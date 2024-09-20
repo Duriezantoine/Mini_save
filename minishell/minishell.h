@@ -78,7 +78,7 @@ typedef struct s_echo
 } t_echo;
 
 int main(int argc, char **argv, char **envp);
-void shell_loop(t_node ***list, t_data **data, char **env);
+int shell_loop(t_node ***list, t_data **data, char **env);
 void organisation_shell_loop(t_node ***list, t_data **data, char **env);
 void ft_insert_cmd(t_command **command, t_data **data, char *input);
 void free_tokens(char **tokens, int len);
@@ -98,13 +98,16 @@ void *ft_bzero(void *s, size_t n);
 char *ft_strdup(char *src);
 int ft_isalnum(int c);
 
+
+
+
 // Parsing
 int ft_nbr_quot(char *input, int i);
 void ft_parsing_init(t_command **command, t_data *data, char *input);
-void ft_parsing(t_node ***list, t_data **data, char *input);
+int ft_parsing(t_node ***list, t_data **data, char *input);
 char **split_string(char *str, int *len);
 void ft_init_data(t_data **data);
-void ft_init_token_space(t_echo **data_echo, char *input, int i);
+int ft_init_token_space(t_echo **data_echo, char *input, int i);
 void ft_init_echo_malloc(t_echo **data_echo);
 void ft_init_tab_echo_malloc(t_echo **data_echo, char *input, int i);
 void ft_insert_data_w_quot(t_echo **data_echo, char *input, int *i, int *place_tab_w_quot);
@@ -112,5 +115,13 @@ void ft_insert_data_s_quot(t_echo **data_echo, char *input, int *i, int *place_t
 void ft_insert_tab_echo(t_echo **data_echo, char *input, int i);
 void ft_insert_data_s_whith_tab(t_echo **data_echo, char *input, int *i, int *clef_tab_s_quot);
 void ft_insert_data_w_whith_tab(t_echo **data_echo, char *input, int *i, int *clef_tab_w_quot);
+void ft_insert_new_data_with_data(char **save, t_echo **data_echo);
+void ft_insert_list(t_node **list, t_echo **data_echo);
+void ft_search_built(t_node **list, char **save);
+void ft_init_list(t_node **list, t_echo **data_echo);
+int ft_split_with_space(t_echo **data_echo, char *input);
+
+
+
 
 #endif

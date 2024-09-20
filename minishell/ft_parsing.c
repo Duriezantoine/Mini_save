@@ -12,39 +12,33 @@
 
 #include "minishell.h"
 
-void ft_split_with_space(t_echo **data_echo, char *input)
+void  ft_search_built(t_node **list, char **save)
 {
-    ft_init_token_space(data_echo, input, 0);
-    ft_init_echo_malloc(data_echo);
-    ft_init_tab_echo_malloc(data_echo, input, 0);
-    ft_insert_tab_echo(data_echo, input, 0);
-    // Il faut recrer une fonction permettant
+    int i;
+
+    i = 0;
+    (void)list;
+    while(save[i] != NULL)
+    {
+        if (ft_strcmp(save[i], "<"))
+        printf("\nsave=|%s|\n",save[i]);
+        i++;
+    }
 }
 
-void ft_init_list(t_node **list, t_echo **data_echo)
+void ft_insert_list(t_node **list, t_echo **data_echo)
 {
     (void)list;
-    // 1 er chose il faut commencer par malloc
-    *list = (t_node *)malloc(sizeof(t_node));
-    if (list == NULL || data_echo == NULL || *data_echo == NULL)
-    {
-        fprintf(stderr, "Erreur : paramètres invalides\n");
-        return;
-    }
-    (*list)->infile = -1;
-    (*list)->outfile = -1;
-
-    (*list)->next = NULL;
-}
-void ft_insert_list(t_node **list, t_echo **data)
-{
     printf("TotalINSER = %d", (*data_echo)->w_quot + (*data_echo)->s_quot);
-    char **save; // CREATION D'UNE DOUBLE CHAINNE DE CARACTERERE POUR SE BALADER DEDAN.
-    *save = malloc (sizeof(char *) * (*data_echo)->w_quot + (*data_echo)->s_quot))
-    ft_insert_new_data_with_data(save, &data_echo);
+    char **save =NULL; // CREATION D'UNE DOUBLE CHAINNE DE CARACTERERE POUR SE BALADER DEDAN.
+    save = malloc (sizeof(char *) * (*data_echo)->w_quot + (*data_echo)->s_quot);
+    ft_insert_new_data_with_data(save, data_echo);
+    //Maintenant il faut commencer a verfifier a la suite 
+    ft_search_built(list, save);
+    //Il ne faut pas oublier de free tout le data_echo 
 }
 
-void ft_parsing(t_node ***list, t_data **data, char *input)
+int ft_parsing(t_node ***list, t_data **data, char *input)
 {
     (void)data;
     (void)list;
@@ -59,12 +53,13 @@ void ft_parsing(t_node ***list, t_data **data, char *input)
     *list = (t_node **)malloc((*data)->nbr_command * sizeof(t_node *));
     // while (i < (*data)->nbr_command)
     // {
-    ft_split_with_space(&data_echo, command[0].input_split); // Voir comment acceder a ma data
+    if(ft_split_with_space(&data_echo, command[0].input_split)== 1)
+        return(1); // Voir comment acceder a ma data
     ft_init_list(&((*list)[0]), &data_echo);
-    ft_inser_list((&(*list)[0], &data_echo));
     // i++;
     // }
     //  Malloc de la structure avec le nbr de commandes
+    return(0);
 }
 void ft_verif_token_infile(t_command **command, t_data **data)
 {

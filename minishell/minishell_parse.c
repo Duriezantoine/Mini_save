@@ -18,7 +18,7 @@ void organisation_shell_loop(t_node ***list, t_data **data, char **env)
 	// free la command_line
 }
 
-void shell_loop(t_node ***list, t_data **data, char **env)
+int shell_loop(t_node ***list, t_data **data, char **env)
 {
 	char *input;
 	(void)env;
@@ -30,12 +30,16 @@ void shell_loop(t_node ***list, t_data **data, char **env)
 		input = readline("minishell$ ");
 		if (!input)
 			ft_out_exit(1);
-
 		// Mise en place d'une structure pour les signaux *2
-		ft_parsing(list, data, input); // Mise en place d'une structure
+		if(ft_parsing(list, data, input)== 1)
+		{
+			//Il faut changer le return
+			return(1);
+		}// Mise en place d'une structure
 		// Libérer l'input après utilisation
 		free(input);
 	}
+	return(0);
 }
 
 int main(int argc, char **argv, char **envp)

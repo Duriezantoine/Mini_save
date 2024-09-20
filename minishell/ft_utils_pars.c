@@ -12,42 +12,53 @@
 
 #include "minishell.h"
 
-void ft_insert_data_data_echo_w(t_data *data, t_echo **data_echo, int i, int iterateur_w)
+int ft_split_with_space(t_echo **data_echo, char *input)
+{
+    printf("INPUT = |%s|", input);
+    if(ft_init_token_space(data_echo, input, 0)== 1)
+        return(1);
+    ft_init_echo_malloc(data_echo);
+    ft_init_tab_echo_malloc(data_echo, input, 0);
+    ft_insert_tab_echo(data_echo, input, 0);
+    // Il faut recrer une fonction permettant
+    return(0);
+}
+
+void ft_insert_data_data_echo_w(char  **save, t_echo **data_echo, int i, int iterateur_w)
 {
     int i_past;
     // int save;
     i_past = 0;
-    free((*data).arg[i]);
-    (*data).arg[i] = malloc(sizeof(char *) * ft_strlen((*data_echo)->str_w_quot[iterateur_w].str) + 1);
+    free(save[i]);
+    save[i] = malloc(sizeof(char *) * ft_strlen((*data_echo)->str_w_quot[iterateur_w].str) + 1);
     while ((*data_echo)->str_w_quot[iterateur_w].str[i_past])
     {
-        (*data).arg[i][i_past] = (*data_echo)->str_w_quot[iterateur_w].str[i_past];
+        save[i][i_past] = (*data_echo)->str_w_quot[iterateur_w].str[i_past];
         i_past++;
     }
 
-    (*data).arg[i][i_past] = '\0';
+    save[i][i_past] = '\0';
     free((*data_echo)->str_w_quot[iterateur_w].str);
 }
 
-void ft_insert_data_data_echo_s(t_data *data, t_echo **data_echo, int i, int iterateur_s)
+void ft_insert_data_data_echo_s(char **save, t_echo **data_echo, int i, int iterateur_s)
 {
     int i_past;
 
     i_past = 0;
-    free((*data).arg[i]);
-    (*data).arg[i] = malloc(sizeof(char *) * ft_strlen((*data_echo)->str_s_quot[iterateur_s].str) + 1);
+    free(save[i]);
+    save[i] = malloc(sizeof(char *) * ft_strlen((*data_echo)->str_s_quot[iterateur_s].str) + 1);
     while ((*data_echo)->str_s_quot[iterateur_s].str[i_past])
     {
-        (*data).arg[i][i_past] = (*data_echo)->str_s_quot[iterateur_s].str[i_past];
+        save[i][i_past] = (*data_echo)->str_s_quot[iterateur_s].str[i_past];
         i_past++;
     }
 
-    (*data).arg[i][i_past] = '\0';
+    save[i][i_past] = '\0';
     free((*data_echo)->str_s_quot[iterateur_s].str);
-    printf("\n|S|Je suis la nouvelle insertion |%s|\n", (*data).arg[i]);
+    // printf("\n|S|Je suis la nouvelle insertion |%s|\n", save[i]);
 }
-
-void ft_insert_new_data_with_data(t_data *data, t_echo **data_echo)
+void ft_insert_new_data_with_data(char **save, t_echo **data_echo)
 {
     (void)data_echo;
     int i;
@@ -64,7 +75,7 @@ void ft_insert_new_data_with_data(t_data *data, t_echo **data_echo)
             if ((*data_echo)->str_s_quot[iterateur_s].order == i)
             {
                 // Creation d'un boucle me permettant de free sans envoyer copier l'adresse
-                ft_insert_data_data_echo_s(data, data_echo, i, iterateur_s);
+                ft_insert_data_data_echo_s(save, data_echo, i, iterateur_s);
                 // (*data).arg[i] = (*data_echo)->str_s_quot[iterateur_s].str;
             }
             iterateur_s++;
@@ -74,22 +85,22 @@ void ft_insert_new_data_with_data(t_data *data, t_echo **data_echo)
         {
             if ((*data_echo)->str_w_quot[iterateur_w].order == i)
             {
-                ft_insert_data_data_echo_w(data, data_echo, i, iterateur_w);
+                ft_insert_data_data_echo_w(save, data_echo, i, iterateur_w);
             }
             iterateur_w++;
         }
         i++;
     }
 
-    if ((*data).arg[i] != NULL)
-    {
-        while ((*data).arg[i] != NULL)
-        {
-            free((*data).arg[i]);
-            (*data).arg[i] = NULL;
-            i++;
-        }
-    }
+    // if ((*data).arg[i] != NULL)
+    // {
+    //     while ((*data).arg[i] != NULL)
+    //     {
+    //         free((*data).arg[i]);
+    //         (*data).arg[i] = NULL;
+    //         i++;
+    //     }
+    // }
 }
 
 void ft_insert_data_s_whith_tab(t_echo **data_echo, char *input, int *i, int *clef_tab_s_quot)
@@ -105,7 +116,7 @@ void ft_insert_data_s_whith_tab(t_echo **data_echo, char *input, int *i, int *cl
     }
 
     (*data_echo)->str_s_quot[(*clef_tab_s_quot)].str[iterateur_tab_s_quot] = '\0';
-    printf("\nSave_with_tab_s|Nbr_occurence=%d|clef=%d|Save=%s|Sorti=%c", iterateur_tab_s_quot, (*clef_tab_s_quot), (*data_echo)->str_s_quot[(*clef_tab_s_quot)].str, input[*i]);
+    // printf("\nSave_with_tab_s|Nbr_occurence=%d|clef=%d|Save=%s|Sorti=%c", iterateur_tab_s_quot, (*clef_tab_s_quot), (*data_echo)->str_s_quot[(*clef_tab_s_quot)].str, input[*i]);
 }
 
 void ft_insert_data_w_whith_tab(t_echo **data_echo, char *input, int *i, int *clef_tab_w_quot)
@@ -130,7 +141,7 @@ void ft_insert_data_w_whith_tab(t_echo **data_echo, char *input, int *i, int *cl
     }
     (*i)++;
     (*data_echo)->str_w_quot[(*clef_tab_w_quot)].str[iterateur_tab_w_quot] = '\0';
-    printf("\nSave_with_tab_w|Nbr_occurence=%d|clef=%d|Save=%s|Sorti=%c\n", iterateur_tab_w_quot, (*clef_tab_w_quot), (*data_echo)->str_w_quot[(*clef_tab_w_quot)].str, input[*i]);
+    // printf("\nSave_with_tab_w|Nbr_occurence=%d|clef=%d|Save=%s|Sorti=%c\n", iterateur_tab_w_quot, (*clef_tab_w_quot), (*data_echo)->str_w_quot[(*clef_tab_w_quot)].str, input[*i]);
 }
 
 void ft_insert_tab_echo(t_echo **data_echo, char *input, int i)
@@ -231,14 +242,17 @@ void ft_init_tab_echo_malloc(t_echo **data_echo, char *input, int i)
     }
 }
 
-void ft_init_token_space(t_echo **data_echo, char *input, int i)
+int ft_init_token_space(t_echo **data_echo, char *input, int i)
 {
     // Cette fonction permet de calculer le nombre de quot
     int ss_quot = 0;
     int wt_quot = 0;
 
     if (ft_nbr_quot(input, i) == 1)
-        return;
+    {
+        printf("Ce n'est pas paire ");
+        return (1);
+    }
     while (input[i])
     {
         while (input[i] == ' ')
@@ -267,6 +281,7 @@ void ft_init_token_space(t_echo **data_echo, char *input, int i)
     (*data_echo)->s_quot = ss_quot;
     (*data_echo)->w_quot = wt_quot;
     printf("S_quot = |%d| W_quot|%d|", (*data_echo)->s_quot, (*data_echo)->w_quot);
+    return(0);
 }
 
 int ft_nbr_quot(char *input, int i)
@@ -276,14 +291,18 @@ int ft_nbr_quot(char *input, int i)
 
     result = 0;
     search = i;
-    printf("\nft_nrb_echo");
+    printf("\nft_nrb_echo de |%s|\n", input);
 
     while (input[search])
     {
-        if (input[i] == '\'' || input[i] == '"')
+        if ( input[search] == '"')
+        {
+
             result++;
+        }
         search++;
     }
+    printf("Je suis result + %d", result);
     if (result % 2 == 0)
     {
         printf("\nC'est un nombre pair\n");
