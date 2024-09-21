@@ -20,7 +20,8 @@ int ft_split_with_space(t_echo **data_echo, char *input)
     ft_init_echo_malloc(data_echo);
     ft_init_tab_echo_malloc(data_echo, input, 0);
     ft_insert_tab_echo(data_echo, input, 0);
-    // Il faut recrer une fonction permettant
+    // Il faut recrer une fonction permettant de free a la toutes fin ne pas zappe
+    
     return(0);
 }
 

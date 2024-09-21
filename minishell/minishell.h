@@ -25,19 +25,36 @@
 #include <termios.h>
 #include <unistd.h>
 
+typedef struct s_arg
+{
+	char *str_command;
+	int type;
+
+	struct s_arg *prev;
+	struct s_arg *next;
+} t_arg;
+
+typedef struct s_cmd
+{
+	char **cmd_and_args;
+
+	int input;
+	int output;
+
+	int is_builtin;
+
+	struct s_cmd *next;
+	struct s_cmd *prev;
+} t_cmd;
+
 typedef struct s__node
 {
-	int infile;
-	int outfile;
-	struct Node *next;
-} t_node;
+	struct s_arg *arg;
+	struct s_cmd *cmd;
 
-typedef struct s_env
-{
-	char *key;
-	char **value;
-	struct s_env *next;
-} t_env;
+	int save[2];
+	int pipe[2];
+} t_node;
 
 typedef struct s_token_str_two
 {
@@ -78,8 +95,8 @@ typedef struct s_echo
 } t_echo;
 
 int main(int argc, char **argv, char **envp);
-int shell_loop(t_node ***list, t_data **data, char **env);
-void organisation_shell_loop(t_node ***list, t_data **data, char **env);
+int shell_loop(t_node *list, t_data **data, char **env);
+void organisation_shell_loop(t_node *list, t_data **data, char **env);
 void ft_insert_cmd(t_command **command, t_data **data, char *input);
 void free_tokens(char **tokens, int len);
 void ft_insert_token(t_command **command, t_data **data);
@@ -98,15 +115,12 @@ void *ft_bzero(void *s, size_t n);
 char *ft_strdup(char *src);
 int ft_isalnum(int c);
 
-
-
-
 // Parsing
 int ft_nbr_quot(char *input, int i);
 void ft_parsing_init(t_command **command, t_data *data, char *input);
-int ft_parsing(t_node ***list, t_data **data, char *input);
+int ft_parsing(t_node *list, t_data **data, char *input);
 char **split_string(char *str, int *len);
-void ft_init_data(t_data **data);
+void ft_init_data(t_data **data, t_node *list);
 int ft_init_token_space(t_echo **data_echo, char *input, int i);
 void ft_init_echo_malloc(t_echo **data_echo);
 void ft_init_tab_echo_malloc(t_echo **data_echo, char *input, int i);
@@ -118,10 +132,7 @@ void ft_insert_data_w_whith_tab(t_echo **data_echo, char *input, int *i, int *cl
 void ft_insert_new_data_with_data(char **save, t_echo **data_echo);
 void ft_insert_list(t_node **list, t_echo **data_echo);
 void ft_search_built(t_node **list, char **save);
-void ft_init_list(t_node **list, t_echo **data_echo);
+t_arg *ft_init_list(t_node *list, t_echo **data_echo);
 int ft_split_with_space(t_echo **data_echo, char *input);
-
-
-
 
 #endif
