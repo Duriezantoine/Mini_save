@@ -26,18 +26,6 @@
 //     }
 // }
 
-void ft_insert_list(t_node **list, t_echo **data_echo)
-{
-    (void)list;
-    printf("TotalINSER = %d", (*data_echo)->w_quot + (*data_echo)->s_quot);
-    char **save = NULL; // CREATION D'UNE DOUBLE CHAINNE DE CARACTERERE POUR SE BALADER DEDAN.
-    save = malloc(sizeof(char *) * (*data_echo)->w_quot + (*data_echo)->s_quot);
-    ft_insert_new_data_with_data(save, data_echo);
-    // Maintenant il faut commencer a verfifier a la suite
-    // ft_search_built(list, save);
-    // Il ne faut pas oublier de free tout le data_echo
-}
-
 int ft_parsing(t_node *list, t_data **data, char *input)
 {
     (void)data;
@@ -46,16 +34,22 @@ int ft_parsing(t_node *list, t_data **data, char *input)
 
     // i = 0;
     t_echo *data_echo;
-    t_command *command = NULL; // Initialisation à NULL
+    t_command *command = NULL;
+    char **save = NULL; // CREATION D'UNE DOUBLE CHAINNE DE CARACTERERE POUR SE BALADER DEDAN.
     // Il faut d'une conditions pour les signaux
+
     // Mettre en place des conditions pour verifier le parsing
+
     ft_parsing_init(&command, *data, input);
-    // list = (t_node **)malloc((*data)->nbr_command * sizeof(t_node *));
+
     // while (i < (*data)->nbr_command)
     // {
     if (ft_split_with_space(&data_echo, command[0].input_split) == 1)
         return (1); // Voir comment acceder a ma data
-    list->arg = ft_init_list(list, &data_echo);
+    save = malloc(sizeof(char *) * (*data_echo).w_quot + (*data_echo).s_quot);
+    ft_insert_new_data_with_data(save, &data_echo);
+    printf("Je suis saVE0 = %s", save[0]);
+    // list->arg = ft_init_list(list, &data_echo);
     // i++;
     // }
     //  Malloc de la structure avec le nbr de commandes
