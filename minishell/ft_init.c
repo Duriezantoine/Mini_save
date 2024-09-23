@@ -38,18 +38,32 @@ void ft_init_echo_malloc(t_echo **data_echo)
     (*data_echo)->str_s_quot = malloc((*data_echo)->s_quot * sizeof(t_str));
     // printf("\nFT_init echo malloc|w=%d|s=%d||\n",(*data_echo)->w_quot, (*data_echo)->s_quot);
 }
-// t_arg *ft_init_list(t_node *list, t_echo **data_echo)
-// {
-//     (void)list;
-//     (void)data_echo;
-//     char **save = NULL; // CREATION D'UNE DOUBLE CHAINNE DE CARACTERERE POUR SE BALADER DEDAN.
-//     t_arg *arg_s;
-//     // 1 er chose il faut commencer par m
-//     t_arg arg_s = NULL;
-//     // 2 eme chose il faut initialiser les variables
-//     arg_s->str_command = NULL;
-//     arg_s->type = 0;
-//     arg_s->prev = NULL;
-//     arg_s->next = NULL;
-//     return (arg_s);
-// }
+t_arg *ft_init_list(t_node *list, t_echo **data_echo, char *save, t_arg **arg_s)
+{
+    (void)list;
+    (void)data_echo;
+    t_arg *new_node;
+    t_arg *tmp;
+    new_node = malloc(sizeof(t_arg));
+    if (!new_node)
+    {
+        printf("C'est une erreurs connards");
+    } // 1 er chose il faut commencer par m
+    // 2 eme chose il faut initialiser les variables
+    new_node->str_command = ft_strdup(save);
+    new_node->type = 0;
+    printf("Voila ce que je viens d'introduire|%s|", new_node->str_command);
+    new_node->prev = NULL;
+    new_node->next = NULL;
+    if (*arg_s == NULL)
+        *arg_s = new_node;
+    else
+    {
+        tmp = *arg_s;
+        while (tmp->next)
+            tmp = tmp->next;
+        tmp->next = new_node;
+        new_node->prev = tmp;
+    }
+    return (*arg_s);
+}

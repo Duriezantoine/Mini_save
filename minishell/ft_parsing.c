@@ -35,6 +35,9 @@ int ft_parsing(t_node *list, t_data **data, char *input)
     // i = 0;
     t_echo *data_echo;
     t_command *command = NULL;
+    //     t_arg *arg_s = NULL;
+    int x = 0;
+
     char **save = NULL; // CREATION D'UNE DOUBLE CHAINNE DE CARACTERERE POUR SE BALADER DEDAN.
     // Il faut d'une conditions pour les signaux
 
@@ -46,11 +49,16 @@ int ft_parsing(t_node *list, t_data **data, char *input)
     // {
     if (ft_split_with_space(&data_echo, command[0].input_split) == 1)
         return (1); // Voir comment acceder a ma data
-    save = malloc(sizeof(char *) * (*data_echo).w_quot + (*data_echo).s_quot);
+
+    save = malloc(sizeof(char *) * ((*data_echo).w_quot + (*data_echo).s_quot + 1));
+
     ft_insert_new_data_with_data(save, &data_echo);
-    printf("Je suis saVE0 = %s", save[0]);
-    // list->arg = ft_init_list(list, &data_echo);
-    // i++;
+    while (save[x])
+    {
+        printf("Je suis saVe o |%s| ", save[x]);
+        //     list->arg = ft_init_list(list, &data_echo, save[x], arg_s);
+        x++;
+    }
     // }
     //  Malloc de la structure avec le nbr de commandes
     return (0);

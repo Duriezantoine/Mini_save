@@ -15,16 +15,16 @@
 int ft_split_with_space(t_echo **data_echo, char *input)
 {
     printf("INPUT = |%s|", input);
-    if(ft_init_token_space(data_echo, input, 0)== 1)
-        return(1);
+    if (ft_init_token_space(data_echo, input, 0) == 1)
+        return (1);
     ft_init_echo_malloc(data_echo);
     ft_init_tab_echo_malloc(data_echo, input, 0);
     ft_insert_tab_echo(data_echo, input, 0);
-    // Il faut recrer une fonction permettant de free a la toutes fin ne pas zappe
-    return(0);
+    // Il faut recrer une fonction permettant de free a la toutes fin ne pas
+    return (0);
 }
 
-void ft_insert_data_data_echo_w(char  **save, t_echo **data_echo, int i, int iterateur_w)
+void ft_insert_data_data_echo_w(char **save, t_echo **data_echo, int i, int iterateur_w)
 {
     int i_past;
     // int save;
@@ -56,7 +56,6 @@ void ft_insert_data_data_echo_s(char **save, t_echo **data_echo, int i, int iter
 
     save[i][i_past] = '\0';
     free((*data_echo)->str_s_quot[iterateur_s].str);
-    // printf("\n|S|Je suis la nouvelle insertion |%s|\n", save[i]);
 }
 void ft_insert_new_data_with_data(char **save, t_echo **data_echo)
 {
@@ -91,16 +90,7 @@ void ft_insert_new_data_with_data(char **save, t_echo **data_echo)
         }
         i++;
     }
-
-    // if ((*data).arg[i] != NULL)
-    // {
-    //     while ((*data).arg[i] != NULL)
-    //     {
-    //         free((*data).arg[i]);
-    //         (*data).arg[i] = NULL;
-    //         i++;
-    //     }
-    // }
+    save[i] = NULL;
 }
 
 void ft_insert_data_s_whith_tab(t_echo **data_echo, char *input, int *i, int *clef_tab_s_quot)
@@ -186,7 +176,7 @@ void ft_insert_data_s_quot(t_echo **data_echo, char *input, int *i, int *place_t
     // Peux d'autre conditions a verifier ici
     (*data_echo)->str_s_quot[(*place_tab_s_quot)].order = (*data_echo)->order_occurence;
     (*data_echo)->order_occurence++;
-    printf("\nTABS|PLace|%d|Nbr occurence|%d|Place_tab|%d|", (*data_echo)->str_s_quot[(*place_tab_s_quot)].order, occurence, (*place_tab_s_quot));
+    // printf("\nTABS|PLace|%d|Nbr occurence|%d|Place_tab|%d|", (*data_echo)->str_s_quot[(*place_tab_s_quot)].order, occurence, (*place_tab_s_quot));
     (*data_echo)->str_s_quot[(*place_tab_s_quot)].str = malloc(sizeof(char *) * occurence + 1);
     (*place_tab_s_quot)++;
 }
@@ -206,7 +196,7 @@ void ft_insert_data_w_quot(t_echo **data_echo, char *input, int *i, int *place_t
     }
     (*i)++;
     (*data_echo)->str_w_quot[(*place_tab_w_quot)].order = (*data_echo)->order_occurence;
-    printf("\n|TABW|Place|%d|Nbr occurence|%d|Place_tab|%d|\n", (*data_echo)->str_w_quot[(*place_tab_w_quot)].order, occurence, (*place_tab_w_quot));
+    // printf("\n|TABW|Place|%d|Nbr occurence|%d|Place_tab|%d|\n", (*data_echo)->str_w_quot[(*place_tab_w_quot)].order, occurence, (*place_tab_w_quot));
     (*data_echo)->order_occurence++;
     (*data_echo)->str_w_quot[(*place_tab_w_quot)].str = malloc(sizeof(char *) * occurence + 1);
     // Il faut proteger le malloc
@@ -280,8 +270,8 @@ int ft_init_token_space(t_echo **data_echo, char *input, int i)
     }
     (*data_echo)->s_quot = ss_quot;
     (*data_echo)->w_quot = wt_quot;
-    printf("S_quot = |%d| W_quot|%d|", (*data_echo)->s_quot, (*data_echo)->w_quot);
-    return(0);
+    printf("S_quot = |%d| W_quot|%d|\n", (*data_echo)->s_quot, (*data_echo)->w_quot);
+    return (0);
 }
 
 int ft_nbr_quot(char *input, int i)
@@ -295,7 +285,7 @@ int ft_nbr_quot(char *input, int i)
 
     while (input[search])
     {
-        if ( input[search] == '"')
+        if (input[search] == '"')
         {
 
             result++;

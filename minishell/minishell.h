@@ -132,7 +132,7 @@ void ft_insert_data_w_whith_tab(t_echo **data_echo, char *input, int *i, int *cl
 void ft_insert_new_data_with_data(char **save, t_echo **data_echo);
 void ft_insert_list(t_node **list, t_echo **data_echo);
 void ft_search_built(t_node **list, char **save);
-t_arg *ft_init_list(t_node *list, t_echo **data_echo);
+t_arg *ft_init_list(t_node *list, t_echo **data_echo, char *save, t_arg **arg_s);
 int ft_split_with_space(t_echo **data_echo, char *input);
 
 #endif
