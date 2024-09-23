@@ -64,13 +64,18 @@ typedef struct s_cmd
 	struct s_cmd *prev;
 } t_cmd;
 
-typedef struct s__node
+typedef struct s_node
 {
 	struct s_arg *arg;
 	struct s_cmd *cmd;
 
 	int save[2];
 	int pipe[2];
+
+	struct s_node *prev;
+    struct s_node *next;
+
+	
 } t_node;
 
 typedef struct s_token_str_two
@@ -133,26 +138,35 @@ char *ft_strdup(char *src);
 int ft_isalnum(int c);
 
 // Parsing
+void ft_init_tab_echo_malloc(t_echo *data_echo, char *input, int i);
+
 int ft_nbr_quot(char *input, int i);
 void ft_parsing_init(t_command **command, t_data *data, char *input);
 int ft_parsing(t_node *list, t_data **data, char *input);
 char **split_string(char *str, int *len);
 void ft_init_data(t_data **data, t_node *list);
-int ft_init_token_space(t_echo **data_echo, char *input, int i);
-void ft_init_echo_malloc(t_echo **data_echo);
-void ft_init_tab_echo_malloc(t_echo **data_echo, char *input, int i);
-void ft_insert_data_w_quot(t_echo **data_echo, char *input, int *i, int *place_tab_w_quot);
-void ft_insert_data_s_quot(t_echo **data_echo, char *input, int *i, int *place_tab_s_quot);
-void ft_insert_tab_echo(t_echo **data_echo, char *input, int i);
-void ft_insert_data_s_whith_tab(t_echo **data_echo, char *input, int *i, int *clef_tab_s_quot);
-void ft_insert_data_w_whith_tab(t_echo **data_echo, char *input, int *i, int *clef_tab_w_quot);
-void ft_insert_new_data_with_data(char **save, t_echo **data_echo);
+int ft_init_token_space(t_echo *data_echo, char *input, int i);
+void ft_init_echo_malloc(t_echo *data_echo);
+void ft_insert_data_w_quot(t_echo *data_echo, char *input, int *i, int *place_tab_w_quot);
+void ft_insert_data_s_quot(t_echo *data_echo, char *input, int *i, int *place_tab_s_quot);
+void ft_insert_data_s_whith_tab(t_echo *data_echo, char *input, int *i, int *clef_tab_s_quot);
+void ft_insert_data_w_whith_tab(t_echo *data_echo, char *input, int *i, int *clef_tab_w_quot);
+void ft_insert_new_data_with_data(char **save, t_echo *data_echo);
 void ft_insert_list(t_node **list, t_echo **data_echo);
 void ft_search_built(t_node **list, char **save);
-t_arg *ft_init_list(t_node *list, t_echo **data_echo, char *save);
-int ft_split_with_space(t_echo **data_echo, char *input);
+t_arg *ft_init_list(t_node *list, t_echo *data_echo, char *save);
+int ft_split_with_space(t_echo *data_echo, char *input);
+
 void print_list(t_node *list);
 int ft_strcmp(char *s1, char *s2);
 void type_insert_cmd(t_arg *new_node);
 void ft_format_list(t_arg *arg);
+void ft_insert_tab_echo(t_echo *data_echo, char *input, int i);
+void ft_init_data_list(t_node **list);
+
+
+
+//Fonction pour free
+
+void free_t_echo(t_echo *echo);
 #endif

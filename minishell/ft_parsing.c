@@ -37,6 +37,7 @@ void ft_format_list(t_arg *arg) {
         }
         if (arg->prev && arg->prev->type == OUTPUT)
             arg->type = OUTFILE;
+        // arg = arg->next;
 }
 
 void type_insert_cmd(t_arg *new_node)
@@ -58,11 +59,11 @@ int ft_parsing(t_node *list, t_data **data, char *input)
 {
     (void)data;
     (void)list;
-    // int i;
+    int i;
 
-    // i = 0;
+    i = 0;
     t_arg *current ;
-    t_echo *data_echo;
+    t_echo data_echo;
     t_command *command = NULL;
     //     t_arg *arg_s = NULL;
     int x = 0;
@@ -74,29 +75,40 @@ int ft_parsing(t_node *list, t_data **data, char *input)
 
     ft_parsing_init(&command, *data, input);
 
-    // while (i < (*data)->nbr_command)
-    // {
-    if (ft_split_with_space(&data_echo, command[0].input_split) == 1)
-        return (1); // Voir comment acceder a ma data
-
-    save = malloc(sizeof(char *) * ((*data_echo).w_quot + (*data_echo).s_quot + 1));
-
-    ft_insert_new_data_with_data(save, &data_echo);
-    while (save[x])
+    while (i < (*data)->nbr_command)
     {
-        // Introduction dans la liste
-        list->arg = ft_init_list(list, &data_echo, save[x]);
-        x++;
+        if (ft_split_with_space(&data_echo, command[i].input_split) == 1)
+            return (1); // Voir comment acceder a ma data
+
+        save = malloc(sizeof(char *) * (data_echo.w_quot + data_echo.s_quot + 1));
+
+        ft_insert_new_data_with_data(save, &data_echo);
+        x = 0;
+        while (save[x])
+        {
+            // Introduction dans la liste
+            list->arg = ft_init_list(list, &data_echo, save[x]);
+            x++;
+        }
+        print_list(list);
+        current = list->arg;
+        while(current)
+        {
+            printf("\nXX\n");
+            type_insert_cmd(current);
+            ft_format_list(current);
+            current = current->next;
+        }
+        t_node *new_node ;
+        ft_init_data_list(&new_node);
+        list->next = new_node;
+        new_node->prev = list;
+        list = new_node;
+        free(save);
+        i++;
     }
-    print_list(list);
-    current = list->arg;
-    while(current)
-    {
-        printf("\nXX\n");
-        type_insert_cmd(current);
-        ft_format_list(current);
-        current = current->next;
-    }
+    //  free_t_echo(data_echo);
+    
     print_list(list);
 
     // Il faut commencer a introduire les modifications dans cette liste

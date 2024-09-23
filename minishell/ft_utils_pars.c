@@ -22,7 +22,7 @@ int ft_strcmp(char *s1, char *s2)
     return (s1[c] - s2[c]);
 }
 
-int ft_split_with_space(t_echo **data_echo, char *input)
+int ft_split_with_space(t_echo *data_echo, char *input)
 {
     printf("INPUT = |%s|", input);
     if (ft_init_token_space(data_echo, input, 0) == 1)
@@ -34,38 +34,38 @@ int ft_split_with_space(t_echo **data_echo, char *input)
     return (0);
 }
 
-void ft_insert_data_data_echo_w(char **save, t_echo **data_echo, int i, int iterateur_w)
+void ft_insert_data_data_echo_w(char **save, t_echo *data_echo, int i, int iterateur_w)
 {
     int i_past;
     // int save;
     i_past = 0;
-    save[i] = malloc(sizeof(char *) * ft_strlen((*data_echo)->str_w_quot[iterateur_w].str) + 1);
-    while ((*data_echo)->str_w_quot[iterateur_w].str[i_past])
+    save[i] = malloc(sizeof(char *) * ft_strlen(data_echo->str_w_quot[iterateur_w].str) + 1);
+    while (data_echo->str_w_quot[iterateur_w].str[i_past])
     {
-        save[i][i_past] = (*data_echo)->str_w_quot[iterateur_w].str[i_past];
+        save[i][i_past] = data_echo->str_w_quot[iterateur_w].str[i_past];
         i_past++;
     }
 
     save[i][i_past] = '\0';
-    free((*data_echo)->str_w_quot[iterateur_w].str);
+    free(data_echo->str_w_quot[iterateur_w].str);
 }
 
-void ft_insert_data_data_echo_s(char **save, t_echo **data_echo, int i, int iterateur_s)
+void ft_insert_data_data_echo_s(char **save, t_echo *data_echo, int i, int iterateur_s)
 {
     int i_past;
 
     i_past = 0;
-    save[i] = malloc(sizeof(char *) * ft_strlen((*data_echo)->str_s_quot[iterateur_s].str) + 1);
-    while ((*data_echo)->str_s_quot[iterateur_s].str[i_past])
+    save[i] = malloc(sizeof(char *) * ft_strlen(data_echo->str_s_quot[iterateur_s].str) + 1);
+    while (data_echo->str_s_quot[iterateur_s].str[i_past])
     {
-        save[i][i_past] = (*data_echo)->str_s_quot[iterateur_s].str[i_past];
+        save[i][i_past] = data_echo->str_s_quot[iterateur_s].str[i_past];
         i_past++;
     }
 
     save[i][i_past] = '\0';
-    free((*data_echo)->str_s_quot[iterateur_s].str);
+    free(data_echo->str_s_quot[iterateur_s].str);
 }
-void ft_insert_new_data_with_data(char **save, t_echo **data_echo)
+void ft_insert_new_data_with_data(char **save, t_echo *data_echo)
 {
     (void)data_echo;
     int i;
@@ -74,12 +74,12 @@ void ft_insert_new_data_with_data(char **save, t_echo **data_echo)
 
     i = 0;
     // IL faut commencer a Introduire les nouvelles valeurs a l'interieuds de la base de donne
-    while (i < (*data_echo)->w_quot + (*data_echo)->s_quot)
+    while (i < data_echo->w_quot + data_echo->s_quot)
     {
         iterateur_s = 0;
-        while (iterateur_s < (*data_echo)->s_quot)
+        while (iterateur_s < data_echo->s_quot)
         {
-            if ((*data_echo)->str_s_quot[iterateur_s].order == i)
+            if (data_echo->str_s_quot[iterateur_s].order == i)
             {
                 // Creation d'un boucle me permettant de free sans envoyer copier l'adresse
                 ft_insert_data_data_echo_s(save, data_echo, i, iterateur_s);
@@ -88,9 +88,9 @@ void ft_insert_new_data_with_data(char **save, t_echo **data_echo)
             iterateur_s++;
         }
         iterateur_w = 0;
-        while (iterateur_w < (*data_echo)->w_quot)
+        while (iterateur_w < data_echo->w_quot)
         {
-            if ((*data_echo)->str_w_quot[iterateur_w].order == i)
+            if (data_echo->str_w_quot[iterateur_w].order == i)
             {
                 ft_insert_data_data_echo_w(save, data_echo, i, iterateur_w);
             }
@@ -101,23 +101,23 @@ void ft_insert_new_data_with_data(char **save, t_echo **data_echo)
     save[i] = NULL;
 }
 
-void ft_insert_data_s_whith_tab(t_echo **data_echo, char *input, int *i, int *clef_tab_s_quot)
+void ft_insert_data_s_whith_tab(t_echo *data_echo, char *input, int *i, int *clef_tab_s_quot)
 {
     int iterateur_tab_s_quot;
     iterateur_tab_s_quot = 0;
     while (ft_isalnum(input[*i]) && input[*i] != '\0')
     {
-        (*data_echo)->str_s_quot[(*clef_tab_s_quot)].str[iterateur_tab_s_quot] = input[*i];
+        data_echo->str_s_quot[(*clef_tab_s_quot)].str[iterateur_tab_s_quot] = input[*i];
 
         (*i)++;
         iterateur_tab_s_quot++;
     }
 
-    (*data_echo)->str_s_quot[(*clef_tab_s_quot)].str[iterateur_tab_s_quot] = '\0';
-    printf("\nSave_with_tab_s|Nbr_occurence=%d|clef=%d|Save=%s|Sorti=%c", iterateur_tab_s_quot, (*clef_tab_s_quot), (*data_echo)->str_s_quot[(*clef_tab_s_quot)].str, input[*i]);
+    data_echo->str_s_quot[(*clef_tab_s_quot)].str[iterateur_tab_s_quot] = '\0';
+    printf("\nSave_with_tab_s|Nbr_occurence=%d|clef=%d|Save=%s|Sorti=%c", iterateur_tab_s_quot, (*clef_tab_s_quot), data_echo->str_s_quot[(*clef_tab_s_quot)].str, input[*i]);
 }
 
-void ft_insert_data_w_whith_tab(t_echo **data_echo, char *input, int *i, int *clef_tab_w_quot)
+void ft_insert_data_w_whith_tab(t_echo *data_echo, char *input, int *i, int *clef_tab_w_quot)
 {
     int iterateur_tab_w_quot;
     (void)data_echo;
@@ -128,21 +128,21 @@ void ft_insert_data_w_whith_tab(t_echo **data_echo, char *input, int *i, int *cl
         // C'est le cas des doubles quot colle
         if ((*i) + 2 < ft_strlen(input) && (input[(*i) + 1] == '"' || input[(*i) + 1] == '\'') && (input[(*i) + 2] == '\'' || input[(*i) + 2] == '"'))
         {
-            (*data_echo)->str_w_quot[(*clef_tab_w_quot)].str[iterateur_tab_w_quot] = input[*i];
+            data_echo->str_w_quot[(*clef_tab_w_quot)].str[iterateur_tab_w_quot] = input[*i];
             (*i)++;
             iterateur_tab_w_quot++;
             (*i) += 2;
         }
-        (*data_echo)->str_w_quot[(*clef_tab_w_quot)].str[iterateur_tab_w_quot] = input[*i];
+        data_echo->str_w_quot[(*clef_tab_w_quot)].str[iterateur_tab_w_quot] = input[*i];
         iterateur_tab_w_quot++;
         (*i)++;
     }
     (*i)++;
-    (*data_echo)->str_w_quot[(*clef_tab_w_quot)].str[iterateur_tab_w_quot] = '\0';
-    printf("\nSave_with_tab_w|Nbr_occurence=%d|clef=%d|Save=%s|Sorti=%c\n", iterateur_tab_w_quot, (*clef_tab_w_quot), (*data_echo)->str_w_quot[(*clef_tab_w_quot)].str, input[*i]);
+    data_echo->str_w_quot[(*clef_tab_w_quot)].str[iterateur_tab_w_quot] = '\0';
+    printf("\nSave_with_tab_w|Nbr_occurence=%d|clef=%d|Save=%s|Sorti=%c\n", iterateur_tab_w_quot, (*clef_tab_w_quot), data_echo->str_w_quot[(*clef_tab_w_quot)].str, input[*i]);
 }
 
-void ft_insert_tab_echo(t_echo **data_echo, char *input, int i)
+void ft_insert_tab_echo(t_echo *data_echo, char *input, int i)
 {
     int clef_tab_w_quot;
     int clef_tab_s_quot;
@@ -170,7 +170,7 @@ void ft_insert_tab_echo(t_echo **data_echo, char *input, int i)
     }
 }
 
-void ft_insert_data_s_quot(t_echo **data_echo, char *input, int *i, int *place_tab_s_quot)
+void ft_insert_data_s_quot(t_echo *data_echo, char *input, int *i, int *place_tab_s_quot)
 {
     int occurence;
 
@@ -182,14 +182,14 @@ void ft_insert_data_s_quot(t_echo **data_echo, char *input, int *i, int *place_t
         (*i)++;
     }
     // Peux d'autre conditions a verifier ici
-    (*data_echo)->str_s_quot[(*place_tab_s_quot)].order = (*data_echo)->order_occurence;
-    (*data_echo)->order_occurence++;
+    data_echo->str_s_quot[(*place_tab_s_quot)].order = data_echo->order_occurence;
+    data_echo->order_occurence++;
     // printf("\nTABS|PLace|%d|Nbr occurence|%d|Place_tab|%d|", (*data_echo)->str_s_quot[(*place_tab_s_quot)].order, occurence, (*place_tab_s_quot));
-    (*data_echo)->str_s_quot[(*place_tab_s_quot)].str = malloc(sizeof(char *) * occurence + 1);
+    data_echo->str_s_quot[(*place_tab_s_quot)].str = malloc(sizeof(char *) * occurence + 1);
     (*place_tab_s_quot)++;
 }
 
-void ft_insert_data_w_quot(t_echo **data_echo, char *input, int *i, int *place_tab_w_quot)
+void ft_insert_data_w_quot(t_echo *data_echo, char *input, int *i, int *place_tab_w_quot)
 {
     int occurence;
     occurence = 0;
@@ -203,15 +203,15 @@ void ft_insert_data_w_quot(t_echo **data_echo, char *input, int *i, int *place_t
         occurence++;
     }
     (*i)++;
-    (*data_echo)->str_w_quot[(*place_tab_w_quot)].order = (*data_echo)->order_occurence;
+    data_echo->str_w_quot[(*place_tab_w_quot)].order = data_echo->order_occurence;
     // printf("\n|TABW|Place|%d|Nbr occurence|%d|Place_tab|%d|\n", (*data_echo)->str_w_quot[(*place_tab_w_quot)].order, occurence, (*place_tab_w_quot));
-    (*data_echo)->order_occurence++;
-    (*data_echo)->str_w_quot[(*place_tab_w_quot)].str = malloc(sizeof(char *) * occurence + 1);
+    data_echo->order_occurence++;
+    data_echo->str_w_quot[(*place_tab_w_quot)].str = malloc(sizeof(char *) * occurence + 1);
     // Il faut proteger le malloc
     (*place_tab_w_quot)++;
 }
 
-void ft_init_tab_echo_malloc(t_echo **data_echo, char *input, int i)
+void ft_init_tab_echo_malloc(t_echo *data_echo, char *input, int i)
 {
 
     int place_tab_w_quot;
@@ -219,7 +219,7 @@ void ft_init_tab_echo_malloc(t_echo **data_echo, char *input, int i)
 
     place_tab_s_quot = 0;
     place_tab_w_quot = 0;
-    (*data_echo)->order_occurence = 0;
+    data_echo->order_occurence = 0;
     // Cette fonction permetd e determiner le nombre d'occurence dans le tableau
     while (input[i])
     {
@@ -240,7 +240,7 @@ void ft_init_tab_echo_malloc(t_echo **data_echo, char *input, int i)
     }
 }
 
-int ft_init_token_space(t_echo **data_echo, char *input, int i)
+int ft_init_token_space(t_echo *data_echo, char *input, int i)
 {
     // Cette fonction permet de calculer le nombre de quot
     int ss_quot = 0;
@@ -277,9 +277,9 @@ int ft_init_token_space(t_echo **data_echo, char *input, int i)
         if (!(input[i] != '"' || input[i] != '\''))
             i++;
     }
-    (*data_echo)->s_quot = ss_quot;
-    (*data_echo)->w_quot = wt_quot;
-    printf("S_quot = |%d| W_quot|%d|\n", (*data_echo)->s_quot, (*data_echo)->w_quot);
+    data_echo->s_quot = ss_quot;
+    data_echo->w_quot = wt_quot;
+    printf("S_quot = |%d| W_quot|%d|\n", data_echo->s_quot, data_echo->w_quot);
     return (0);
 }
 
