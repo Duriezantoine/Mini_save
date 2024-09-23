@@ -49,6 +49,9 @@ t_arg *ft_init_list(t_node *list, t_echo **data_echo, char *save)
         return NULL;
     }
     new_node->str_command = ft_strdup(save);
+    new_node->type = 0;
+    type_insert_cmd(new_node);
+
     if (!new_node->str_command)
     {
         printf("Erreur de duplication de chaîne\n");
@@ -56,7 +59,6 @@ t_arg *ft_init_list(t_node *list, t_echo **data_echo, char *save)
         return NULL;
     }
 
-    new_node->type = 0;
     printf("Voila ce que je viens d'introduire: |%s|\n", new_node->str_command);
     new_node->prev = NULL;
     new_node->next = NULL;

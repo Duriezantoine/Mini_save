@@ -12,10 +12,12 @@
 
 #include "minishell.h"
 
-void print_list(t_node *list) {
+void print_list(t_node *list)
+{
     t_arg *current = list->arg;
-    while (current) {
-        printf("Command: %s\n", current->str_command);
+    while (current)
+    {
+        printf("Command: |%s| type ;|%d|\n", current->str_command, current->type);
         current = current->next;
     }
 }

@@ -25,6 +25,22 @@
 #include <termios.h>
 #include <unistd.h>
 
+typedef enum e_tokens
+{
+	INFILE,
+	OUTFILE,
+	INPUT,
+	HEREDOC,
+	DELIM,
+	OUTPUT,
+	APPEND,
+	PIPE,
+	CMD,
+	ARG,
+	OPTION,
+	REDIR
+} t_token;
+
 typedef struct s_arg
 {
 	char *str_command;
@@ -135,4 +151,7 @@ void ft_search_built(t_node **list, char **save);
 t_arg *ft_init_list(t_node *list, t_echo **data_echo, char *save);
 int ft_split_with_space(t_echo **data_echo, char *input);
 void print_list(t_node *list);
+int ft_strcmp(char *s1, char *s2);
+void type_insert_cmd(t_arg *new_node);
+
 #endif

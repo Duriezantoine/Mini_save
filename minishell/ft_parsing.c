@@ -26,6 +26,21 @@
 //     }
 // }
 
+void type_insert_cmd(t_arg *new_node)
+{
+    // Cette fonction permet d'introduire le type
+    if (ft_strcmp(new_node->str_command, "<<") == 0)
+        new_node->type = HEREDOC;
+    else if (ft_strcmp(new_node->str_command, "<") == 0)
+        new_node->type = INPUT;
+    else if (ft_strcmp(new_node->str_command, ">>") == 0)
+        new_node->type = APPEND;
+    else if (ft_strcmp(new_node->str_command, ">") == 0)
+        new_node->type = OUTPUT;
+    else if (ft_strcmp(new_node->str_command, "|") == 0)
+        new_node->type = PIPE;
+}
+
 int ft_parsing(t_node *list, t_data **data, char *input)
 {
     (void)data;
@@ -59,6 +74,7 @@ int ft_parsing(t_node *list, t_data **data, char *input)
         list->arg = ft_init_list(list, &data_echo, save[x]);
         x++;
     }
+    // Il faut commencer a introduire les modifications dans cette liste
     print_list(list);
     // }
     //  Malloc de la structure avec le nbr de commandes

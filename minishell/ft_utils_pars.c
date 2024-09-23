@@ -12,6 +12,16 @@
 
 #include "minishell.h"
 
+int ft_strcmp(char *s1, char *s2)
+{
+    int c;
+
+    c = 0;
+    while (s1[c] == s2[c] && (s1[c] != '\0' && s2[c] != '\0'))
+        c++;
+    return (s1[c] - s2[c]);
+}
+
 int ft_split_with_space(t_echo **data_echo, char *input)
 {
     printf("INPUT = |%s|", input);
@@ -152,7 +162,7 @@ void ft_insert_tab_echo(t_echo **data_echo, char *input, int i)
             ft_insert_data_w_whith_tab(data_echo, input, &i, &clef_tab_w_quot);
             clef_tab_w_quot++;
         }
-        if (ft_isalnum(input[i]) == 1)
+        if (((ft_isalnum(input[i]) == 1) || input[i] == '<'))
         {
             ft_insert_data_s_whith_tab(data_echo, input, &i, &clef_tab_s_quot);
             clef_tab_s_quot++;
@@ -223,7 +233,7 @@ void ft_init_tab_echo_malloc(t_echo **data_echo, char *input, int i)
                 i += 2;
             ft_insert_data_w_quot(data_echo, input, &i, &place_tab_w_quot);
         }
-        if (ft_isalnum(input[i]) == 1 && input[i] != '\'' && input[i] != '"' && input[i] != '\'' && input[i] != '"')
+        if (((ft_isalnum(input[i]) == 1) || input[i] == '<') && input[i] != '\'' && input[i] != '"' && input[i] != '\'' && input[i] != '"')
         {
             ft_insert_data_s_quot(data_echo, input, &i, &place_tab_s_quot);
         }
@@ -259,9 +269,9 @@ int ft_init_token_space(t_echo **data_echo, char *input, int i)
             wt_quot++;
             i++;
         }
-        if (ft_isalnum(input[i]) == 1 && input[i] != '"' && input[i] != '\'')
+        if (((ft_isalnum(input[i]) == 1) || input[i] == '<') && input[i] != '"' && input[i] != '\'')
         {
-            while (ft_isalnum(input[i]) == 1 && input[i] != '\'' && input[i] != '"')
+            while (((ft_isalnum(input[i]) == 1) || input[i] == '<') && input[i] != '\'' && input[i] != '"')
                 i++;
             ss_quot++;
         }
