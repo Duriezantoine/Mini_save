@@ -26,17 +26,32 @@
 //     }
 // }
 
+void ft_format_list(t_arg *arg) {
+
+        // Vérifiez que current->prev n'est pas NULL avant d'accéder à current->prev->type
+        if (arg->prev && arg->prev->type == HEREDOC)
+            arg->type = DELIM;
+        if (arg->prev && arg->prev->type == INPUT)
+        {
+            arg->type = INFILE;
+        }
+        if (arg->prev && arg->prev->type == OUTPUT)
+            arg->type = OUTFILE;
+}
+
 void type_insert_cmd(t_arg *new_node)
 {
     // Cette fonction permet d'introduire le type
     if (ft_strcmp(new_node->str_command, "<<") == 0)
         new_node->type = HEREDOC;
     else if (ft_strcmp(new_node->str_command, "<") == 0)
+    {
         new_node->type = INPUT;
-    else if (ft_strcmp(new_node->str_command, ">>") == 0)
-        new_node->type = APPEND;
+    }
     else if (ft_strcmp(new_node->str_command, ">") == 0)
         new_node->type = OUTPUT;
+    else if (ft_strcmp(new_node->str_command, ">>") == 0)
+        new_node->type = OUTPUT_ADD;
 }
 
 int ft_parsing(t_node *list, t_data **data, char *input)
@@ -46,6 +61,7 @@ int ft_parsing(t_node *list, t_data **data, char *input)
     // int i;
 
     // i = 0;
+    t_arg *current ;
     t_echo *data_echo;
     t_command *command = NULL;
     //     t_arg *arg_s = NULL;
@@ -68,12 +84,22 @@ int ft_parsing(t_node *list, t_data **data, char *input)
     ft_insert_new_data_with_data(save, &data_echo);
     while (save[x])
     {
-        // printf("Je suis saVe o |%s| ", save[x]);
+        // Introduction dans la liste
         list->arg = ft_init_list(list, &data_echo, save[x]);
         x++;
     }
-    // Il faut commencer a introduire les modifications dans cette liste
     print_list(list);
+    current = list->arg;
+    while(current)
+    {
+        printf("\nXX\n");
+        type_insert_cmd(current);
+        ft_format_list(current);
+        current = current->next;
+    }
+    print_list(list);
+
+    // Il faut commencer a introduire les modifications dans cette liste
     // }
     //  Malloc de la structure avec le nbr de commandes
     return (0);

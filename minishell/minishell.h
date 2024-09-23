@@ -38,7 +38,8 @@ typedef enum e_tokens
 	CMD,
 	ARG,
 	OPTION,
-	REDIR
+	REDIR,
+	OUTPUT_ADD
 } t_token;
 
 typedef struct s_arg
@@ -153,5 +154,5 @@ int ft_split_with_space(t_echo **data_echo, char *input);
 void print_list(t_node *list);
 int ft_strcmp(char *s1, char *s2);
 void type_insert_cmd(t_arg *new_node);
-
+void ft_format_list(t_arg *arg);
 #endif

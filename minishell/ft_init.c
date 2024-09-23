@@ -49,8 +49,7 @@ t_arg *ft_init_list(t_node *list, t_echo **data_echo, char *save)
         return NULL;
     }
     new_node->str_command = ft_strdup(save);
-    new_node->type = 0;
-    type_insert_cmd(new_node);
+    new_node->type = -1;
 
     if (!new_node->str_command)
     {
@@ -59,7 +58,7 @@ t_arg *ft_init_list(t_node *list, t_echo **data_echo, char *save)
         return NULL;
     }
 
-    printf("Voila ce que je viens d'introduire: |%s|\n", new_node->str_command);
+    // printf("Voila ce que je viens d'introduire: |%s|\n", new_node->str_command);
     new_node->prev = NULL;
     new_node->next = NULL;
 
