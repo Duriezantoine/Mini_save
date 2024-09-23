@@ -37,8 +37,6 @@ void type_insert_cmd(t_arg *new_node)
         new_node->type = APPEND;
     else if (ft_strcmp(new_node->str_command, ">") == 0)
         new_node->type = OUTPUT;
-    else if (ft_strcmp(new_node->str_command, "|") == 0)
-        new_node->type = PIPE;
 }
 
 int ft_parsing(t_node *list, t_data **data, char *input)

@@ -162,7 +162,7 @@ void ft_insert_tab_echo(t_echo **data_echo, char *input, int i)
             ft_insert_data_w_whith_tab(data_echo, input, &i, &clef_tab_w_quot);
             clef_tab_w_quot++;
         }
-        if (((ft_isalnum(input[i]) == 1) || input[i] == '<'))
+        if ((ft_isalnum(input[i]) == 1))
         {
             ft_insert_data_s_whith_tab(data_echo, input, &i, &clef_tab_s_quot);
             clef_tab_s_quot++;
@@ -233,7 +233,7 @@ void ft_init_tab_echo_malloc(t_echo **data_echo, char *input, int i)
                 i += 2;
             ft_insert_data_w_quot(data_echo, input, &i, &place_tab_w_quot);
         }
-        if (((ft_isalnum(input[i]) == 1) || input[i] == '<') && input[i] != '\'' && input[i] != '"' && input[i] != '\'' && input[i] != '"')
+        if (((ft_isalnum(input[i]) == 1)) && input[i] != '\'' && input[i] != '"' && input[i] != '\'' && input[i] != '"')
         {
             ft_insert_data_s_quot(data_echo, input, &i, &place_tab_s_quot);
         }
@@ -269,7 +269,8 @@ int ft_init_token_space(t_echo **data_echo, char *input, int i)
             wt_quot++;
             i++;
         }
-        if (((ft_isalnum(input[i]) == 1) || input[i] == '<') && input[i] != '"' && input[i] != '\'')
+        
+        if (((ft_isalnum(input[i]) == 1)) && input[i] != '"' && input[i] != '\'')
         {
             while (((ft_isalnum(input[i]) == 1) || input[i] == '<') && input[i] != '\'' && input[i] != '"')
                 i++;
@@ -317,8 +318,12 @@ int ft_nbr_quot(char *input, int i)
 
 int ft_isalnum(int c)
 {
-    if ((c >= 48 && c <= 57) || (c >= 97 && c <= 122) || (c >= 65 && c <= 90))
+    if ((c >= 48 && c <= 57) || (c >= 97 && c <= 122) || (c >= 65 && c <= 90) || (c == 60) || (c == 62))
+    {
+        if(c==60)
+            printf("\nCa passe\n");
         return (1);
+    }
     else
         return (0);
 }
