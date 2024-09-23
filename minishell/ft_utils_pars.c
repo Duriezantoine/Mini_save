@@ -39,7 +39,6 @@ void ft_insert_data_data_echo_w(char **save, t_echo **data_echo, int i, int iter
     int i_past;
     // int save;
     i_past = 0;
-    free(save[i]);
     save[i] = malloc(sizeof(char *) * ft_strlen((*data_echo)->str_w_quot[iterateur_w].str) + 1);
     while ((*data_echo)->str_w_quot[iterateur_w].str[i_past])
     {
@@ -56,7 +55,6 @@ void ft_insert_data_data_echo_s(char **save, t_echo **data_echo, int i, int iter
     int i_past;
 
     i_past = 0;
-    free(save[i]);
     save[i] = malloc(sizeof(char *) * ft_strlen((*data_echo)->str_s_quot[iterateur_s].str) + 1);
     while ((*data_echo)->str_s_quot[iterateur_s].str[i_past])
     {
@@ -116,7 +114,7 @@ void ft_insert_data_s_whith_tab(t_echo **data_echo, char *input, int *i, int *cl
     }
 
     (*data_echo)->str_s_quot[(*clef_tab_s_quot)].str[iterateur_tab_s_quot] = '\0';
-    // printf("\nSave_with_tab_s|Nbr_occurence=%d|clef=%d|Save=%s|Sorti=%c", iterateur_tab_s_quot, (*clef_tab_s_quot), (*data_echo)->str_s_quot[(*clef_tab_s_quot)].str, input[*i]);
+    printf("\nSave_with_tab_s|Nbr_occurence=%d|clef=%d|Save=%s|Sorti=%c", iterateur_tab_s_quot, (*clef_tab_s_quot), (*data_echo)->str_s_quot[(*clef_tab_s_quot)].str, input[*i]);
 }
 
 void ft_insert_data_w_whith_tab(t_echo **data_echo, char *input, int *i, int *clef_tab_w_quot)
@@ -141,7 +139,7 @@ void ft_insert_data_w_whith_tab(t_echo **data_echo, char *input, int *i, int *cl
     }
     (*i)++;
     (*data_echo)->str_w_quot[(*clef_tab_w_quot)].str[iterateur_tab_w_quot] = '\0';
-    // printf("\nSave_with_tab_w|Nbr_occurence=%d|clef=%d|Save=%s|Sorti=%c\n", iterateur_tab_w_quot, (*clef_tab_w_quot), (*data_echo)->str_w_quot[(*clef_tab_w_quot)].str, input[*i]);
+    printf("\nSave_with_tab_w|Nbr_occurence=%d|clef=%d|Save=%s|Sorti=%c\n", iterateur_tab_w_quot, (*clef_tab_w_quot), (*data_echo)->str_w_quot[(*clef_tab_w_quot)].str, input[*i]);
 }
 
 void ft_insert_tab_echo(t_echo **data_echo, char *input, int i)
