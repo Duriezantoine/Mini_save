@@ -55,10 +55,11 @@ int ft_parsing(t_node *list, t_data **data, char *input)
     ft_insert_new_data_with_data(save, &data_echo);
     while (save[x])
     {
-        printf("Je suis saVe o |%s| ", save[x]);
-        //     list->arg = ft_init_list(list, &data_echo, save[x], arg_s);
+        // printf("Je suis saVe o |%s| ", save[x]);
+        list->arg = ft_init_list(list, &data_echo, save[x]);
         x++;
     }
+    print_list(list);
     // }
     //  Malloc de la structure avec le nbr de commandes
     return (0);

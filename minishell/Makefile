@@ -18,6 +18,7 @@ SRCS =	minishell_parse.c \
 		ft_parsing.c \
 		ft_utils_pars.c \
 		ft_init.c \
+		ft_verif.c \
 
 OBJS = $(SRCS:%.c=%.o)
 

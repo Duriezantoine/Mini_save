@@ -38,32 +38,42 @@ void ft_init_echo_malloc(t_echo **data_echo)
     (*data_echo)->str_s_quot = malloc((*data_echo)->s_quot * sizeof(t_str));
     // printf("\nFT_init echo malloc|w=%d|s=%d||\n",(*data_echo)->w_quot, (*data_echo)->s_quot);
 }
-t_arg *ft_init_list(t_node *list, t_echo **data_echo, char *save, t_arg **arg_s)
+
+t_arg *ft_init_list(t_node *list, t_echo **data_echo, char *save)
 {
-    (void)list;
-    (void)data_echo;
-    t_arg *new_node;
-    t_arg *tmp;
-    new_node = malloc(sizeof(t_arg));
+    (void)data_echo; // Supprimer l'avertissement d'utilisation inutilisée
+    t_arg *new_node = malloc(sizeof(t_arg));
     if (!new_node)
     {
-        printf("C'est une erreurs connards");
-    } // 1 er chose il faut commencer par m
-    // 2 eme chose il faut initialiser les variables
+        printf("Erreur d'allocation de mémoire\n");
+        return NULL;
+    }
     new_node->str_command = ft_strdup(save);
+    if (!new_node->str_command)
+    {
+        printf("Erreur de duplication de chaîne\n");
+        free(new_node);
+        return NULL;
+    }
+
     new_node->type = 0;
-    printf("Voila ce que je viens d'introduire|%s|", new_node->str_command);
+    printf("Voila ce que je viens d'introduire: |%s|\n", new_node->str_command);
     new_node->prev = NULL;
     new_node->next = NULL;
-    if (*arg_s == NULL)
-        *arg_s = new_node;
+
+    if (list->arg == NULL)
+    {
+        list->arg = new_node;
+    }
     else
     {
-        tmp = *arg_s;
+        t_arg *tmp = list->arg;
         while (tmp->next)
+        {
             tmp = tmp->next;
+        }
         tmp->next = new_node;
         new_node->prev = tmp;
     }
-    return (*arg_s);
+    return list->arg;
 }
