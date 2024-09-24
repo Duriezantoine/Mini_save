@@ -95,5 +95,6 @@ t_arg *ft_init_list(t_node *list, t_echo *data_echo, char *save)
         tmp->next = new_node;
         new_node->prev = tmp;
     }
+    // printf("list_Arg %ls",list->arg->next );
     return list->arg;
 }

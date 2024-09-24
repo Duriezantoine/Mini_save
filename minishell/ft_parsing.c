@@ -90,15 +90,24 @@ int ft_parsing(t_node *list, t_data **data, char *input)
             list->arg = ft_init_list(list, &data_echo, save[x]);
             x++;
         }
+        // for (int i = 0; i++; i < 5)
+        // printf("%s LA", current[0]);
         print_list(list);
+        void *pointeur = list;
         current = list->arg;
-        while(current)
+        while(current->next)
         {
-            printf("\nXX\n");
+            // printf("\nXX\n");
             type_insert_cmd(current);
             ft_format_list(current);
             current = current->next;
         }
+        printf("\n\n%s ICI\n\n", list->arg->str_command);
+        print_list(pointeur);
+
+        // printf("\n\n%s LIST%d\n\n", );
+        printf("\n\n%s ICI\n\n", list->arg->str_command);
+        list->arg= pointeur;
         t_node *new_node ;
         ft_init_data_list(&new_node);
         list->next = new_node;

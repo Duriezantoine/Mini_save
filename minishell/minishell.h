@@ -13,7 +13,6 @@
 #ifndef MINISHELL_PARSE_H
 #define MINISHELL_PARSE_H
 
-#include "colors.h"
 #include <dirent.h>
 #include <fcntl.h>
 #include <readline/history.h>
