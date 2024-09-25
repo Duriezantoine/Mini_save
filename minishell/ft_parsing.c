@@ -26,8 +26,10 @@
 //     }
 // }
 
-void ft_format_list(t_arg *arg) {
-
+void ft_format_list(t_arg *arg) 
+{
+    while(arg)
+    {
         // Vérifiez que current->prev n'est pas NULL avant d'accéder à current->prev->type
         if (arg->prev && arg->prev->type == HEREDOC)
             arg->type = DELIM;
@@ -37,92 +39,106 @@ void ft_format_list(t_arg *arg) {
         }
         if (arg->prev && arg->prev->type == OUTPUT)
             arg->type = OUTFILE;
-        // arg = arg->next;
+        arg = arg->next;
+        }
 }
 
 void type_insert_cmd(t_arg *new_node)
 {
-    // Cette fonction permet d'introduire le type
-    if (ft_strcmp(new_node->str_command, "<<") == 0)
-        new_node->type = HEREDOC;
-    else if (ft_strcmp(new_node->str_command, "<") == 0)
+
+    while(new_node)
     {
-        new_node->type = INPUT;
+    // Cette fonction permet d'introduire le type
+        if (ft_strcmp(new_node->str_command, "<<") == 0)
+            new_node->type = HEREDOC;
+        else if (ft_strcmp(new_node->str_command, "<") == 0)
+        {
+            new_node->type = INPUT;
+        }
+        else if (ft_strcmp(new_node->str_command, ">") == 0)
+            new_node->type = OUTPUT;
+        else if (ft_strcmp(new_node->str_command, ">>") == 0)
+            new_node->type = OUTPUT_ADD;
+        new_node = new_node->next;
     }
-    else if (ft_strcmp(new_node->str_command, ">") == 0)
-        new_node->type = OUTPUT;
-    else if (ft_strcmp(new_node->str_command, ">>") == 0)
-        new_node->type = OUTPUT_ADD;
 }
+
+// void ft_append_node(t_list *list, t_node *new_node)
+// {
+//     if (list == NULL || new_node == NULL)
+//         return;
+
+//     t_arg *arg = list->arg;
+//     t_node *current = arg->head;
+
+//     if (current == NULL)
+//     {
+//         arg->head = new_node;
+//         new_node->prev = NULL;
+//         new_node->next = NULL;
+//         return;
+//     }
+
+//     while (current->next != NULL)
+//     {
+//         current = current->next;
+//     }
+
+//     current->next = new_node;
+//     new_node->prev = current;
+//     new_node->next = NULL;
+// }
+
+void       append_node(t_node **list, t_node *new_list)
+{
+    while((*list)->next)
+    {
+        (*list) = (*list)->next;
+    }
+    new_list ->prev = (*list);
+    (*list)->next = new_list;
+
+}
+
 
 int ft_parsing(t_node *list, t_data **data, char *input)
 {
-    (void)data;
-    (void)list;
     int i;
 
     i = 0;
-    t_arg *current ;
     t_echo data_echo;
     t_command *command = NULL;
     //     t_arg *arg_s = NULL;
     int x = 0;
-
     char **save = NULL; // CREATION D'UNE DOUBLE CHAINNE DE CARACTERERE POUR SE BALADER DEDAN.
     // Il faut d'une conditions pour les signaux
-
     // Mettre en place des conditions pour verifier le parsing
-
     ft_parsing_init(&command, *data, input);
-
+    t_node *pointeur = list ;
     while (i < (*data)->nbr_command)
     {
+        if(i != 0)
+        {
+            t_node *new_list;
+            ft_init_data_list(&new_list);
+            append_node(&list, new_list);
+            list = list->next;
+        }
         if (ft_split_with_space(&data_echo, command[i].input_split) == 1)
             return (1); // Voir comment acceder a ma data
-
         save = malloc(sizeof(char *) * (data_echo.w_quot + data_echo.s_quot + 1));
-
         ft_insert_new_data_with_data(save, &data_echo);
         x = 0;
+        //Possible mise en place d'un pointeur au debut de la liste
         while (save[x])
         {
-            // Introduction dans la liste
             list->arg = ft_init_list(list, &data_echo, save[x]);
             x++;
         }
-        // for (int i = 0; i++; i < 5)
-        // printf("%s LA", current[0]);
-        print_list(list);
-        void *pointeur = list;
-        current = list->arg;
-        while(current->next)
-        {
-            // printf("\nXX\n");
-            type_insert_cmd(current);
-            ft_format_list(current);
-            current = current->next;
-        }
-        printf("\n\n%s ICI\n\n", list->arg->str_command);
-        print_list(pointeur);
-
-        // printf("\n\n%s LIST%d\n\n", );
-        printf("\n\n%s ICI\n\n", list->arg->str_command);
-        list->arg= pointeur;
-        t_node *new_node ;
-        ft_init_data_list(&new_node);
-        list->next = new_node;
-        new_node->prev = list;
-        list = new_node;
         free(save);
         i++;
     }
-    //  free_t_echo(data_echo);
-    
-    print_list(list);
-
-    // Il faut commencer a introduire les modifications dans cette liste
-    // }
-    //  Malloc de la structure avec le nbr de commandes
+    list = pointeur;
     return (0);
 }
 void ft_verif_token_infile(t_command **command, t_data **data)

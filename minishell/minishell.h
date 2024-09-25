@@ -163,6 +163,8 @@ void ft_format_list(t_arg *arg);
 void ft_insert_tab_echo(t_echo *data_echo, char *input, int i);
 void ft_init_data_list(t_node **list);
 
+void lexer(t_arg *head);
+
 
 
 //Fonction pour free

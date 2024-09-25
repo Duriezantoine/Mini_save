@@ -78,16 +78,19 @@ t_arg *ft_init_list(t_node *list, t_echo *data_echo, char *save)
     }
 
     // printf("Voila ce que je viens d'introduire: |%s|\n", new_node->str_command);
-    new_node->prev = NULL;
     new_node->next = NULL;
 
     if (list->arg == NULL)
     {
+        printf("\n  Je suis le 1 , NEW_NODE %s\n", new_node->str_command);
         list->arg = new_node;
+        list->arg->prev = NULL;
     }
     else
     {
+        printf("\n  Je suis le 2 , NEW_NODE %s\n", new_node->str_command);
         t_arg *tmp = list->arg;
+
         while (tmp->next)
         {
             tmp = tmp->next;
@@ -95,6 +98,5 @@ t_arg *ft_init_list(t_node *list, t_echo *data_echo, char *save)
         tmp->next = new_node;
         new_node->prev = tmp;
     }
-    // printf("list_Arg %ls",list->arg->next );
     return list->arg;
 }
