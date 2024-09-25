@@ -23,11 +23,12 @@ void       append_node(t_node **list, t_node *new_list)
     (*list)->next = new_list;
 
 }
-void    ft_inser_init_list_arg(t_node *list)
+void    ft_inser_init_list_arg(t_node **list)
 {
     t_node *new_list;
     ft_init_data_list(&new_list);
-    append_node(&list, new_list);
+    append_node(list, new_list);
+    (*list) = (*list)->next;
     
 }
 
@@ -45,16 +46,12 @@ int ft_parsing(t_node *list, t_data **data, char *input)
     while (i < (*data)->nbr_command)
     {
         if(i != 0)
-        {
-            ft_inser_init_list_arg(list);//Je pense qu'il faut utliser un pointeur pour mettre next in function demander a titouan
-            list = list->next;
-        }
+            ft_inser_init_list_arg(&list);//Je pense qu'il faut utliser un pointeur pour mettre next in function demander a titouan
         if (ft_split_with_space(&data_echo, command[i].input_split) == 1)
             return (1); // Voir comment acceder a ma data
         save = malloc(sizeof(char *) * (data_echo.w_quot + data_echo.s_quot + 1));
         ft_insert_new_data_with_data(save, &data_echo);
         x = -1;
-        //Possible mise en place d'un pointeur au debut de la liste
         while (save[++x])//Boucle permettant d'introduire dans la list->arg
             list->arg = ft_init_list(list, &data_echo, save[x]);
         free(save);
@@ -62,11 +59,6 @@ int ft_parsing(t_node *list, t_data **data, char *input)
     }
     list = pointeur;
     return (0);
-}
-void ft_verif_token_infile(t_command **command, t_data **data)
-{
-    printf("\n|SSSSJqe suis la cmd|%s|n", (*command)[0].input_split);
-    (void)data;
 }
 
 void ft_parsing_init(t_command **command, t_data *data, char *input)

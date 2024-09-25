@@ -162,6 +162,8 @@ void type_insert_cmd(t_arg *new_node);
 void ft_format_list(t_arg *arg);
 void ft_insert_tab_echo(t_echo *data_echo, char *input, int i);
 void ft_init_data_list(t_node **list);
+void    lexer_cmd(t_node *list);
+void print_liste(t_arg *list);
 
 void lexer(t_node *head);
 
