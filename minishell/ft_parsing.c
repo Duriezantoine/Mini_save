@@ -23,7 +23,13 @@ void       append_node(t_node **list, t_node *new_list)
     (*list)->next = new_list;
 
 }
-
+void    ft_inser_init_list_arg(t_node *list)
+{
+    t_node *new_list;
+    ft_init_data_list(&new_list);
+    append_node(&list, new_list);
+    
+}
 
 int ft_parsing(t_node *list, t_data **data, char *input)
 {
@@ -32,33 +38,25 @@ int ft_parsing(t_node *list, t_data **data, char *input)
     i = 0;
     t_echo data_echo;
     t_command *command = NULL;
-    //     t_arg *arg_s = NULL;
     int x = 0;
     char **save = NULL; // CREATION D'UNE DOUBLE CHAINNE DE CARACTERERE POUR SE BALADER DEDAN.
-    // Il faut d'une conditions pour les signaux
-    // Mettre en place des conditions pour verifier le parsing
-    ft_parsing_init(&command, *data, input);
-    t_node *pointeur = list ;
+    ft_parsing_init(&command, *data, input);//IL faut mettre des conditions pour verifier les signaux
+    t_node *pointeur = list ;//IL faut mettre des conditions pour verifier le parsing
     while (i < (*data)->nbr_command)
     {
         if(i != 0)
         {
-            t_node *new_list;
-            ft_init_data_list(&new_list);
-            append_node(&list, new_list);
+            ft_inser_init_list_arg(list);//Je pense qu'il faut utliser un pointeur pour mettre next in function demander a titouan
             list = list->next;
         }
         if (ft_split_with_space(&data_echo, command[i].input_split) == 1)
             return (1); // Voir comment acceder a ma data
         save = malloc(sizeof(char *) * (data_echo.w_quot + data_echo.s_quot + 1));
         ft_insert_new_data_with_data(save, &data_echo);
-        x = 0;
+        x = -1;
         //Possible mise en place d'un pointeur au debut de la liste
-        while (save[x])
-        {
+        while (save[++x])//Boucle permettant d'introduire dans la list->arg
             list->arg = ft_init_list(list, &data_echo, save[x]);
-            x++;
-        }
         free(save);
         i++;
     }

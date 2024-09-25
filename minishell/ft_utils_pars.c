@@ -72,31 +72,24 @@ void ft_insert_new_data_with_data(char **save, t_echo *data_echo)
     int iterateur_w;
     int iterateur_s;
 
-    i = 0;
+    i = -1;
     // IL faut commencer a Introduire les nouvelles valeurs a l'interieuds de la base de donne
-    while (i < data_echo->w_quot + data_echo->s_quot)
+    while (++i < data_echo->w_quot + data_echo->s_quot)
     {
         iterateur_s = 0;
         while (iterateur_s < data_echo->s_quot)
         {
             if (data_echo->str_s_quot[iterateur_s].order == i)
-            {
-                // Creation d'un boucle me permettant de free sans envoyer copier l'adresse
                 ft_insert_data_data_echo_s(save, data_echo, i, iterateur_s);
-                // (*data).arg[i] = (*data_echo)->str_s_quot[iterateur_s].str;
-            }
             iterateur_s++;
         }
         iterateur_w = 0;
         while (iterateur_w < data_echo->w_quot)
         {
             if (data_echo->str_w_quot[iterateur_w].order == i)
-            {
                 ft_insert_data_data_echo_w(save, data_echo, i, iterateur_w);
-            }
             iterateur_w++;
         }
-        i++;
     }
     save[i] = NULL;
 }
@@ -290,8 +283,6 @@ int ft_nbr_quot(char *input, int i)
 
     result = 0;
     search = i;
-    // printf("\nft_nrb_echo de |%s|\n", input);
-
     while (input[search])
     {
         if (input[search] == '"')
@@ -301,17 +292,10 @@ int ft_nbr_quot(char *input, int i)
         }
         search++;
     }
-    // printf("Je suis result + %d", result);
     if (result % 2 == 0)
-    {
-        // printf("\nC'est un nombre pair\n");
         return (0);
-    }
     else
-    {
-//        printf("\nCe n'est pas un nombre pair");
         return (1);
-    }
 }
 
 int ft_isalnum(int c)

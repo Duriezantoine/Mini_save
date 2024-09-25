@@ -57,7 +57,6 @@ int main(int argc, char **argv, char **envp)
 		ft_putstr_fd("Error arguments", 2);
 		exit(2);
 	}
-
 	if (!envp || !*envp)
 	{
 		ft_putstr_fd("No environment", 2);
