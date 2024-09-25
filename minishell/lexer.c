@@ -20,7 +20,7 @@ void print_cmd(t_node *list) {
 void print_liste(t_arg *list) {
     t_arg *current = list;
     while (current != NULL) {
-        printf("Command: %s, Type: %d\n", current->str_command, current->type);
+        printf("\nPour option \nCommand: %s, Type: %d\n", current->str_command, current->type);
         current = current->next;
     }
 }
@@ -87,12 +87,14 @@ void    ft_intro_cmd(t_node *list)
 void    lexer_cmd(t_node *list)//Cette fonction permet d'implementer list->cmd
 {
     //verification acces list->arg//Start with list->arglist->cmd = 
-    //while(list)
-    //{
+    while(list)
+    {
     ft_init_cmd(&list->cmd);//it's ok
     ft_intro_cmd(list);
     print_liste(list->arg);
-    //}
+    printf("\nXXX\n");
+    list = list->next;
+    }
 }
 
 void lexer(t_node *list)
@@ -103,7 +105,7 @@ void lexer(t_node *list)
         set_file(list->arg);
         set_cmd(list->arg);
         set_arg(list->arg);
-        // print_liste(list->arg);
+        print_liste(list->arg);
         list = list->next;
     }
 }
@@ -166,7 +168,7 @@ static void    set_arg(t_arg *elem)// sets arguments and options
     while (tmp)
     {
         if (tmp->type == -1 && tmp->str_command[0] == '-')
-            tmp->type = OPTION;
+            tmp->type = ARG;
         else if (tmp->type == -1 && tmp->str_command[0] != '-')
             tmp->type = ARG;
         tmp = tmp->next;
@@ -174,8 +176,6 @@ static void    set_arg(t_arg *elem)// sets arguments and options
     cmd_count = 0;
     while (elem)
     {
-        if (elem->type == PIPE)
-            cmd_count = 0;
         if (elem->type == CMD)
             cmd_count++;
         if (elem->type == CMD && cmd_count > 1)
