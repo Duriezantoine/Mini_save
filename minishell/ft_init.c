@@ -82,13 +82,13 @@ t_arg *ft_init_list(t_node *list, t_echo *data_echo, char *save)
 
     if (list->arg == NULL)
     {
-        printf("\n  Je suis le 1 , NEW_NODE %s\n", new_node->str_command);
+        // printf("\n  Je suis le 1 , NEW_NODE %s\n", new_node->str_command);
         list->arg = new_node;
         list->arg->prev = NULL;
     }
     else
     {
-        printf("\n  Je suis le 2 , NEW_NODE %s\n", new_node->str_command);
+        // printf("\n  Je suis le 2 , NEW_NODE %s\n", new_node->str_command);
         t_arg *tmp = list->arg;
 
         while (tmp->next)

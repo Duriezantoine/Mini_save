@@ -5,12 +5,26 @@ static void    set_file(t_arg *elem);
 static void    set_cmd(t_arg *elem);
 static void    set_arg(t_arg *elem);
 
-void lexer(t_arg *head)
+
+void print_liste(t_arg *list) {
+    t_arg *current = list;
+    while (current != NULL) {
+        printf("Command: %s, Type: %d\n", current->str_command, current->type);
+        current = current->next;
+    }
+}
+void lexer(t_node *list)
 {
-    set_spec(head);
-    set_file(head);
-    set_cmd(head);
-    set_arg(head);
+    while(list)
+    {
+        set_spec(list->arg);
+        set_file(list->arg);
+        set_cmd(list->arg);
+        set_arg(list->arg);
+        printf("\nxx\n");
+        print_liste(list->arg);
+        list = list->next;
+    }
 }
 
 // sets redirection and pipes
@@ -26,8 +40,6 @@ static void    set_spec(t_arg *elem)
             elem->type = APPEND;
         else if (ft_strcmp(elem->str_command, ">") == 0)
             elem->type = OUTPUT;
-        else if (ft_strcmp(elem->str_command, "|") == 0)
-            elem->type = PIPE;
         elem = elem->next;
     }
 }
@@ -57,7 +69,9 @@ static void    set_cmd(t_arg *elem)
     while (elem)
     {
         if (elem->type == -1 && (!elem->prev || elem->prev->type >= 0))
+        {   
             elem->type = CMD;
+        }
         elem = elem->prev;
     }
 }

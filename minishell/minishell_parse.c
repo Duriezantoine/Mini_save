@@ -37,6 +37,7 @@ int shell_loop(t_node *list, t_data **data, char **env)
 			// Il faut changer le return
 			return (1);
 		} // Mise en place d'une structure
+		lexer(list);
 		// Libérer l'input après utilisation
 		free(input);
 	}

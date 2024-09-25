@@ -24,7 +24,7 @@ int ft_strcmp(char *s1, char *s2)
 
 int ft_split_with_space(t_echo *data_echo, char *input)
 {
-    printf("INPUT = |%s|", input);
+    // printf("INPUT = |%s|", input);
     if (ft_init_token_space(data_echo, input, 0) == 1)
         return (1);
     ft_init_echo_malloc(data_echo);
@@ -114,7 +114,7 @@ void ft_insert_data_s_whith_tab(t_echo *data_echo, char *input, int *i, int *cle
     }
 
     data_echo->str_s_quot[(*clef_tab_s_quot)].str[iterateur_tab_s_quot] = '\0';
-    printf("\nSave_with_tab_s|Nbr_occurence=%d|clef=%d|Save=%s|Sorti=%c", iterateur_tab_s_quot, (*clef_tab_s_quot), data_echo->str_s_quot[(*clef_tab_s_quot)].str, input[*i]);
+    // printf("\nSave_with_tab_s|Nbr_occurence=%d|clef=%d|Save=%s|Sorti=%c", iterateur_tab_s_quot, (*clef_tab_s_quot), data_echo->str_s_quot[(*clef_tab_s_quot)].str, input[*i]);
 }
 
 void ft_insert_data_w_whith_tab(t_echo *data_echo, char *input, int *i, int *clef_tab_w_quot)
@@ -139,7 +139,7 @@ void ft_insert_data_w_whith_tab(t_echo *data_echo, char *input, int *i, int *cle
     }
     (*i)++;
     data_echo->str_w_quot[(*clef_tab_w_quot)].str[iterateur_tab_w_quot] = '\0';
-    printf("\nSave_with_tab_w|Nbr_occurence=%d|clef=%d|Save=%s|Sorti=%c\n", iterateur_tab_w_quot, (*clef_tab_w_quot), data_echo->str_w_quot[(*clef_tab_w_quot)].str, input[*i]);
+    // printf("\nSave_with_tab_w|Nbr_occurence=%d|clef=%d|Save=%s|Sorti=%c\n", iterateur_tab_w_quot, (*clef_tab_w_quot), data_echo->str_w_quot[(*clef_tab_w_quot)].str, input[*i]);
 }
 
 void ft_insert_tab_echo(t_echo *data_echo, char *input, int i)
@@ -279,7 +279,7 @@ int ft_init_token_space(t_echo *data_echo, char *input, int i)
     }
     data_echo->s_quot = ss_quot;
     data_echo->w_quot = wt_quot;
-    printf("S_quot = |%d| W_quot|%d|\n", data_echo->s_quot, data_echo->w_quot);
+    // printf("S_quot = |%d| W_quot|%d|\n", data_echo->s_quot, data_echo->w_quot);
     return (0);
 }
 
@@ -290,7 +290,7 @@ int ft_nbr_quot(char *input, int i)
 
     result = 0;
     search = i;
-    printf("\nft_nrb_echo de |%s|\n", input);
+    // printf("\nft_nrb_echo de |%s|\n", input);
 
     while (input[search])
     {
@@ -301,15 +301,15 @@ int ft_nbr_quot(char *input, int i)
         }
         search++;
     }
-    printf("Je suis result + %d", result);
+    // printf("Je suis result + %d", result);
     if (result % 2 == 0)
     {
-        printf("\nC'est un nombre pair\n");
+        // printf("\nC'est un nombre pair\n");
         return (0);
     }
     else
     {
-        printf("\nCe n'est pas un nombre pair");
+//        printf("\nCe n'est pas un nombre pair");
         return (1);
     }
 }

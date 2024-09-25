@@ -12,82 +12,6 @@
 
 #include "minishell.h"
 
-// void ft_search_built(t_node **list, char **save)
-// {
-//     int i;
-
-//     i = 0;
-//     (void)list;
-//     while (save[i] != NULL)
-//     {
-//         if (ft_strcmp(save[i], "<"))
-//             printf("\nsave=|%s|\n", save[i]);
-//         i++;
-//     }
-// }
-
-void ft_format_list(t_arg *arg) 
-{
-    while(arg)
-    {
-        // Vérifiez que current->prev n'est pas NULL avant d'accéder à current->prev->type
-        if (arg->prev && arg->prev->type == HEREDOC)
-            arg->type = DELIM;
-        if (arg->prev && arg->prev->type == INPUT)
-        {
-            arg->type = INFILE;
-        }
-        if (arg->prev && arg->prev->type == OUTPUT)
-            arg->type = OUTFILE;
-        arg = arg->next;
-        }
-}
-
-void type_insert_cmd(t_arg *new_node)
-{
-
-    while(new_node)
-    {
-    // Cette fonction permet d'introduire le type
-        if (ft_strcmp(new_node->str_command, "<<") == 0)
-            new_node->type = HEREDOC;
-        else if (ft_strcmp(new_node->str_command, "<") == 0)
-        {
-            new_node->type = INPUT;
-        }
-        else if (ft_strcmp(new_node->str_command, ">") == 0)
-            new_node->type = OUTPUT;
-        else if (ft_strcmp(new_node->str_command, ">>") == 0)
-            new_node->type = OUTPUT_ADD;
-        new_node = new_node->next;
-    }
-}
-
-// void ft_append_node(t_list *list, t_node *new_node)
-// {
-//     if (list == NULL || new_node == NULL)
-//         return;
-
-//     t_arg *arg = list->arg;
-//     t_node *current = arg->head;
-
-//     if (current == NULL)
-//     {
-//         arg->head = new_node;
-//         new_node->prev = NULL;
-//         new_node->next = NULL;
-//         return;
-//     }
-
-//     while (current->next != NULL)
-//     {
-//         current = current->next;
-//     }
-
-//     current->next = new_node;
-//     new_node->prev = current;
-//     new_node->next = NULL;
-// }
 
 void       append_node(t_node **list, t_node *new_list)
 {
@@ -156,7 +80,7 @@ void ft_parsing_init(t_command **command, t_data *data, char *input)
     char **tokens = split_string(input, &len); // Appeler la fonction split_string
     if (tokens == NULL)
         ft_out_exit(4);
-    printf("LONGEUR= %d", len);
+    // printf("LONGEUR= %d", len);
     *command = malloc((len + 1) * sizeof(t_command));
     if (*command == NULL)
         ft_out_exit(3);
@@ -165,7 +89,7 @@ void ft_parsing_init(t_command **command, t_data *data, char *input)
         (*command)[i].input_split = malloc(sizeof(char *) * (ft_strlen(tokens[i]) + 1));
         (*command)[i].b = 2;
         (*command)[i].input_split = ft_strdup(tokens[i]);
-        printf("\n|Jqe suis la cmd|%s|n", (*command)[i].input_split);
+        // printf("\n|Jqe suis la cmd|%s|n", (*command)[i].input_split);
         i++;
     }
     (*data).nbr_command = len;
