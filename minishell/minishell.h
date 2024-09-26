@@ -77,6 +77,8 @@ typedef struct s_node
 	
 } t_node;
 
+//Pour le parsing
+
 typedef struct s_token_str_two
 {
 	// Chaque command est separer par une pipe

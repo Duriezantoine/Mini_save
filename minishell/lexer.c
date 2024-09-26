@@ -53,20 +53,20 @@ void    ft_init_cmd(t_cmd **list)
 }
 void ft_insert_double_tab(t_node *list)
 {    
+    t_arg  *args = list->arg;
     int count_arg;
-
     count_arg = ft_search_arg(list->arg);//Commencer l'initialisation du double tableau d'arguments
     list->cmd->cmd_and_args = malloc((count_arg * sizeof(char *)+1));
     count_arg = 0;
-    while(list->arg)
+    while(args)
     {
-        if (list->arg->type == CMD || list->arg->type == ARG)
+        if (args->type == CMD || args->type == ARG)
         {
-           list->cmd->cmd_and_args [count_arg] = ft_strdup(list->arg->str_command);
+           list->cmd->cmd_and_args [count_arg] = ft_strdup(args->str_command);
             // printf("\nSAVE = |%s|COUNT_TAB|%d|\n",  list->cmd->cmd_and_args[count_arg], count_arg);
             count_arg++;
         }
-        list->arg = list->arg->next;
+        args = args->next;
     }
     list->cmd->cmd_and_args [count_arg]= NULL;
 }
@@ -75,13 +75,14 @@ void ft_insert_double_tab(t_node *list)
 
 // }
 
-void    ft_intro_cmd(t_node *list)
+void    ft_insert_cmd_here_doc(t_node *list)
 {
-    //Il faut initialiser chaque variables
-    //Commencer par la varible 	char **cmd_and_args;
-    ft_insert_double_tab(list);//it's ok
-    // ft_insert_infile(list);
-    print_cmd(list);
+    while(list->arg)
+    {
+        if (list->arg->type == DELIM)
+            printf("\nCa marche\n");
+        list->arg = list->arg->next;
+    }
 }
 
 void    lexer_cmd(t_node *list)//Cette fonction permet d'implementer list->cmd
@@ -89,12 +90,30 @@ void    lexer_cmd(t_node *list)//Cette fonction permet d'implementer list->cmd
     //verification acces list->arg//Start with list->arglist->cmd = 
     while(list)
     {
-    ft_init_cmd(&list->cmd);//it's ok
-    ft_intro_cmd(list);
-    print_liste(list->arg);
-    printf("\nXXX\n");
+        printf("aa1 %p\n", list->arg);
+        ft_init_cmd(&list->cmd);//it's ok
+        printf("a2a %p\n", list->arg);
+        ft_insert_double_tab(list);
+        printf("a3a %p\n", list->arg);
+        ft_insert_cmd_here_doc(list);
+        printf("a4a %p\n", list->arg);
+        while (list->arg)
+         {
+            list->arg = list->arg->prev;
+        }
+
+        // while(list->arg)
+        // {
+        //     list->arg = list->arg->next;
+        // }
+        //Attention here_doc
+        // print_list(list);
+        // ft_insert_cmd_here_doc(list);
+     printf("\nXXX\n");
+        print_cmd(list);
     list = list->next;
     }
+    //IL faut maintenat voir si il y a here_doc et le placer en premeir
 }
 
 void lexer(t_node *list)
