@@ -38,7 +38,7 @@ int shell_loop(t_node *list, t_data **data, char **env)
 			return (1);
 		} // Mise en place d'une structure
 		lexer(list);//celui la est bon 
-		lexer_cmd(list);
+		lexer_cmd(list, *data, env);
 		
 		// lexer_insert_here_doc(list);
 		// Libérer l'input après utilisation

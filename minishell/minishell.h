@@ -164,7 +164,7 @@ void type_insert_cmd(t_arg *new_node);
 void ft_format_list(t_arg *arg);
 void ft_insert_tab_echo(t_echo *data_echo, char *input, int i);
 void ft_init_data_list(t_node **list);
-void    lexer_cmd(t_node *list);
+void    lexer_cmd(t_node *list, t_data *data, char **env);
 void print_liste(t_arg *list);
 
 void lexer(t_node *head);
@@ -180,7 +180,6 @@ void	ft_manager_sig(int sig);
 void	ft_init_signaux(struct sigaction *action, char **write_here_do);
 
 //Fonction pour le here_doc
-void	ft_here_doc(char *value, t_data *data, char *envp[]);
-
+void	ft_here_doc(t_data *data, t_node *list , char **envp, char *limiteur);
 
 #endif
