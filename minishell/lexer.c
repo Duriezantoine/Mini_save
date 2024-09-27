@@ -75,13 +75,18 @@ void ft_insert_double_tab(t_node *list)
 
 // }
 
-void    ft_insert_cmd_here_doc(t_node *list)
+void    ft_insert_cmd_here_doc(t_node *list)//Il faut voir 
 {
-    while(list->arg)
+    //Apres etre passe dessus il faut voir pour gerer la redirection du here_doc
+    t_arg *current = list->arg;
+    while(current)
     {
-        if (list->arg->type == DELIM)
+        if (current->type == DELIM && current->next->type==HEREDOC)
+        {
             printf("\nCa marche\n");
-        list->arg = list->arg->next;
+            //Mise en place du here_doc;
+        }
+        current = current->next;
     }
 }
 
@@ -90,13 +95,9 @@ void    lexer_cmd(t_node *list)//Cette fonction permet d'implementer list->cmd
     //verification acces list->arg//Start with list->arglist->cmd = 
     while(list)
     {
-        printf("aa1 %p\n", list->arg);
         ft_init_cmd(&list->cmd);//it's ok
-        printf("a2a %p\n", list->arg);
         ft_insert_double_tab(list);
-        printf("a3a %p\n", list->arg);
         ft_insert_cmd_here_doc(list);
-        printf("a4a %p\n", list->arg);
         while (list->arg)
          {
             list->arg = list->arg->prev;

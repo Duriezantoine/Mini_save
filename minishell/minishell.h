@@ -174,4 +174,13 @@ void lexer(t_node *head);
 //Fonction pour free
 
 void free_t_echo(t_echo *echo);
+
+//Fonction pour les signauxx 
+void	ft_manager_sig(int sig);
+void	ft_init_signaux(struct sigaction *action, char **write_here_do);
+
+//Fonction pour le here_doc
+void	ft_here_doc(char *value, t_data *data, char *envp[]);
+
+
 #endif
