@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/27 10:32:48 by aduriez           #+#    #+#             */
-/*   Updated: 2024/09/27 12:56:44 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/09/28 12:46:08 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,7 @@ void	ft_manager_sig(int sig)
 	return ;
 }
 
-void	ft_here_doc(t_data *data, t_node *list , char **env, char *limiteur)//Il vat falloir mettre en place l'environnement
+void	ft_here_doc(t_data *data, t_node *list , t_env **env, char *limiteur)//Il vat falloir mettre en place l'environnement
 {
 	char				*write_here_do;
 	int					ret;
@@ -55,7 +55,7 @@ void	ft_here_doc(t_data *data, t_node *list , char **env, char *limiteur)//Il va
 	struct sigaction	action;
 	struct termios		term_attr;
 	// void(data);
-	// void(envp);
+	(void)env;
 	// void(list);
 	ft_init_signaux(&action, &write_here_do);
 	tcgetattr(STDIN_FILENO, &term_attr);
@@ -72,7 +72,7 @@ void	ft_here_doc(t_data *data, t_node *list , char **env, char *limiteur)//Il va
 			break ;
 		if (signal_recu == -2)
 		{
-			shell_loop(list, &data, env);
+			shell_loop(list, &data, &list->env);
 			break ;
 		}
 		ret = read(0, write_here_do, 1023);

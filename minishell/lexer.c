@@ -70,10 +70,9 @@ void ft_insert_double_tab(t_node *list)
     }
     list->cmd->cmd_and_args [count_arg]= NULL;
 }
-void    ft_insert_cmd_here_doc(t_node *list, t_data *data, char **envp)//Il faut voir 
+void    ft_insert_cmd_here_doc(t_node *list, t_data *data)//Il faut voir 
 {
     (void )data;
-    (void)envp;
     //Apres etre passe dessus il faut voir pour gerer la redirection du here_doc
     t_arg *current = list->arg;
     while(current)
@@ -81,7 +80,7 @@ void    ft_insert_cmd_here_doc(t_node *list, t_data *data, char **envp)//Il faut
         if (current->type==HEREDOC && current->next->type== DELIM)
         {
             current = current->next;//Demander pourquoi le prev ne marche pas 
-            ft_here_doc(data, list ,envp, current->str_command);
+            ft_here_doc(data, list ,&list->env, current->str_command);
             printf("\nJe suis ici donc |%s|\n", current->str_command);
             //Mise en place du here_doc;
         }
@@ -89,14 +88,14 @@ void    ft_insert_cmd_here_doc(t_node *list, t_data *data, char **envp)//Il faut
     }
 }
 
-void    lexer_cmd(t_node *list, t_data *data, char **env)//Cette fonction permet d'implementer list->cmd
+void    lexer_cmd(t_node *list, t_data *data)//Cette fonction permet d'implementer list->cmd
 {
     //verification acces list->arg//Start with list->arglist->cmd = 
     while(list)
     {
         ft_init_cmd(&list->cmd);//it's ok
         ft_insert_double_tab(list);
-        ft_insert_cmd_here_doc(list, data, env);
+        ft_insert_cmd_here_doc(list, data);
         while (list->arg)
          {
             list->arg = list->arg->prev;

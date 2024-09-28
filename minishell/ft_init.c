@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   minishell_parse.c                                  :+:      :+:    :+:   */
+/*   ft_init.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/09 17:08:04 by dpoltura          #+#    #+#             */
-/*   Updated: 2024/06/29 17:24:46 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/09/28 10:23:41 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@ void ft_init_data_list(t_node **list)
     }
     (*list)->arg = NULL;
     (*list)->cmd = NULL;
+    (*list)->env = NULL;
     (*list)->save[0] = dup(STDIN_FILENO);
     (*list)->save[1] = dup(STDOUT_FILENO);
     (*list)->pipe[0] = -1;

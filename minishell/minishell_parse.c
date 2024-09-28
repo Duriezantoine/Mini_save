@@ -6,25 +6,24 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/09 17:08:04 by dpoltura          #+#    #+#             */
-/*   Updated: 2024/06/29 17:24:46 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/09/28 12:44:13 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-void organisation_shell_loop(t_node *list, t_data **data, char **env)
+void organisation_shell_loop(t_node *list, t_data **data)
 {
 	(void)list;
 	// Declaration des signaux
-	shell_loop(list, data, env);
+	shell_loop(list, data, &list->env);
 	// free la command_line
 }
 
-int shell_loop(t_node *list, t_data **data, char **env)
+int shell_loop(t_node *list, t_data **data, t_env **env)
 {
 	char *input;
-	(void)env;
 	(void)data;
-
+	(void)env;
 	while (1)
 	{
 		// Creation de l'input
@@ -38,7 +37,7 @@ int shell_loop(t_node *list, t_data **data, char **env)
 			return (1);
 		} // Mise en place d'une structure
 		lexer(list);//celui la est bon 
-		lexer_cmd(list, *data, env);
+		lexer_cmd(list, *data);
 		
 		// lexer_insert_here_doc(list);
 		// Libérer l'input après utilisation
@@ -47,12 +46,82 @@ int shell_loop(t_node *list, t_data **data, char **env)
 	}
 	return (0);
 }
+void init_env_node(t_env *new_env, char **tmp, char *envp_i)
+{
+	new_env->key = strdup(tmp[0]);
+	new_env->value = (char **)malloc(sizeof(char *) * (strlen(envp_i) + 1));
+	if (new_env->value == NULL)
+	{
+		perror("malloc");
+		exit(EXIT_FAILURE);
+	}
+
+	int j = 0;
+	for (int k = 1; tmp[k] != NULL; k++)
+	{
+		new_env->value[j] = strdup(tmp[k]);
+		j++;
+	}
+	new_env->value[j] = NULL;
+}
+
+void add_env_to_list(t_env **head, t_env **current, t_env *new_env, char *envp_i)
+{
+	if (*head == NULL)
+	{
+		*head = new_env;
+		*current = new_env;
+	}
+	else
+	{
+		(*current)->next = new_env;
+		*current = new_env;
+	}
+
+	printf("\n|%s", new_env->key);
+	for (int j = 0; new_env->value[j] != NULL; j++)
+	{
+		printf("\nARG|%s|", new_env->value[j]);
+	}
+	printf("\nTOtal|%s|\n\n\n", envp_i);
+}
+
+
+t_env *ft_insert_env(char **envp)
+{
+	int i;
+	char **tmp;
+	t_env *head = NULL;
+	t_env *current = NULL;
+
+	i = 0;
+	while (envp[i])
+	{
+		tmp = ft_split((const char *)envp[i], '=');
+		if (tmp == NULL || tmp[0] == NULL)
+		{
+			i++;
+			continue;
+		}
+		t_env *new_env = (t_env *)malloc(sizeof(t_env));
+		if (new_env == NULL)
+		{
+			perror("malloc");
+			exit(EXIT_FAILURE);
+		}
+		init_env_node(new_env, tmp, envp[i]);
+		new_env->next = NULL;
+		add_env_to_list(&head, &current, new_env, envp[i]);
+		i++;
+		free(tmp);
+	}
+	return (head);
+}
 
 int main(int argc, char **argv, char **envp)
 {
 	t_data *data;
 	t_node *list;
-
 	(void)argv;
 	(void)argc;
 
@@ -73,6 +142,8 @@ int main(int argc, char **argv, char **envp)
 		exit(1);
 	}
 	ft_init_data(&data, list);
-	organisation_shell_loop(list, &data, envp);
+	ft_init_env(&list->env);
+	list->env = ft_insert_env(envp);
+	organisation_shell_loop(list, &data);
 	return (0); // Il faut l'exit code.
 }
