@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/09 17:08:04 by dpoltura          #+#    #+#             */
-/*   Updated: 2024/09/28 10:23:41 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/09/28 17:47:12 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,7 @@ void ft_init_data_list(t_node **list)
 void ft_init_data(t_data **data, t_node *list)
 {
     *data = malloc(sizeof(t_data));
+    (*data)->count = '1';
     if (data == NULL)
     {
         fprintf(stderr, "Memory allocation failed for data\n");

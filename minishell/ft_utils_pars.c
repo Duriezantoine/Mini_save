@@ -1,16 +1,43 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   arg_to_cmd.c                                       :+:      :+:    :+:   */
+/*   ft_utils_pars.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/11 10:51:14 by dpoltura          #+#    #+#             */
-/*   Updated: 2024/06/24 13:54:25 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/09/28 17:45:22 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+char *ft_strcat(char *dest, char src) {
+    char *original_dest = dest;
+    while (*dest != '\0') {
+        dest++;
+    }
+    *dest = src;
+    dest++;
+    *dest = '\0';
+    return original_dest;
+}
+
+char *ft_strcpy(char *dest, char *src) {
+    char *original_dest = dest; // Sauvegarder la position initiale de dest
+
+    // Copier chaque caractère de src vers dest
+    while (*src != '\0') {
+        *dest = *src;
+        dest++;
+        src++;
+    }
+
+    // Ajouter le caractère de fin de chaîne à dest
+    *dest = '\0';
+
+    return original_dest; // Retourner la position initiale de dest
+}
 
 int ft_strcmp(char *s1, char *s2)
 {

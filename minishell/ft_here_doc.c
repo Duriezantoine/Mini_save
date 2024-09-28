@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/27 10:32:48 by aduriez           #+#    #+#             */
-/*   Updated: 2024/09/28 12:46:08 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/09/28 18:55:53 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,12 +66,17 @@ void	ft_here_doc(t_data *data, t_node *list , t_env **env, char *limiteur)//Il v
 		test = strcmp(write_here_do, limiteur);
 		if (ret == 0)
 		{
+			printf("AAA");
 			break ;
 		}
 		if (test - 10 == 0)
+		{
+			printf("BBB");
 			break ;
+		}
 		if (signal_recu == -2)
 		{
+			printf("CCC");
 			shell_loop(list, &data, &list->env);
 			break ;
 		}

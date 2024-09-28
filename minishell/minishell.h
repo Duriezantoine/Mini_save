@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/09 17:05:05 by dpoltura          #+#    #+#             */
-/*   Updated: 2024/09/28 12:43:28 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/09/28 17:36:05 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,6 +67,7 @@ typedef struct s_cmd
 	int input;
 	int output;
 
+	int cmd;
 	int is_builtin;
 
 	struct s_cmd *next;
@@ -110,6 +111,7 @@ typedef struct s_command
 typedef struct s_data
 {
 	int nbr_command;
+	char count;
 
 } t_data;
 
@@ -168,6 +170,8 @@ void ft_insert_list(t_node **list, t_echo **data_echo);
 void ft_search_built(t_node **list, char **save);
 t_arg *ft_init_list(t_node *list, t_echo *data_echo, char *save);
 int ft_split_with_space(t_echo *data_echo, char *input);
+char *ft_strcpy(char *dest, char *src);
+char *ft_strcat(char *dest, char src);
 
 void print_list(t_node *list);
 int ft_strcmp(char *s1, char *s2);
@@ -177,6 +181,7 @@ void ft_insert_tab_echo(t_echo *data_echo, char *input, int i);
 void ft_init_data_list(t_node **list);
 void   lexer_cmd(t_node *list, t_data *data);
 void print_liste(t_arg *list);
+void ft_insert_double_tab(t_cmd **list, t_arg *list_arg);
 
 void lexer(t_node *head);
 
@@ -196,6 +201,10 @@ void	ft_here_doc(t_data *data, t_node *list , t_env **env, char *limiteur);
 //Fonction pour l'environnement
 void	ft_init_env(t_env **env);
 char	**ft_split(char const *s, char c);
+
+//Ce qui permet de verifier ou j'en suis
+void print_cmd(t_node *list);
+void print_all_cmds(t_node *list) ;
 
 
 #endif

@@ -6,11 +6,35 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/09 17:08:04 by dpoltura          #+#    #+#             */
-/*   Updated: 2024/09/28 12:44:13 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/09/28 15:28:26 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+void print_cmd(t_node *list) {
+    if (list == NULL || list->cmd == NULL) {
+        printf("List or cmd is NULL\n");
+        return;
+    }
+
+	printf("\nNext Node\n");
+    printf("Command: |%s| Command: int |%d|\n", list->cmd->cmd_and_args[0], list->cmd->cmd);
+    for (int i = 1; list->cmd->cmd_and_args[i] != NULL; i++) {
+        printf("Argument %d: %s\n", i, list->cmd->cmd_and_args[i]);
+    }
+}
+
+// Fonction pour boucler sur tous les nœuds de la liste
+void print_all_cmds(t_node *list) {
+    t_node *current = list;
+    while (current != NULL) {
+        print_cmd(current);
+        current = current->next;
+    }
+}
+
+
 void organisation_shell_loop(t_node *list, t_data **data)
 {
 	(void)list;
@@ -38,7 +62,8 @@ int shell_loop(t_node *list, t_data **data, t_env **env)
 		} // Mise en place d'une structure
 		lexer(list);//celui la est bon 
 		lexer_cmd(list, *data);
-		
+		print_all_cmds(list);
+
 		// lexer_insert_here_doc(list);
 		// Libérer l'input après utilisation
 
