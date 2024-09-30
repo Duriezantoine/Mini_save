@@ -182,7 +182,79 @@ void ft_check_bulting(t_cmd **cmd, t_arg *arg)
         tmp = tmp->next;
     }
 }
+void	ft_open_infile(t_cmd **cmd, char *infile)
+{
+	// printf("|DATAVALUE|%s|", data->value);
+	(*cmd)->input = open(infile, O_RDONLY);
+	if ((*cmd)->input < 0)
+	{
+        ft_putstr_fd("Not open Infile", 2 );
+	}
+    printf("\nJ'ai ouvert|%s|", infile);
+}
+void    ft_check_infile_cmd(t_cmd **cmd, t_arg *arg)
+{
+    //1 er chose il faut boucler sur arg
+    t_arg *tmp;
+    (void)cmd;
+    tmp = arg;
+    while(tmp)
+    {
+        if (tmp->type == INFILE || tmp->type == HEREDOC_INFILE)
+        {
+            //Il faut essayer d'ouvrir le fichier et le mettre dans CMD INFILE
+            ft_open_infile(cmd, tmp->str_command);
+        }
+        tmp = tmp->next;
+    }
+}
+void ft_init_outfile(t_cmd **cmd, char *outfile, int i)
+{
+    if(i == 0)
+    {
+        (*cmd)->output = open(outfile, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+        if ((*cmd)->output < 0)
+        {
+            perror("open");
+            exit(EXIT_FAILURE);
+        }
+        //dup2(fd, STDOUT_FILENO);Demande a tillian
+        close((*cmd)->output);
+    }
+    if(i == 1)
+    {
+        (*cmd)->output = open(outfile, O_WRONLY | O_CREAT | O_APPEND, 0644);
+        if ((*cmd)->output< 0)
+        {
+        perror("open");
+        exit(EXIT_FAILURE);
+    }
+   // dup2(fd, STDOUT_FILENO);demande a tilian
+    close((*cmd)->output);
+    }
+}
 
+void    ft_check_outfile(t_cmd **cmd, t_arg *arg)
+{
+    t_arg *tmp;
+
+    tmp = arg;
+    while(tmp)
+    {
+        if(tmp->type == OUTFILE)
+        {
+            ft_init_outfile(cmd, tmp->str_command, 0);
+            printf("\n |fd|%d|\n",(*cmd)->output);
+        }
+        if(tmp->type == APPEND)
+        {    
+            ft_init_outfile(cmd, tmp->str_command, 1);
+            printf("\n |fd|%d|\n",(*cmd)->output);
+        }
+        tmp= tmp->next;
+    }
+
+}
 void lexer_cmd(t_node *list, t_data *data) // Cette fonction permet d'implementer list->cmd
 {
     (void)data;
@@ -191,10 +263,12 @@ void lexer_cmd(t_node *list, t_data *data) // Cette fonction permet d'implemente
     {
         ft_init_cmd(&list->cmd);                     // it's ok
         ft_insert_double_tab(&list->cmd, list->arg); // it's ok
-        ft_verif_cmd(&list->cmd, list->arg);         //it's ok
+        ft_verif_cmd(&list->cmd, list->arg);         //it's ok//Pour le here_doc
         ft_insert_cmd_here_doc(list, &list->cmd, list->arg, data);//it's ok plus ou moins
-        ft_check_bulting(&list->cmd, list->arg);
-        data->count = data->count + 1;
+        ft_check_bulting(&list->cmd, list->arg);//it's ok
+        ft_check_infile_cmd(&list->cmd, list->arg);//it's ok
+        ft_check_outfile(&list->cmd, list->arg);//Il me semble qu'il manque un truc
+        data->count = data->count + 1;//Permet de modifier le nom du infile pour le here_doc
         list = list->next;
     }
     // IL faut maintenat voir si il y a here_doc et le placer en premeir
