@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/09 17:05:05 by dpoltura          #+#    #+#             */
-/*   Updated: 2024/09/30 11:51:38 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/09/30 12:45:17 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,8 @@ typedef enum e_tokens
 	ARG,
 	OPTION,
 	REDIR,
-	OUTPUT_ADD
+	OUTPUT_ADD,
+	HEREDOC_INFILE,
 } t_token;
 typedef struct {
     char *write_here_do;

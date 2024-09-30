@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/27 10:32:48 by aduriez           #+#    #+#             */
-/*   Updated: 2024/09/30 12:11:47 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/09/30 12:48:42 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -125,7 +125,7 @@ void handle_signal_recu(int signal_recu, t_node *list, t_data *data, t_here_doc_
     (void)here_doc_data;
 
 	if (signal_recu == -2) {
-        // free_here_doc_data(here_doc_data);
+        // free_here_doc_data(here_doc_data);//Je ne comprends pas apparement il se free deja
         shell_loop(list, &data, &list->env);
     }
 }
@@ -133,7 +133,7 @@ void handle_signal_recu(int signal_recu, t_node *list, t_data *data, t_here_doc_
 char *ft_here_doc(t_data *data, t_node *list, char *limiteur) 
 {
     t_here_doc_data here_doc_data = init_here_doc_data();
-
+    //iL manque free
     setup_here_doc_files(&here_doc_data, data, list, here_doc_data.write_here_do);
     initialize_here_doc_input(&here_doc_data);
     while (1) 

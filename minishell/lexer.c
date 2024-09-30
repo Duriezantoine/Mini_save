@@ -122,7 +122,7 @@ void ft_insert_cmd_here_doc(t_node *list, t_cmd **list_cmd, t_arg *list_arg, t_d
                 // //Demander a mon colleg pour faire plus propre
                 // }
                 current->str_command = tmp_file_name;
-                current ->type = INFILE;
+                current ->type = HEREDOC_INFILE;
                 printf("\nJe suis le neouds |%s| et le type |%d|\n",current->str_command, current->type);
             }
             printf("\nName tmp_file_name|%s|\n", tmp_file_name);
@@ -134,7 +134,6 @@ void ft_insert_cmd_here_doc(t_node *list, t_cmd **list_cmd, t_arg *list_arg, t_d
 void ft_verif_cmd(t_cmd **list, t_arg *list_arg)
 {
     t_arg *arg = list_arg;
-    ;
     int count;
 
     count = 0;
@@ -151,6 +150,38 @@ void ft_verif_cmd(t_cmd **list, t_arg *list_arg)
 
     (*list)->cmd = count;
 }
+int is_builtin(const char *command) {
+    if (strncmp(command, "echo", 4) == 0) {
+        return 1;
+    }
+    if (strncmp(command, "cd", 2) == 0) {
+        return 1;
+    }
+    if (strncmp(command, "exit", 4) == 0) {
+        return 1;
+    }
+    // Ajoutez d'autres commandes built-in ici
+    return 0;
+}
+
+void ft_check_bulting(t_cmd **cmd, t_arg *arg)
+{
+    t_arg *tmp = arg;
+    (void)cmd;
+    //Creation d'une boucle permettant de verifier si la cammande est un bulting
+    while(tmp)
+    {
+        if (tmp->type == CMD)
+        {
+             if (is_builtin(tmp->str_command)) 
+             {
+                (*cmd)->is_builtin = 1;
+                printf("La commande est un built-in.\n");
+            }
+        } 
+        tmp = tmp->next;
+    }
+}
 
 void lexer_cmd(t_node *list, t_data *data) // Cette fonction permet d'implementer list->cmd
 {
@@ -161,8 +192,8 @@ void lexer_cmd(t_node *list, t_data *data) // Cette fonction permet d'implemente
         ft_init_cmd(&list->cmd);                     // it's ok
         ft_insert_double_tab(&list->cmd, list->arg); // it's ok
         ft_verif_cmd(&list->cmd, list->arg);         //it's ok
-        ft_insert_cmd_here_doc(list, &list->cmd, list->arg, data);
-        // Il faut ensuite verifier tous les infiles et les outfiles
+        ft_insert_cmd_here_doc(list, &list->cmd, list->arg, data);//it's ok plus ou moins
+        ft_check_bulting(&list->cmd, list->arg);
         data->count = data->count + 1;
         list = list->next;
     }
