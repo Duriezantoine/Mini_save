@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/27 10:32:48 by aduriez           #+#    #+#             */
-/*   Updated: 2024/09/28 18:55:53 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/09/30 09:00:02 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,17 +44,50 @@ void ft_manager_sig(int sig)
 	}
 	return;
 }
+char *create_file_name(char *temp_file_name, t_data *data, char *write_here_do)
+{
+	temp_file_name = malloc(256);
+	if (temp_file_name == NULL) 
+	{
+		perror("malloc");
+		free(write_here_do);
+		exit(EXIT_FAILURE);
+	}
+	ft_strcpy(temp_file_name, "bbw");
+	ft_strcat(temp_file_name, data->count);
+	return (temp_file_name);
 
+}
+
+int 	open_file_here_doc(int tmp_fd, char *temp_file_name, char *write_here_do)
+{
+    tmp_fd = open(temp_file_name, O_CREAT | O_WRONLY | O_TRUNC, 0600);
+    if (tmp_fd == -1) {
+        perror("open");
+        free(temp_file_name);
+        free(write_here_do);
+        exit(EXIT_FAILURE);
+    }
+	return (tmp_fd);
+}
 void ft_here_doc(t_data *data, t_node *list, t_env **env, char *limiteur) // Il vat falloir mettre en place l'environnement
 {
 	printf("\nLimiteur = %s\n", limiteur);
-	char *write_here_do;
+	char *write_here_do = NULL;
 	int ret;
 	int test;
 	struct sigaction action;
 	struct termios term_attr;
+	char *temp_file_name = NULL;
+	int tmp_fd = 0;
 	// void(data);
 	(void)env;
+	if(list->cmd->cmd != 0)
+	{
+		temp_file_name = create_file_name(temp_file_name, data, write_here_do);//Creation du nom du fichier special pour les pipes et ecrase autre here_doc
+		tmp_fd = open_file_here_doc(tmp_fd, temp_file_name, write_here_do);//Il faut ouvrir  le fichier temporaire
+		printf("Nom du fichier temporaire|%s|", temp_file_name);
+	}
 	// void(list);
 	ft_init_signaux(&action, &write_here_do);
 	tcgetattr(STDIN_FILENO, &term_attr);
@@ -80,7 +113,23 @@ void ft_here_doc(t_data *data, t_node *list, t_env **env, char *limiteur) // Il 
 			shell_loop(list, &data, &list->env);
 			break;
 		}
-		ret = read(0, write_here_do, 1023);
-		write_here_do[ret] = '\0';
+        if (list->cmd->cmd != 0)
+        {
+            // Écrire dans le fichier temporaire
+            printf("Je dois ecrire dans le fichier temporaire ici");
+            if (write(tmp_fd, write_here_do, ret) == -1) {
+                perror("write");
+                free(write_here_do);
+                return;
+            }
+        }
+
+			ret = read(0, write_here_do, 1023);
+			write_here_do[ret] = '\0';
 	}
+	if (list->cmd->cmd != 0)
+    {
+        close(tmp_fd); // Fermer le fichier temporaire après avoir terminé l'écriture
+    }
+	
 }

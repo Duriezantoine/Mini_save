@@ -4,7 +4,6 @@ static void set_spec(t_arg *elem);
 static void set_file(t_arg *elem);
 static void set_cmd(t_arg *elem);
 static void set_arg(t_arg *elem);
-static volatile sig_atomic_t signal_recu = 0;
 
 void write_to_temp_file(int fd, char *buffer)
 {
@@ -55,50 +54,8 @@ void ft_insert_double_tab(t_cmd **list, t_arg *list_arg)
     }
     (*list)->cmd_and_args[count_arg] = NULL;
 }
-void ft_here_doc_create_infile(t_data *data, t_node *list, t_env **env, char *limiteur)
-{
-    char *write_here_do;
-    int ret;
-    int test;
-    struct sigaction action;
-    struct termios term_attr;
-    // void(data);
-    (void)env;
-    // void(list);
-    ft_init_signaux(&action, &write_here_do);
-    tcgetattr(STDIN_FILENO, &term_attr);
-    ret = read(0, write_here_do, 1023);
-    write_here_do[ret] = '\n';
-    while (1)
-    {
-        test = strcmp(write_here_do, limiteur);
-        if (ret == 0)
-        {
-            printf("AAA");
-            break;
-        }
-        if (test - 10 == 0)
-        {
-            printf("BBB");
-            break;
-        }
-        if (signal_recu == -2)
-        {
-            printf("CCC");
-            shell_loop(list, &data, &list->env);
-            break;
-        }
-        ret = read(0, write_here_do, 1023);
-        write_here_do[ret] = '\0';
-    }
-}
-void ft_here_doc_infile(t_data *data, t_node *list, t_env **env, char *limiteur)
-{
 
-    ft_here_doc_create_infile(data, list, env, limiteur); // 1 er chose il faut creer un fichier temporaire
-    // 2 em chose dans ce fichier temporaire il faut l'introduire le here_doc
-    // 3 em chose il faut modifier le list->arg en supprimment le delimm et le here_doc et mettre a la place que c'est un infile
-}
+
 
 void ft_insert_cmd_here_doc(t_node *list, t_cmd **list_cmd, t_arg *list_arg, t_data *data) // Il faut voir
 {
@@ -108,13 +65,7 @@ void ft_insert_cmd_here_doc(t_node *list, t_cmd **list_cmd, t_arg *list_arg, t_d
     t_arg *current = list_arg;
     while (current)
     {
-        if (current->type == HEREDOC && current->next->type == DELIM && (*list_cmd)->cmd != 0) // Ce qui permet de creer un infile car il y a une commande
-        {
-            current = current->next;
-            printf("\nicic\n");
-            ft_here_doc_infile(data, list, &list->env, current->str_command);
-        }
-        if (current->type == HEREDOC && current->next->type == DELIM && (*list_cmd)->cmd == 0) // Ce qui permet de ne pas creer d'infile car il n'y a pas de commande
+        if (current->type == HEREDOC && current->next->type == DELIM ) // Ce qui permet de ne pas creer d'infile car il n'y a pas de commande
         {
             current = current->next;
             printf("\nNBR_CMD = %d\n", (*list_cmd)->cmd);
