@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/09 17:05:05 by dpoltura          #+#    #+#             */
-/*   Updated: 2024/09/28 17:36:05 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/09/30 09:29:26 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -197,7 +197,7 @@ void	ft_init_signaux(struct sigaction *action, char **write_here_do);
 
 //Fonction pour le here_doc
 
-void	ft_here_doc(t_data *data, t_node *list , t_env **env, char *limiteur);
+char	*ft_here_doc(t_data *data, t_node *list , t_env **env, char *limiteur);
 //Fonction pour l'environnement
 void	ft_init_env(t_env **env);
 char	**ft_split(char const *s, char c);

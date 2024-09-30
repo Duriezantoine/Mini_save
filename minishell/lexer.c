@@ -5,6 +5,18 @@ static void set_file(t_arg *elem);
 static void set_cmd(t_arg *elem);
 static void set_arg(t_arg *elem);
 
+void print_arg(t_arg *arg) {
+    if (arg == NULL) {
+        printf("t_arg is NULL\n");
+        return;
+    }
+    printf("t_arg:\n");
+    printf("  str_command: %s\n", arg->str_command);
+    printf("  type: %d\n", arg->type);
+    printf("  prev: %p\n", (void *)arg->prev);
+    printf("  next: %p\n", (void *)arg->next);
+}
+
 void write_to_temp_file(int fd, char *buffer)
 {
     write(fd, buffer, strlen(buffer));
@@ -56,20 +68,64 @@ void ft_insert_double_tab(t_cmd **list, t_arg *list_arg)
 }
 
 
+t_arg *find_previous_node(t_arg *head, t_arg *current) {
+    t_arg *previous = NULL;
+    t_arg *temp = head;
 
-void ft_insert_cmd_here_doc(t_node *list, t_cmd **list_cmd, t_arg *list_arg, t_data *data) // Il faut voir
-{
+    while (temp != NULL && temp->next != current) {
+        previous = temp;
+        temp = temp->next;
+    }
 
+    return previous;
+}
+
+// Fonction pour supprimer un nœud spécifique
+void delete_node(t_arg **head, t_arg *node_to_delete) {
+    if (*head == NULL || node_to_delete == NULL) {
+        // La liste est vide ou le nœud à supprimer est NULL
+        return;
+    }
+
+    t_arg *previous = find_previous_node(*head, node_to_delete);
+
+    if (previous != NULL) {
+        previous->next = node_to_delete->next; // Mettre à jour le pointeur du nœud précédent
+    } else {
+        *head = node_to_delete->next; // Mettre à jour la tête de la liste
+    }
+
+    if (node_to_delete->next != NULL) {
+        node_to_delete->next->prev = previous; // Mettre à jour le pointeur précédent du nœud suivant
+    }
+
+    free(node_to_delete); // Libérer la mémoire du nœud actuel
+}
+
+
+void ft_insert_cmd_here_doc(t_node *list, t_cmd **list_cmd, t_arg *list_arg, t_data *data) {
     (void)data;
     (void)list_cmd;
+    char *tmp_file_name;
     t_arg *current = list_arg;
-    while (current)
-    {
-        if (current->type == HEREDOC && current->next->type == DELIM ) // Ce qui permet de ne pas creer d'infile car il n'y a pas de commande
-        {
+
+    while (current) {
+        // printf("\n\nJe suis le type|%s|\n", current->str_command);
+        if (current->type == HEREDOC && current->next->type == DELIM) {
             current = current->next;
-            printf("\nNBR_CMD = %d\n", (*list_cmd)->cmd);
-            ft_here_doc(data, list, &list->env, current->str_command);
+            tmp_file_name = ft_here_doc(data, list, &list->env, current->str_command); // it's ok
+            if (list->cmd->cmd != 0) // Ce qui permet de ne pas creer d'infile car il n'y a pas de commande
+            {
+                printf("\nJe suis le neouds |%s| et le type |%d|\n",current->str_command, current->type);
+                // if (current->prev != NULL) {
+                //  // Supprimer le nœud à partir d'ici
+                // //Demander a mon colleg pour faire plus propre
+                // }
+                current->str_command = tmp_file_name;
+                current ->type = INFILE;
+                printf("\nJe suis le neouds |%s| et le type |%d|\n",current->str_command, current->type);
+            }
+            printf("\nName tmp_file_name|%s|\n", tmp_file_name);
         }
         current = current->next;
     }
@@ -104,7 +160,7 @@ void lexer_cmd(t_node *list, t_data *data) // Cette fonction permet d'implemente
     {
         ft_init_cmd(&list->cmd);                     // it's ok
         ft_insert_double_tab(&list->cmd, list->arg); // it's ok
-        ft_verif_cmd(&list->cmd, list->arg);
+        ft_verif_cmd(&list->cmd, list->arg);         //it's ok
         ft_insert_cmd_here_doc(list, &list->cmd, list->arg, data);
         // Il faut ensuite verifier tous les infiles et les outfiles
         data->count = data->count + 1;

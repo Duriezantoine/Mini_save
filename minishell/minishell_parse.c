@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/09 17:08:04 by dpoltura          #+#    #+#             */
-/*   Updated: 2024/09/28 15:28:26 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/09/30 10:12:04 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,6 +92,7 @@ void init_env_node(t_env *new_env, char **tmp, char *envp_i)
 
 void add_env_to_list(t_env **head, t_env **current, t_env *new_env, char *envp_i)
 {
+	(void)envp_i;
 	if (*head == NULL)
 	{
 		*head = new_env;
@@ -103,12 +104,12 @@ void add_env_to_list(t_env **head, t_env **current, t_env *new_env, char *envp_i
 		*current = new_env;
 	}
 
-	printf("\n|%s", new_env->key);
-	for (int j = 0; new_env->value[j] != NULL; j++)
-	{
-		printf("\nARG|%s|", new_env->value[j]);
-	}
-	printf("\nTOtal|%s|\n\n\n", envp_i);
+	// // printf("\n|%s", new_env->key);
+	// for (int j = 0; new_env->value[j] != NULL; j++)
+	// {
+	// 	printf("\nARG|%s|", new_env->value[j]);
+	// }
+	// printf("\nTOtal|%s|\n\n\n", envp_i);
 }
 
 
