@@ -12,9 +12,11 @@
 
 #include "minishell.h"
 
-char *ft_strcat(char *dest, char src) {
+char *ft_strcat(char *dest, char src)
+{
     char *original_dest = dest;
-    while (*dest != '\0') {
+    while (*dest != '\0')
+    {
         dest++;
     }
     *dest = src;
@@ -23,11 +25,13 @@ char *ft_strcat(char *dest, char src) {
     return original_dest;
 }
 
-char *ft_strcpy(char *dest, char *src) {
+char *ft_strcpy(char *dest, char *src)
+{
     char *original_dest = dest; // Sauvegarder la position initiale de dest
 
     // Copier chaque caractère de src vers dest
-    while (*src != '\0') {
+    while (*src != '\0')
+    {
         *dest = *src;
         dest++;
         src++;
@@ -61,38 +65,86 @@ int ft_split_with_space(t_echo *data_echo, char *input)
     return (0);
 }
 
-void ft_insert_data_data_echo_w(char **save, t_echo *data_echo, int i, int iterateur_w)
+void ft_insert_data_data_echo_w(t_save **save, t_echo *data_echo, int iterateur_w)
 {
-    int i_past;
-    // int save;
-    i_past = 0;
-    save[i] = malloc(sizeof(char *) * ft_strlen(data_echo->str_w_quot[iterateur_w].str) + 1);
-    while (data_echo->str_w_quot[iterateur_w].str[i_past])
+    t_save *new_node = malloc(sizeof(t_save));
+    if (!new_node)
     {
-        save[i][i_past] = data_echo->str_w_quot[iterateur_w].str[i_past];
-        i_past++;
+        // Gestion de l'erreur d'allocation
+        return;
     }
 
-    save[i][i_past] = '\0';
+    new_node->str = malloc(sizeof(char) * ft_strlen(data_echo->str_w_quot[iterateur_w].str) + 1);
+    if (!new_node->str)
+    {
+        // Gestion de l'erreur d'allocation
+        free(new_node);
+        return;
+    }
+
+    strcpy(new_node->str, data_echo->str_w_quot[iterateur_w].str);
+    new_node->bool = data_echo->str_w_quot[iterateur_w].bool; // Initialisation de l'attribut bool (vous pouvez le définir selon vos besoins)
+    new_node->next = NULL;
+
+    // Insérer le nouveau nœud à la fin de la liste
+    if (*save == NULL)
+    {
+        *save = new_node;
+    }
+    else
+    {
+        t_save *current = *save;
+        while (current->next != NULL)
+        {
+            current = current->next;
+        }
+        current->next = new_node;
+    }
+
     free(data_echo->str_w_quot[iterateur_w].str);
 }
 
-void ft_insert_data_data_echo_s(char **save, t_echo *data_echo, int i, int iterateur_s)
+void ft_insert_data_data_echo_s(t_save **save, t_echo *data_echo, int iterateur_s)
 {
-    int i_past;
-
-    i_past = 0;
-    save[i] = malloc(sizeof(char *) * ft_strlen(data_echo->str_s_quot[iterateur_s].str) + 1);
-    while (data_echo->str_s_quot[iterateur_s].str[i_past])
+    t_save *new_node = malloc(sizeof(t_save));
+    if (!new_node)
     {
-        save[i][i_past] = data_echo->str_s_quot[iterateur_s].str[i_past];
-        i_past++;
+        // Gestion de l'erreur d'allocation
+        return;
     }
 
-    save[i][i_past] = '\0';
-    free(data_echo->str_s_quot[iterateur_s].str);
+    new_node->str = malloc(sizeof(char) * ft_strlen(data_echo->str_s_quot[iterateur_s].str) + 1);
+    if (!new_node->str)
+    {
+        // Gestion de l'erreur d'allocation
+        free(new_node);
+        return;
+    }
+
+    strcpy(new_node->str, data_echo->str_s_quot[iterateur_s].str);
+    new_node->bool = 0; // Initialisation de l'attribut bool (vous pouvez le définir selon vos besoins)
+    new_node->next = NULL;
+
+    // Insérer le nouveau nœud à la fin de la liste
+    if (*save == NULL)
+    {
+        *save = new_node;
+    }
+    else
+    {
+        t_save *current = *save;
+        while (current->next != NULL)
+        {
+            current = current->next;
+        }
+        current->next = new_node;
+    }
+
+    // Libération de la mémoire si nécessaire
+    // free(data_echo->str_s_quot[iterateur_s].str); // Assurez-vous que cela est correct dans votre contexte
 }
-void ft_insert_new_data_with_data(char **save, t_echo *data_echo)
+
+void ft_insert_new_data_with_data(t_save **save, t_echo *data_echo)
 {
     (void)data_echo;
     int i;
@@ -107,14 +159,14 @@ void ft_insert_new_data_with_data(char **save, t_echo *data_echo)
         while (iterateur_s < data_echo->s_quot)
         {
             if (data_echo->str_s_quot[iterateur_s].order == i)
-                ft_insert_data_data_echo_s(save, data_echo, i, iterateur_s);
+                ft_insert_data_data_echo_s(save, data_echo, iterateur_s);
             iterateur_s++;
         }
         iterateur_w = 0;
         while (iterateur_w < data_echo->w_quot)
         {
             if (data_echo->str_w_quot[iterateur_w].order == i)
-                ft_insert_data_data_echo_w(save, data_echo, i, iterateur_w);
+                ft_insert_data_data_echo_w(save, data_echo, iterateur_w);
             iterateur_w++;
         }
     }
@@ -134,6 +186,8 @@ void ft_insert_data_s_whith_tab(t_echo *data_echo, char *input, int *i, int *cle
     }
 
     data_echo->str_s_quot[(*clef_tab_s_quot)].str[iterateur_tab_s_quot] = '\0';
+    data_echo->str_s_quot[(*clef_tab_s_quot)].bool = 0;
+
     // printf("\nSave_with_tab_s|Nbr_occurence=%d|clef=%d|Save=%s|Sorti=%c", iterateur_tab_s_quot, (*clef_tab_s_quot), data_echo->str_s_quot[(*clef_tab_s_quot)].str, input[*i]);
 }
 
@@ -142,6 +196,10 @@ void ft_insert_data_w_whith_tab(t_echo *data_echo, char *input, int *i, int *cle
     int iterateur_tab_w_quot;
     (void)data_echo;
     iterateur_tab_w_quot = 0;
+    if (input[*i] == '\'')
+        data_echo->str_w_quot[(*clef_tab_w_quot)].bool = 1;
+    else
+        data_echo->str_w_quot[(*clef_tab_w_quot)].bool = 0;
     (*i) = (*i) + 1;
     while (input[*i] != '\0' && input[*i] != '"' && input[*i] != '\'')
     {
@@ -287,7 +345,7 @@ int ft_init_token_space(t_echo *data_echo, char *input, int i)
             wt_quot++;
             i++;
         }
-        
+
         if (((ft_isalnum(input[i]) == 1)) && input[i] != '"' && input[i] != '\'')
         {
             while (((ft_isalnum(input[i]) == 1) || input[i] == '<') && input[i] != '\'' && input[i] != '"')
@@ -327,9 +385,9 @@ int ft_nbr_quot(char *input, int i)
 
 int ft_isalnum(int c)
 {
-    if ((c >= 48 && c <= 57) || (c >= 97 && c <= 122) || (c >= 65 && c <= 90) || (c == 60) || (c == 62) || (c ==45 ))
+    if ((c >= 48 && c <= 57) || (c >= 97 && c <= 122) || (c >= 65 && c <= 90) || (c == 60) || (c == 62) || (c == 45))
     {
-        if(c==45)
+        if (c == 45)
             printf("\nCa passe\n");
         return (1);
     }

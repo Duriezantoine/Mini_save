@@ -41,31 +41,31 @@ typedef enum e_tokens
 	OUTPUT_ADD,
 	HEREDOC_INFILE,
 } t_token;
-typedef struct {
-    char *write_here_do;
-    int ret;
-    int test;
-    struct sigaction action;
-    struct termios term_attr;
-    char *temp_file_name;
-    int tmp_fd;
+typedef struct
+{
+	char *write_here_do;
+	int ret;
+	int test;
+	struct sigaction action;
+	struct termios term_attr;
+	char *temp_file_name;
+	int tmp_fd;
 } t_here_doc_data;
 
 /// Strucuture pour l'environnement  ////////////////
 typedef struct s_env
 {
-	char			*key;
-	char			**value;
-	struct s_env	*next;
+	char *key;
+	char **value;
+	struct s_env *next;
 
-}					t_env;
-
+} t_env;
 
 typedef struct s_arg
 {
 	char *str_command;
 	int type;
-
+	int quot;
 	struct s_arg *prev;
 	struct s_arg *next;
 } t_arg;
@@ -94,12 +94,11 @@ typedef struct s_node
 	int pipe[2];
 
 	struct s_node *prev;
-    struct s_node *next;
+	struct s_node *next;
 
-	
 } t_node;
 
-//Pour le parsing
+// Pour le parsing
 
 typedef struct s_token_str_two
 {
@@ -108,6 +107,15 @@ typedef struct s_token_str_two
 	char *token;
 
 } t_token_str_two;
+
+typedef struct s_save
+{
+	// Chaque command est separer par une pipe
+	char *str;
+	int bool;
+	struct s_save *next;
+
+} t_save;
 
 typedef struct s_command
 {
@@ -122,6 +130,7 @@ typedef struct s_data
 {
 	int nbr_command;
 	char count;
+	int bool;
 
 } t_data;
 
@@ -129,12 +138,14 @@ typedef struct s_str
 {
 	char *str;
 	int order;
+	int bool;
 } t_str;
 
 typedef struct s_echo
 {
 	int s_quot;
 	int w_quot;
+
 	t_str *str_w_quot;
 	t_str *str_s_quot;
 	int order_occurence;
@@ -175,13 +186,13 @@ void ft_insert_data_w_quot(t_echo *data_echo, char *input, int *i, int *place_ta
 void ft_insert_data_s_quot(t_echo *data_echo, char *input, int *i, int *place_tab_s_quot);
 void ft_insert_data_s_whith_tab(t_echo *data_echo, char *input, int *i, int *clef_tab_s_quot);
 void ft_insert_data_w_whith_tab(t_echo *data_echo, char *input, int *i, int *clef_tab_w_quot);
-void ft_insert_new_data_with_data(char **save, t_echo *data_echo);
 void ft_insert_list(t_node **list, t_echo **data_echo);
 void ft_search_built(t_node **list, char **save);
-t_arg *ft_init_list(t_node *list, t_echo *data_echo, char *save);
 int ft_split_with_space(t_echo *data_echo, char *input);
 char *ft_strcpy(char *dest, char *src);
 char *ft_strcat(char *dest, char src);
+void ft_insert_new_data_with_data(t_save **save, t_echo *data_echo);
+void ft_insert_data_data_echo_s(t_save **save, t_echo *data_echo, int iterateur_s);
 
 void print_list(t_node *list);
 int ft_strcmp(char *s1, char *s2);
@@ -189,35 +200,31 @@ void type_insert_cmd(t_arg *new_node);
 void ft_format_list(t_arg *arg);
 void ft_insert_tab_echo(t_echo *data_echo, char *input, int i);
 void ft_init_data_list(t_node **list);
-void   lexer_cmd(t_node *list, t_data *data);
+void lexer_cmd(t_node *list, t_data *data);
 void print_liste(t_arg *list);
 void ft_insert_double_tab(t_cmd **list, t_arg *list_arg);
-
+t_arg *ft_init_list(t_node *list, t_echo *data_echo, t_save *save);
 void lexer(t_node *head);
 
-
-
-//Fonction pour free
+// Fonction pour free
 
 void free_t_echo(t_echo *echo);
 
-//Fonction pour les signauxx 
-void	ft_manager_sig(int sig);
-void	ft_init_signaux(struct sigaction *action, char **write_here_do);
+// Fonction pour les signauxx
+void ft_manager_sig(int sig);
+void ft_init_signaux(struct sigaction *action, char **write_here_do);
 
-//Fonction pour le here_doc
+// Fonction pour le here_doc
 
-char	*ft_here_doc(t_data *data, t_node *list , char *limiteur);
-//Fonction pour l'environnement
-void	ft_init_env(t_env **env);
-char	**ft_split(char const *s, char c);
+char *ft_here_doc(t_data *data, t_node *list, char *limiteur);
+// Fonction pour l'environnement
+void ft_init_env(t_env **env);
+char **ft_split(char const *s, char c);
 
-//Ce qui permet de verifier ou j'en suis
+// Ce qui permet de verifier ou j'en suis
 void print_cmd(t_node *list);
-void print_all_cmds(t_node *list) ;
+void print_all_cmds(t_node *list);
 
-void	ft_open_infile(t_cmd **cmd, char *infile);
-
-
+void ft_open_infile(t_cmd **cmd, char *infile);
 
 #endif

@@ -14,7 +14,7 @@
 
 void ft_init_data_list(t_node **list)
 {
-   *list = malloc(sizeof(t_node));
+    *list = malloc(sizeof(t_node));
     if (list == NULL)
     {
         fprintf(stderr, "Memory allocation failed for data\n");
@@ -55,12 +55,12 @@ void ft_init_data(t_data **data, t_node *list)
 }
 void ft_init_echo_malloc(t_echo *data_echo)
 {
-    data_echo->str_w_quot = malloc (data_echo->w_quot * sizeof(t_str));
+    data_echo->str_w_quot = malloc(data_echo->w_quot * sizeof(t_str));
     data_echo->str_s_quot = malloc(data_echo->s_quot * sizeof(t_str));
     // printf("\nFT_init echo malloc|w=%d|s=%d||\n",(*data_echo)->w_quot, (*data_echo)->s_quot);
 }
 
-t_arg *ft_init_list(t_node *list, t_echo *data_echo, char *save)
+t_arg *ft_init_list(t_node *list, t_echo *data_echo, t_save *save)
 {
     (void)data_echo; // Supprimer l'avertissement d'utilisation inutilisée
     t_arg *new_node = malloc(sizeof(t_arg));
@@ -69,7 +69,8 @@ t_arg *ft_init_list(t_node *list, t_echo *data_echo, char *save)
         printf("Erreur d'allocation de mémoire\n");
         return NULL;
     }
-    new_node->str_command = ft_strdup(save);
+    new_node->str_command = ft_strdup(save->str);
+    new_node->quot = save->bool;
     new_node->type = -1;
 
     if (!new_node->str_command)
