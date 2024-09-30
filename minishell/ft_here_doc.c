@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/27 10:32:48 by aduriez           #+#    #+#             */
-/*   Updated: 2024/09/30 11:06:02 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/09/30 12:11:47 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,16 +30,16 @@ void ft_manager_sig(int sig)
 {
 	if (sig == SIGINT)
 	{
-		printf("\nttt\n");
+		// printf("\nttt\n");
 		signal_recu = -2;
 	}
 	else if (sig == SIGTSTP)
 	{
-		printf("Je viens de contrôler z\n");
+		// printf("Je viens de contrôler z\n");
 	}
 	else
 	{
-		printf("est ce ");
+		// printf("est ce ");
 		signal_recu = sig;
 	}
 	return;
@@ -70,70 +70,91 @@ int 	open_file_here_doc(int tmp_fd, char *temp_file_name, char *write_here_do)
     }
 	return (tmp_fd);
 }
-char *ft_here_doc(t_data *data, t_node *list, t_env **env, char *limiteur) // Il vat falloir mettre en place l'environnement
-{
-	// printf("\nLimiteur = %s\n", limiteur);
-	char *write_here_do = NULL;
-	int ret;
-	int test;
-	struct sigaction action;
-	struct termios term_attr;
-	char *temp_file_name = NULL;
-	int tmp_fd = 0;
-	// void(data);
-	(void)env;
-	if(list->cmd->cmd != 0)
-	{
-		temp_file_name = create_file_name(temp_file_name, data, write_here_do);//Creation du nom du fichier special pour les pipes et ecrase autre here_doc
-		tmp_fd = open_file_here_doc(tmp_fd, temp_file_name, write_here_do);//Il faut ouvrir  le fichier temporaire
-		// printf("Nom du fichier temporaire|%s|", temp_file_name);
-	}
-	// void(list);
-	ft_init_signaux(&action, &write_here_do);
-	tcgetattr(STDIN_FILENO, &term_attr);
-	ret = read(0, write_here_do, 1023);
-	write_here_do[ret] = '\n';
-	while (1)
-	{
-		// printf("\nsignal recus = |%d|\n", signal_recu);
-		test = strcmp(write_here_do, limiteur);
-		if (ret == 0)
-		{
-			// printf("AAA");
-			break;
-		}
-		if (test - 10 == 0)
-		{
-			// printf("BBB");
-			break;
-		}
-		if (signal_recu == -2)
-		{
-			// printf("CCC");
-			shell_loop(list, &data, &list->env);
-			break;
-		}
-        if (list->cmd->cmd != 0)
-        {
-            // Écrire dans le fichier temporaire
-            // printf("Je dois ecrire dans le fichier temporaire ici");
-            if (write(tmp_fd, write_here_do, ret) == -1) {
-                perror("write");
-                free(write_here_do);
-                return("erreur");
-            }
-        }
-
-			ret = read(0, write_here_do, 1023);
-			write_here_do[ret] = '\0';
-	}
-	if (list->cmd->cmd != 0)
-    {
-        close(tmp_fd); // Fermer le fichier temporaire après avoir terminé l'écriture
-    }
-	if (list->cmd->cmd != 0)
-    {
-		return(temp_file_name);
-	}
-	return("No_tmp_name");
+t_here_doc_data init_here_doc_data() {
+    t_here_doc_data data;
+    data.write_here_do = NULL;
+    data.ret = 0;
+    data.test = 0;
+    data.temp_file_name = NULL;
+    data.tmp_fd = 0;
+    return data;
 }
+void free_here_doc_data(t_here_doc_data *data) {
+    if (data->write_here_do) {
+        free(data->write_here_do);
+    }
+    if (data->temp_file_name) {
+        free(data->temp_file_name);
+    }
+}
+
+void setup_here_doc_files(t_here_doc_data *here_doc_data, t_data *data, t_node *list, char *write_here_do) {
+    if (list->cmd->cmd != 0) {
+        here_doc_data->temp_file_name = create_file_name(here_doc_data->temp_file_name, data, write_here_do);
+        here_doc_data->tmp_fd = open_file_here_doc(here_doc_data->tmp_fd, here_doc_data->temp_file_name, write_here_do);
+    }
+}
+
+void initialize_here_doc_input(t_here_doc_data *here_doc_data) {
+    ft_init_signaux(&here_doc_data->action, &here_doc_data->write_here_do);
+    tcgetattr(STDIN_FILENO, &here_doc_data->term_attr);
+    here_doc_data->ret = read(0, here_doc_data->write_here_do, 1023);
+    here_doc_data->write_here_do[here_doc_data->ret] = '\n';
+}
+
+char *handle_write_error(t_here_doc_data *here_doc_data) {
+    if (write(here_doc_data->tmp_fd, here_doc_data->write_here_do, here_doc_data->ret) == -1) {
+        perror("write");
+        free(here_doc_data->write_here_do);
+        return "erreur";
+    }
+    return NULL;
+}
+
+void read_input(t_here_doc_data *here_doc_data) {
+    here_doc_data->ret = read(0, here_doc_data->write_here_do, 1023);
+    here_doc_data->write_here_do[here_doc_data->ret] = '\0';
+}
+
+char *close_and_return_temp_file(t_here_doc_data *here_doc_data) {
+    close(here_doc_data->tmp_fd);
+    return here_doc_data->temp_file_name;
+}
+
+void handle_signal_recu(int signal_recu, t_node *list, t_data *data, t_here_doc_data *here_doc_data) {
+    (void)here_doc_data;
+
+	if (signal_recu == -2) {
+        // free_here_doc_data(here_doc_data);
+        shell_loop(list, &data, &list->env);
+    }
+}
+
+char *ft_here_doc(t_data *data, t_node *list, char *limiteur) 
+{
+    t_here_doc_data here_doc_data = init_here_doc_data();
+
+    setup_here_doc_files(&here_doc_data, data, list, here_doc_data.write_here_do);
+    initialize_here_doc_input(&here_doc_data);
+    while (1) 
+	{
+        here_doc_data.test = strcmp(here_doc_data.write_here_do, limiteur);
+        if (here_doc_data.ret == 0 || here_doc_data.test - 10 == 0)
+            break;
+        handle_signal_recu(signal_recu, list, data, &here_doc_data);
+        if (signal_recu == -2) 
+            break;
+       if (list->cmd->cmd != 0) 
+	   	{
+            char *error = handle_write_error(&here_doc_data);
+            if (error) 
+                return error;
+        }
+        read_input(&here_doc_data);
+    }
+    if (list->cmd->cmd != 0)
+        return close_and_return_temp_file(&here_doc_data);
+    free_here_doc_data(&here_doc_data);
+    return "No_tmp_name";
+}
+

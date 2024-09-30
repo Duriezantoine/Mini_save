@@ -113,7 +113,7 @@ void ft_insert_cmd_here_doc(t_node *list, t_cmd **list_cmd, t_arg *list_arg, t_d
         // printf("\n\nJe suis le type|%s|\n", current->str_command);
         if (current->type == HEREDOC && current->next->type == DELIM) {
             current = current->next;
-            tmp_file_name = ft_here_doc(data, list, &list->env, current->str_command); // it's ok
+            tmp_file_name = ft_here_doc(data, list, current->str_command); // it's ok
             if (list->cmd->cmd != 0) // Ce qui permet de ne pas creer d'infile car il n'y a pas de commande
             {
                 printf("\nJe suis le neouds |%s| et le type |%d|\n",current->str_command, current->type);

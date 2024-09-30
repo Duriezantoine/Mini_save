@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/09 17:05:05 by dpoltura          #+#    #+#             */
-/*   Updated: 2024/09/30 09:29:26 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/09/30 11:51:38 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,8 +40,17 @@ typedef enum e_tokens
 	REDIR,
 	OUTPUT_ADD
 } t_token;
+typedef struct {
+    char *write_here_do;
+    int ret;
+    int test;
+    struct sigaction action;
+    struct termios term_attr;
+    char *temp_file_name;
+    int tmp_fd;
+} t_here_doc_data;
 
-
+/// Strucuture pour l'environnement  ////////////////
 typedef struct s_env
 {
 	char			*key;
@@ -197,7 +206,7 @@ void	ft_init_signaux(struct sigaction *action, char **write_here_do);
 
 //Fonction pour le here_doc
 
-char	*ft_here_doc(t_data *data, t_node *list , t_env **env, char *limiteur);
+char	*ft_here_doc(t_data *data, t_node *list , char *limiteur);
 //Fonction pour l'environnement
 void	ft_init_env(t_env **env);
 char	**ft_split(char const *s, char c);
