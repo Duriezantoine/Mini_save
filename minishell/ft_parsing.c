@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/11 10:51:14 by dpoltura          #+#    #+#             */
-/*   Updated: 2024/10/01 10:06:16 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/01 10:10:14 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,12 +66,6 @@ int ft_parsing(t_node *list, t_data **data, char *input)
     t_echo data_echo;
     t_command *command = NULL;
 
-    if((*data) == NULL)
-    {
-        printf("data_echo vide");
-        return(1);
-    }
-    // CREATION D'UNE DOUBLE CHAINNE DE CARACTERERE POUR SE BALADER DEDAN.
     ft_parsing_init(&command, *data, input); // IL faut mettre des conditions pour verifier les signaux
     t_node *pointeur = list;                 // IL faut mettre des conditions pour verifier le parsing
     while ((data != NULL) && (*data != NULL) && i < (*data)->nbr_command)
@@ -89,8 +83,6 @@ int ft_parsing(t_node *list, t_data **data, char *input)
             list->arg = ft_init_list(list, &data_echo, tmp);
             tmp = tmp->next;
         }
-        print_list_save(save);
-        printf("nbrcommande=|");
         free_list(save);
         i++;
 

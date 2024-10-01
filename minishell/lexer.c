@@ -182,59 +182,63 @@ void ft_check_bulting(t_cmd **cmd, t_arg *arg)
         tmp = tmp->next;
     }
 }
-void	ft_open_infile(t_cmd **cmd, char *infile)
+void	ft_open_infile(t_node **list, char *infile)
 {
 	// printf("|DATAVALUE|%s|", data->value);
-	(*cmd)->input = open(infile, O_RDONLY);
-	if ((*cmd)->input < 0)
+	(*list)->save[0] = open(infile, O_RDONLY);
+	if ((*list)->save[0] < 0)
 	{
         ft_putstr_fd("Not open Infile", 2 );
 	}
-    printf("\nJ'ai ouvert|%s|", infile);
+    printf("\nJ'ai ouvert|%s|et le fd est |%d|", infile, (*list)->save[0]);
 }
-void    ft_check_infile_cmd(t_cmd **cmd, t_arg *arg)
+void    ft_check_infile_cmd(t_node *list, t_cmd **cmd, t_arg *arg)
 {
     //1 er chose il faut boucler sur arg
     t_arg *tmp;
     (void)cmd;
     tmp = arg;
+    printf("JE SUI SCI ");
     while(tmp)
     {
         if (tmp->type == INFILE || tmp->type == HEREDOC_INFILE)
         {
             //Il faut essayer d'ouvrir le fichier et le mettre dans CMD INFILE
-            ft_open_infile(cmd, tmp->str_command);
+            (*cmd)->input++;
+            ft_open_infile(&list, tmp->str_command);
         }
         tmp = tmp->next;
     }
 }
-void ft_init_outfile(t_cmd **cmd, char *outfile, int i)
+void ft_init_outfile(t_node **list, char *outfile, int i)
 {
     if(i == 0)
     {
-        (*cmd)->output = open(outfile, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-        if ((*cmd)->output < 0)
+        (*list)->save[1] = open(outfile, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+        if ((*list)->save[1] < 0)
         {
             perror("open");
             exit(EXIT_FAILURE);
         }
         //dup2(fd, STDOUT_FILENO);Demande a tillian
-        close((*cmd)->output);
+        printf("Je suis le resultat du outfile|%d|", (*list)->save[1]);
+        close((*list)->save[1]);// peut etre qu'il faut le ferme apres a voir
     }
     if(i == 1)
     {
-        (*cmd)->output = open(outfile, O_WRONLY | O_CREAT | O_APPEND, 0644);
-        if ((*cmd)->output< 0)
+        (*list)->save[1] = open(outfile, O_WRONLY | O_CREAT | O_APPEND, 0644);
+        if ((*list)->save[1]< 0)
         {
         perror("open");
         exit(EXIT_FAILURE);
     }
    // dup2(fd, STDOUT_FILENO);demande a tilian
-    close((*cmd)->output);
+        printf("Je suis le resultat du outfile|%d|", (*list)->save[1]);
+      close((*list)->save[1]);
     }
 }
 
-void    ft_check_outfile(t_cmd **cmd, t_arg *arg)
+void    ft_check_outfile(t_node *list, t_cmd **cmd, t_arg *arg)
 {
     t_arg *tmp;
 
@@ -243,12 +247,13 @@ void    ft_check_outfile(t_cmd **cmd, t_arg *arg)
     {
         if(tmp->type == OUTFILE)
         {
-            ft_init_outfile(cmd, tmp->str_command, 0);
+            (*cmd)->output++;
+            ft_init_outfile(&list, tmp->str_command, 0);
             printf("\n |fd|%d|\n",(*cmd)->output);
         }
         if(tmp->type == APPEND)
-        {    
-            ft_init_outfile(cmd, tmp->str_command, 1);
+        {    (*cmd)->output++;
+            ft_init_outfile(&list, tmp->str_command, 1);
             printf("\n |fd|%d|\n",(*cmd)->output);
         }
         tmp= tmp->next;
@@ -266,8 +271,8 @@ void lexer_cmd(t_node *list, t_data *data) // Cette fonction permet d'implemente
         ft_verif_cmd(&list->cmd, list->arg);         //it's ok//Pour le here_doc
         ft_insert_cmd_here_doc(list, &list->cmd, list->arg, data);//it's ok plus ou moins
         ft_check_bulting(&list->cmd, list->arg);//it's ok
-        ft_check_infile_cmd(&list->cmd, list->arg);//it's ok
-        ft_check_outfile(&list->cmd, list->arg);//Il me semble qu'il manque un truc
+        ft_check_infile_cmd(list, &list->cmd, list->arg);//it's ok
+        ft_check_outfile(list, &list->cmd, list->arg);//Il me semble qu'il manque un truc
         data->count = data->count + 1;//Permet de modifier le nom du infile pour le here_doc
         list = list->next;
     }

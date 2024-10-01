@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/09 17:08:04 by dpoltura          #+#    #+#             */
-/*   Updated: 2024/09/30 13:52:51 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/01 10:10:15 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,6 +54,12 @@ int shell_loop(t_node *list, t_data **data, t_env **env)
 		input = readline("minishell$ ");
 		if (!input)
 			ft_out_exit(1);
+		
+		if((*data) == NULL)
+		{
+			printf("data_echo vide");
+			return(1);
+		}
 		// Mise en place d'une structure pour les signaux *2
 		if (ft_parsing(list, data, input) == 1)
 		{

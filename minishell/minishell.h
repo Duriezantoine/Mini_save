@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/09 17:05:05 by dpoltura          #+#    #+#             */
-/*   Updated: 2024/10/01 08:56:07 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/01 10:21:59 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -224,6 +224,6 @@ char **ft_split(char const *s, char c);
 void print_cmd(t_node *list);
 void print_all_cmds(t_node *list);
 
-void ft_open_infile(t_cmd **cmd, char *infile);
+void	ft_open_infile(t_node **list, char *infile);
 
 #endif
