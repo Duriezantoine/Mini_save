@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/11 10:51:14 by dpoltura          #+#    #+#             */
-/*   Updated: 2024/09/28 17:45:22 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/01 09:50:38 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,28 +106,22 @@ void ft_insert_data_data_echo_w(t_save **save, t_echo *data_echo, int iterateur_
 
 void ft_insert_data_data_echo_s(t_save **save, t_echo *data_echo, int iterateur_s)
 {
-    t_save *new_node = malloc(sizeof(t_save));
+    t_save *new_node = ft_calloc(sizeof(t_save), 1);//Calloc plus propre//Des noe
     if (!new_node)
     {
         // Gestion de l'erreur d'allocation
         return;
     }
 
-    new_node->str = malloc(sizeof(char) * ft_strlen(data_echo->str_s_quot[iterateur_s].str) + 1);
-    if (!new_node->str)
-    {
-        // Gestion de l'erreur d'allocation
-        free(new_node);
-        return;
-    }
 
-    strcpy(new_node->str, data_echo->str_s_quot[iterateur_s].str);
+    new_node->str= ft_strdup(data_echo->str_s_quot[iterateur_s].str );
     new_node->bool = 0; // Initialisation de l'attribut bool (vous pouvez le définir selon vos besoins)
     new_node->next = NULL;
 
     // Insérer le nouveau nœud à la fin de la liste
     if (*save == NULL)
     {
+        printf("\nDebut du noeuds\n");
         *save = new_node;
     }
     else
@@ -150,10 +144,9 @@ void ft_insert_new_data_with_data(t_save **save, t_echo *data_echo)
     int i;
     int iterateur_w;
     int iterateur_s;
-
     i = -1;
     // IL faut commencer a Introduire les nouvelles valeurs a l'interieuds de la base de donne
-    while (++i < data_echo->w_quot + data_echo->s_quot)
+    while (++i < data_echo->w_quot + data_echo->s_quot)//Bonne pratique
     {
         iterateur_s = 0;
         while (iterateur_s < data_echo->s_quot)
@@ -170,7 +163,7 @@ void ft_insert_new_data_with_data(t_save **save, t_echo *data_echo)
             iterateur_w++;
         }
     }
-    save[i] = NULL;
+    // save[i] = NULL;
 }
 
 void ft_insert_data_s_whith_tab(t_echo *data_echo, char *input, int *i, int *clef_tab_s_quot)

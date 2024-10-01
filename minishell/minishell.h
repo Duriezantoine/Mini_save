@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/09 17:05:05 by dpoltura          #+#    #+#             */
-/*   Updated: 2024/09/30 13:41:41 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/01 08:56:07 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,7 +110,6 @@ typedef struct s_token_str_two
 
 typedef struct s_save
 {
-	// Chaque command est separer par une pipe
 	char *str;
 	int bool;
 	struct s_save *next;

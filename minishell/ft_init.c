@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/09 17:08:04 by dpoltura          #+#    #+#             */
-/*   Updated: 2024/09/28 17:47:12 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/01 09:47:00 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,7 @@ void ft_init_echo_malloc(t_echo *data_echo)
 t_arg *ft_init_list(t_node *list, t_echo *data_echo, t_save *save)
 {
     (void)data_echo; // Supprimer l'avertissement d'utilisation inutilisée
-    t_arg *new_node = malloc(sizeof(t_arg));
+    t_arg *new_node = ft_calloc(sizeof(t_arg), 1);
     if (!new_node)
     {
         printf("Erreur d'allocation de mémoire\n");
@@ -82,7 +82,10 @@ t_arg *ft_init_list(t_node *list, t_echo *data_echo, t_save *save)
 
     // printf("Voila ce que je viens d'introduire: |%s|\n", new_node->str_command);
     new_node->next = NULL;
-
+    if (list==NULL)
+    {
+        printf("\nCa beug\n");
+    }
     if (list->arg == NULL)
     {
         // printf("\n  Je suis le 1 , NEW_NODE %s\n", new_node->str_command);

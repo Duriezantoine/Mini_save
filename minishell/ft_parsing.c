@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   arg_to_cmd.c                                       :+:      :+:    :+:   */
+/*   ft_parsing.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/11 10:51:14 by dpoltura          #+#    #+#             */
-/*   Updated: 2024/06/24 13:54:25 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/01 10:06:16 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,33 +37,63 @@ void init_t_save(t_save **save)
 
     *save = NULL;
 }
+void free_list(t_save* head) {
+    t_save* current = head;
+    t_save* next;
+
+    while (current != NULL) {
+        next = current->next;
+        free(current->str); // Libérer la chaîne de caractères si elle est allouée dynamiquement
+        free(current);
+        current = next;
+    }
+}
+void print_list_save(t_save* head) {
+    t_save* current = head;
+
+    while (current != NULL) {
+        printf("str: %s, bool: %d\n", current->str, current->bool);
+        current = current->next;
+    }
+}
+
 int ft_parsing(t_node *list, t_data **data, char *input)
 {
     int i;
 
     i = 0;
-    t_save *save;
+    t_save *save = NULL;
     t_echo data_echo;
     t_command *command = NULL;
-    init_t_save(&save);
 
+    if((*data) == NULL)
+    {
+        printf("data_echo vide");
+        return(1);
+    }
     // CREATION D'UNE DOUBLE CHAINNE DE CARACTERERE POUR SE BALADER DEDAN.
     ft_parsing_init(&command, *data, input); // IL faut mettre des conditions pour verifier les signaux
     t_node *pointeur = list;                 // IL faut mettre des conditions pour verifier le parsing
-    while (i < (*data)->nbr_command)
+    while ((data != NULL) && (*data != NULL) && i < (*data)->nbr_command)
     {
+        save = NULL;
         if (i != 0)
             ft_inser_init_list_arg(&list); // Je pense qu'il faut utliser un pointeur pour mettre next in function demander a titouan
         if (ft_split_with_space(&data_echo, command[i].input_split) == 1)
             return (1); // Voir comment acceder a ma data
+        init_t_save(&save);
         ft_insert_new_data_with_data(&save, &data_echo);
-        while (save)
+        t_save *tmp = save;
+        while (tmp)
         { // Boucle permettant d'introduire dans la list->arg
-            list->arg = ft_init_list(list, &data_echo, save);
-            save = save->next;
+            list->arg = ft_init_list(list, &data_echo, tmp);
+            tmp = tmp->next;
         }
-        free(save);
+        print_list_save(save);
+        printf("nbrcommande=|");
+        free_list(save);
         i++;
+
     }
     list = pointeur;
     return (0);
