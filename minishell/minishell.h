@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/09 17:05:05 by dpoltura          #+#    #+#             */
-/*   Updated: 2024/10/01 10:21:59 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/01 11:41:08 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -225,5 +225,9 @@ void print_cmd(t_node *list);
 void print_all_cmds(t_node *list);
 
 void	ft_open_infile(t_node **list, char *infile);
+
+//Ce qui permet de mettre en place l'execution 
+void	ft_exceve(t_node *list, t_data *data);//Hesitation a mettre un double pointeur mais normarlement c'est l'exec rien ne doit etre modifier quand on va a l'interieur 
+
 
 #endif

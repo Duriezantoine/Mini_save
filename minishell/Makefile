@@ -6,7 +6,7 @@
 #    By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/04/09 17:09:10 by dpoltura          #+#    #+#              #
-#    Updated: 2024/09/28 10:50:00 by aduriez          ###   ########.fr        #
+#    Updated: 2024/10/01 11:35:58 by aduriez          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -24,6 +24,7 @@ SRCS =	minishell_parse.c \
 		ft_signaux.c \
 		ft_init_env.c \
 		ft_split.c \
+		ft_exceve.c \
 
 OBJS = $(SRCS:%.c=%.o)
 

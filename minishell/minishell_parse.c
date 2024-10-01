@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/09 17:08:04 by dpoltura          #+#    #+#             */
-/*   Updated: 2024/10/01 10:10:15 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/01 18:23:17 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,14 @@ void print_all_cmds(t_node *list) {
         current = current->next;
     }
 }
+void print_arg_arg(t_arg *head) {
+    t_arg *current = head;
 
+    while (current != NULL) {
+        printf("str_command: %s, type: %d, quot: %d\n", current->str_command, current->type, current->quot);
+        current = current->next;
+    }
+}
 
 void organisation_shell_loop(t_node *list, t_data **data)
 {
@@ -67,10 +74,10 @@ int shell_loop(t_node *list, t_data **data, t_env **env)
 			return (1);
 		} // Mise en place d'une structure
 		lexer(list);//celui la est bon 
+		print_arg_arg(list->arg);
 		lexer_cmd(list, *data);
-		print_all_cmds(list);
-
-		// lexer_insert_here_doc(list);
+		print_all_cmds(list);//Here__cod present ici dans le parsing
+		ft_exceve(list, *data);
 		// Libérer l'input après utilisation
 
 		free(input);
