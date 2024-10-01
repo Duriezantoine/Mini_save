@@ -269,10 +269,10 @@ void lexer_cmd(t_node *list, t_data *data) // Cette fonction permet d'implemente
         ft_init_cmd(&list->cmd);                     // it's ok
         ft_insert_double_tab(&list->cmd, list->arg); // it's ok
         ft_verif_cmd(&list->cmd, list->arg);         //it's ok//Pour le here_doc
+        ft_check_outfile(list, &list->cmd, list->arg);//Il me semble qu'il manque un truc
         ft_insert_cmd_here_doc(list, &list->cmd, list->arg, data);//it's ok plus ou moins
         ft_check_bulting(&list->cmd, list->arg);//it's ok
         ft_check_infile_cmd(list, &list->cmd, list->arg);//it's ok
-        ft_check_outfile(list, &list->cmd, list->arg);//Il me semble qu'il manque un truc
         data->count = data->count + 1;//Permet de modifier le nom du infile pour le here_doc
         list = list->next;
     }
