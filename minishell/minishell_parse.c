@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/09 17:08:04 by dpoltura          #+#    #+#             */
-/*   Updated: 2024/10/01 18:23:17 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/03 15:44:09 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,9 +74,9 @@ int shell_loop(t_node *list, t_data **data, t_env **env)
 			return (1);
 		} // Mise en place d'une structure
 		lexer(list);//celui la est bon 
-		print_arg_arg(list->arg);
-		lexer_cmd(list, *data);
-		print_all_cmds(list);//Here__cod present ici dans le parsing
+		lexer_cmd(list, *data);//Here__cod present ici dans le parsing
+		//print_all_cmds(list);//Permet de verifier toutes les commandes 
+		//print_arg_arg(list->arg);//Permet de verifier toutes les argument du noeuds 
 		ft_exceve(list, *data);
 		// Libérer l'input après utilisation
 

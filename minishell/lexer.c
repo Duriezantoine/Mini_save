@@ -142,7 +142,7 @@ void ft_verif_cmd(t_cmd **list, t_arg *list_arg)
     {
         if (arg->type == CMD)
         {
-            printf("Je suis la cmd |%s|", arg->str_command);
+            // printf("Je suis la cmd |%s|", arg->str_command);
             count++;
         }
         arg = arg->next;
@@ -176,7 +176,7 @@ void ft_check_bulting(t_cmd **cmd, t_arg *arg)
              if (is_builtin(tmp->str_command)) 
              {
                 (*cmd)->is_builtin = 1;
-                printf("La commande est un built-in.\n");
+                // printf("La commande est un built-in.\n");
             }
         } 
         tmp = tmp->next;
@@ -198,7 +198,6 @@ void    ft_check_infile_cmd(t_node *list, t_cmd **cmd, t_arg *arg)
     t_arg *tmp;
     (void)cmd;
     tmp = arg;
-    printf("JE SUI SCI ");
     while(tmp)
     {
         if (tmp->type == INFILE || tmp->type == HEREDOC_INFILE)
