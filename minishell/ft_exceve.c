@@ -26,9 +26,9 @@ void ft_exceve_bulting(t_cmd *cmd, t_node *list)
     if (strncmp(cmd->cmd_and_args[0], "unset", 5) == 0) {
         bulting_unset(cmd, list);
     }    
-    //   if (strncmp(cmd->cmd_and_args[0], "export", 6) == 0) {
-    //     bulting_export(cmd,list,  i);
-    // }
+      if (strncmp(cmd->cmd_and_args[0], "export", 6) == 0) {
+        bulting_export(cmd,list->env);
+    }
 }
 
 void    ft_exceve(t_node *list, t_data *data)

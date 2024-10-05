@@ -172,29 +172,90 @@ void    bulting_unset(t_cmd *cmd, t_node *list)
     }
 }
 
-// void    bulting_export(t_cmd *cmd, int i)
+int ft_verif_export_space(char *str)
+{
+    int x;
+
+    x = 0;
+    while(str[x])
+    {
+        if (ft_isalnum(x)==1)
+            return(1);
+        if (str[x] == '=')
+            break;
+        x++;
+    }
+    return(0);
+}
+
+int     ft_verif_export(char *str)
+{
+    if (ft_verif_export_equal(str)==0)
+    {
+        return(0);
+    }
+    if(ft_verif_export_space(str)==1)
+    {
+
+        printf("\nft_verif_export_equal\n");
+        return(0);
+    }
+    return(1);
+}
+
+// void    ft_insert_envp(char *str, t_env env)
 // {
-//     (void)cmd;
-//     char  **tmp = cmd->cmd_and_args;
-//     int x = 1;
-//     while(tmp[x])
-//     {
-//         if(ft_search_envp(list->env, cmd->cmd_and_args[x])==0)
-//         {
-
-//             printf("\nVariables not exist\n");//Je dois donc la mettre a la creer et l'inserer
-//         }
-//         else 
-//         {
-//             printf("\nJe dois deleat\n");
-//             ft_delete_unset(list->env, cmd->cmd_and_args[x]);//Je dois donc mmodifier la variables qui est a l'interieur 
-//             	//print_env(list->env);
-
-//         }
-//         x++;
-//     }
+//     (void) env;
+//     (void)str;
+//     printf("\n Je suis ce que je dois inserer\n");
 
 // }
+
+int     ft_verif_export_equal(char *str)
+{
+    int x;
+
+    x = 0;
+    //Cette fonction permet de savoir si la commande est bonne 
+    while (str[x])//Verification si il y a un egal ou non
+    {
+        if(str[x]=='=')
+            return(1);
+        x++;
+    } 
+    return(0);
+
+}
+
+void    bulting_export(t_cmd *cmd, t_env *env)
+{
+    (void)env;
+    (void)cmd;
+    char **tmp = cmd->cmd_and_args;
+    int x = 1;
+    while(tmp[x])
+    {
+        if(ft_verif_export(tmp[x])==0)
+            printf("NOT VALID");
+        else
+            {
+                if(ft_search_envp(env, tmp[x])==0)
+                {
+
+                    printf("\nVariables not exist\n");//Je dois donc la mettre a la creer et l'inserer
+                    // ft_insert_envp(env, tmp[x]);
+                }
+                else 
+                {
+                    printf("\nJe dois Modifier la variable deje existante\n");
+                        //print_env(list->env);
+                }
+
+            }
+        x++;
+    }
+
+}
 
 void    bulting_echo(t_cmd *cmd, int i)
 {

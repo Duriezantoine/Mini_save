@@ -240,6 +240,10 @@ void    bulting_echo(t_cmd *cmd, int i);
 void bulting_env(t_cmd *cmd, t_node *list);
 void    ft_delete_unset(t_env *env, char *search);
 void    bulting_unset(t_cmd *cmd, t_node *list);
+void    bulting_export(t_cmd *cmd, t_env *env);
+int     ft_verif_export_equal(char *str);
+int		 ft_verif_export_space(char *str);
+
 
 
 
