@@ -116,7 +116,7 @@ void ft_insert_data_data_echo_s(t_save **save, t_echo *data_echo, int iterateur_
     
     new_node->str= ft_strdup(data_echo->str_s_quot[iterateur_s].str );
     free(data_echo->str_s_quot[iterateur_s].str);
-    data_echo->str_s_quot[iterateur_s].order = -2;
+    data_echo->str_s_quot[iterateur_s].order =-2;
     new_node->bool = 0; // Initialisation de l'attribut bool (vous pouvez le définir selon vos besoins)
     new_node->next = NULL;
 
@@ -285,11 +285,7 @@ void ft_insert_data_s_quot(t_echo *data_echo, char *input, int *i, int *place_ta
 
     while (ft_isalnum(input[*i]) == 1)
     {
-        if((input[*i])== '<' || input[*i]== '>')
-        {
-             (*i)--;
-            break;
-        }
+
         occurence++;
         (*i)++;
     }
@@ -354,7 +350,7 @@ void ft_init_tab_echo_malloc(t_echo *data_echo, char *input, int i)
             {
                 data_echo->str_s_quot[place_tab_s_quot].order = data_echo->order_occurence;//Je determine sa place ici 
                 data_echo->order_occurence++;//J'incremente la plce ici 
-                // printf("\nInsert double TABS|PLace|%d|Nbr occurence|2|Place_tab|%d|", data_echo->str_s_quot[place_tab_s_quot].order, place_tab_s_quot);
+                printf("\n Insert double TABS|PLace|%d|Nbr occurence|2|Place_tab|%d|\n", data_echo->str_s_quot[place_tab_s_quot].order, place_tab_s_quot);
                 data_echo->str_s_quot[place_tab_s_quot].str = malloc(sizeof(char *) * 2 + 1);
                 place_tab_s_quot++;//J'incremente ca place dans le tableau
                 i = i+2;
@@ -363,7 +359,7 @@ void ft_init_tab_echo_malloc(t_echo *data_echo, char *input, int i)
             {//C'est ici qu'il faur que j'implemente
                 data_echo->str_s_quot[place_tab_s_quot].order = data_echo->order_occurence;//Je determine sa place ici 
                 data_echo->order_occurence++;//J'incremente la plce ici 
-                // printf("\INsertSimpleTABS|PLace|%d|Nbr occurence|1|Place_tab|%d|", data_echo->str_s_quot[place_tab_s_quot].order, place_tab_s_quot);
+                printf("\nNsertSimpleTABS|PLace|%d|Nbr occurence|1|Place_tab|%d|", data_echo->str_s_quot[place_tab_s_quot].order, place_tab_s_quot);
 
                 data_echo->str_s_quot[place_tab_s_quot].str = malloc(sizeof(char *) * 1 + 1);
                 place_tab_s_quot++;//J'incremente ca place dans le tableau
@@ -408,40 +404,23 @@ int ft_init_token_space(t_echo *data_echo, char *input, int i)
             i++;
         }
 
+        if (input[i]== '<' | input[i] =='>' )
+        {
+            if((input[i]== '<' && input[i+1] == '<')||(input[i]== '>' && input[i+1] == '>'))
+            {
+                i= i+2;
+                ss_quot++;
+            }
+            else
+            {
+                i++;
+                ss_quot++;
+            }
+        }
         if (((ft_isalnum(input[i]) == 1)) && input[i] != '"' && input[i] != '\'')
         {
-
-            if (input[i]== '<' | input[i] =='>' )
+            while (((ft_isalnum(input[i]) == 1)) && input[i] != '\'' && input[i] != '"')//Il faut commencer ici 
             {
-                if((input[i]== '<' && input[i+1] == '<')||(input[i]== '>' && input[i+1] == '>'))
-                {
-                    i= i+2;
-                    ss_quot++;
-                }
-                else
-                {
-                   ss_quot++;
-                    i++;
-                }
-            }
-            while (((ft_isalnum(input[i]) == 1) || input[i] == '<') && input[i] != '\'' && input[i] != '"')//Il faut commencer ici 
-            {
-                if(input[i]== '<' | input[i]== '>')
-                {
-                    if((input[i]== '<' && input[i+1] == '<')||(input[i]== '>' && input[i+1] == '>'))
-                    {
-                        printf("Je passe ici\n");
-                         i= i+2;
-                         ss_quot++;
-                         break;
-                    }
-                    else//Il faut alors commencer a compatabiliser avant
-                    { 
-                        ss_quot++;
-                        i++;
-                        break;;
-                    }
-                }
                 i++;
             }
 
@@ -480,7 +459,7 @@ int ft_nbr_quot(char *input, int i)
 
 int ft_isalnum(int c)
 {
-    if ((c >= 48 && c <= 57) || (c >= 97 && c <= 122) || (c >= 65 && c <= 90) || (c == 60) || (c == 62) || (c == 45))
+    if ((c >= 48 && c <= 57) || (c >= 97 && c <= 122) || (c >= 65 && c <= 90) || (c == 62) || (c == 45))
     {
         if (c == 45)
             printf("\nCa passe\n");
