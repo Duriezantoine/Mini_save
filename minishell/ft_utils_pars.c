@@ -123,7 +123,7 @@ void ft_insert_data_data_echo_s(t_save **save, t_echo *data_echo, int iterateur_
     // Insérer le nouveau nœud à la fin de la liste
     if (*save == NULL)
     {
-        printf("\nDebut du noeuds\n");
+        // printf("\nDebut du noeuds\n");
         *save = new_node;
     }
     else
@@ -222,7 +222,7 @@ void ft_insert_data_w_whith_tab(t_echo *data_echo, char *input, int *i, int *cle
     }
     (*i)++;
     data_echo->str_w_quot[(*clef_tab_w_quot)].str[iterateur_tab_w_quot] = '\0';
-    printf("\nSave_with_tab_w|Nbr_occurence=%d|clef=%d|Save=%s|Sorti=%c\n", iterateur_tab_w_quot, (*clef_tab_w_quot), data_echo->str_w_quot[(*clef_tab_w_quot)].str, input[*i]);
+    // printf("\nSave_with_tab_w|Nbr_occurence=%d|clef=%d|Save=%s|Sorti=%c\n", iterateur_tab_w_quot, (*clef_tab_w_quot), data_echo->str_w_quot[(*clef_tab_w_quot)].str, input[*i]);
 }
 
 void ft_insert_tab_echo(t_echo *data_echo, char *input, int i)
@@ -350,7 +350,7 @@ void ft_init_tab_echo_malloc(t_echo *data_echo, char *input, int i)
             {
                 data_echo->str_s_quot[place_tab_s_quot].order = data_echo->order_occurence;//Je determine sa place ici 
                 data_echo->order_occurence++;//J'incremente la plce ici 
-                printf("\n Insert double TABS|PLace|%d|Nbr occurence|2|Place_tab|%d|\n", data_echo->str_s_quot[place_tab_s_quot].order, place_tab_s_quot);
+                // printf("\n Insert double TABS|PLace|%d|Nbr occurence|2|Place_tab|%d|\n", data_echo->str_s_quot[place_tab_s_quot].order, place_tab_s_quot);
                 data_echo->str_s_quot[place_tab_s_quot].str = malloc(sizeof(char *) * 2 + 1);
                 place_tab_s_quot++;//J'incremente ca place dans le tableau
                 i = i+2;
@@ -359,7 +359,7 @@ void ft_init_tab_echo_malloc(t_echo *data_echo, char *input, int i)
             {//C'est ici qu'il faur que j'implemente
                 data_echo->str_s_quot[place_tab_s_quot].order = data_echo->order_occurence;//Je determine sa place ici 
                 data_echo->order_occurence++;//J'incremente la plce ici 
-                printf("\nNsertSimpleTABS|PLace|%d|Nbr occurence|1|Place_tab|%d|", data_echo->str_s_quot[place_tab_s_quot].order, place_tab_s_quot);
+                // printf("\nNsertSimpleTABS|PLace|%d|Nbr occurence|1|Place_tab|%d|", data_echo->str_s_quot[place_tab_s_quot].order, place_tab_s_quot);
 
                 data_echo->str_s_quot[place_tab_s_quot].str = malloc(sizeof(char *) * 1 + 1);
                 place_tab_s_quot++;//J'incremente ca place dans le tableau
@@ -431,7 +431,7 @@ int ft_init_token_space(t_echo *data_echo, char *input, int i)
     }
     data_echo->s_quot = ss_quot;
     data_echo->w_quot = wt_quot;
-    printf("S_quot = |%d| W_quot|%d|\n", data_echo->s_quot, data_echo->w_quot);
+    // printf("S_quot = |%d| W_quot|%d|\n", data_echo->s_quot, data_echo->w_quot);
     return (0);
 }
 

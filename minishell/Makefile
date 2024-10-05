@@ -26,6 +26,7 @@ SRCS =	minishell_parse.c \
 		ft_split.c \
 		ft_exceve.c \
 		ft_free.c \
+		ft_bulting.c \
 
 OBJS = $(SRCS:%.c=%.o)
 

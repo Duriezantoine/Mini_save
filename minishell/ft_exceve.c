@@ -12,15 +12,26 @@
 
 #include "minishell.h"
 
+void ft_exceve_bulting(t_cmd *cmd)
+{
+    int i;
 
+    i =  1;
+  if (strncmp(cmd->cmd_and_args[0], "echo", 4) == 0) {
+        bulting_echo(cmd, i);
+    }
+}
 
 void    ft_exceve(t_node *list, t_data *data)
 {
     (void)list;
     (void)data;
-    //1 er chose verifier si il n'y a que que une seule boucle 
-    // printf("Je suis le nbr de commande |%d|", (*data).nbr_command);
-    // if (list->cmd->is_builtin== 1)
-    //     ft_builtin(list);
-    // printf ("\nNRB_Outfile = |%d| NBR_Infile = |%d| FD_Outfile |%d| FD_Infile|%d|\n", list->cmd->output, list->cmd->output, list->save[1],list->save[0]);
+    t_cmd *tmp = list->cmd;
+    while(tmp)
+    {
+        if (tmp->is_builtin==1)
+            ft_exceve_bulting(tmp);
+        tmp = tmp->next;
+    }
+
 }

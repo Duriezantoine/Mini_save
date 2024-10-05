@@ -282,7 +282,7 @@ void lexer(t_node *list)
 {
     while (list)
     {
-        printf("LIst = |%s|", list->arg->str_command);
+        // printf("LIst = |%s|", list->arg->str_command);
         set_spec(list->arg);
         set_file(list->arg);
         set_cmd(list->arg);

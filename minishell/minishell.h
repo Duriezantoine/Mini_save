@@ -234,6 +234,11 @@ void	ft_exceve(t_node *list, t_data *data);//Hesitation a mettre un double point
 void free_node(t_node *list, t_data *data);
 void 	ft_free_data_echo(t_echo *data_echo);
 
+///////////////////////////////////////Pour les bultings///////////////////////////////////////////////
+
+void    bulting_echo(t_cmd *cmd, int i);
+
+
 
 
 #endif

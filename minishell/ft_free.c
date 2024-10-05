@@ -82,7 +82,7 @@ void free_node(t_node *list, t_data *data)
         free(data);
     }
 
-    printf("\nJe passe ici\n");
+    // printf("\nJe passe ici\n");
 
     while (current != NULL) {
         next = current->next;
