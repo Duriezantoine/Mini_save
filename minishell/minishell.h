@@ -237,6 +237,7 @@ void 	ft_free_data_echo(t_echo *data_echo);
 ///////////////////////////////////////Pour les bultings///////////////////////////////////////////////
 
 void    bulting_echo(t_cmd *cmd, int i);
+void    bulting_env(t_cmd *cmd, t_node *list);
 
 
 
