@@ -30,17 +30,18 @@ void ft_init_data_list(t_node **list)
     (*list)->next = NULL;
 }
 
-void ft_init_data(t_data **data, t_node *list)
+void ft_init_data(t_data ***data, t_node *list)
 {
-    *data = malloc(sizeof(t_data));
-    (*data)->count = '1';
-    if (data == NULL)
+    (**data) = malloc(sizeof(t_data));
+    (**data)->count = '1';
+
+    if ((**data) == NULL)
     {
         fprintf(stderr, "Memory allocation failed for data\n");
         exit(1);
     }
     list = malloc(sizeof(t_node));
-    if (data == NULL)
+    if (list == NULL)
     {
         fprintf(stderr, "Memory allocation failed for data\n");
         exit(1);
@@ -69,7 +70,10 @@ t_arg *ft_init_list(t_node *list, t_echo *data_echo, t_save *save)
         printf("Erreur d'allocation de mémoire\n");
         return NULL;
     }
+    // printf("\nDNEWNODE = |%s|\n",save->str);
     new_node->str_command = ft_strdup(save->str);
+    // printf("\nFNEWNODE = |%s|\n", new_node->str_command);
+
     new_node->quot = save->bool;
     new_node->type = -1;
 

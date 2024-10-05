@@ -42,11 +42,11 @@ void print_arg_arg(t_arg *head) {
     }
 }
 
-void organisation_shell_loop(t_node *list, t_data **data)
+void organisation_shell_loop(t_node *list, t_data *data)
 {
 	(void)list;
 	// Declaration des signaux
-	shell_loop(list, data, &list->env);
+	shell_loop(list, &data, &list->env);
 	// free la command_line
 }
 
@@ -57,16 +57,19 @@ int shell_loop(t_node *list, t_data **data, t_env **env)
 	(void)env;
 	while (1)
 	{
+		printf("\nminishell\n");
+		ft_init_data(&data, list);
+
 		// Creation de l'input
 		input = readline("minishell$ ");
 		if (!input)
 			ft_out_exit(1);
 		
-		if((*data) == NULL)
-		{
-			printf("data_echo vide");
-			return(1);
-		}
+		// if((*data) == NULL)
+		// {
+		// 	printf("data_echo vide");
+		// 	return(1);
+		// }
 		// Mise en place d'une structure pour les signaux *2
 		if (ft_parsing(list, data, input) == 1)
 		{
@@ -79,7 +82,7 @@ int shell_loop(t_node *list, t_data **data, t_env **env)
 		t_node *tmp = list;
 		print_all_cmds(tmp);//Permet de verifier toutes les commandes 
 		ft_exceve(list, *data);
-		free_node(list, data);
+		free_node(list, *data);
 		// Libérer l'input après utilisation
 
 		free(input);
@@ -161,7 +164,7 @@ t_env *ft_insert_env(char **envp)
 
 int main(int argc, char **argv, char **envp)
 {
-	t_data *data;
+	t_data *data = 	NULL;
 	t_node *list;
 	(void)argv;
 	(void)argc;
@@ -182,9 +185,8 @@ int main(int argc, char **argv, char **envp)
 		fprintf(stderr, "Memory allocation failed for data\n");
 		exit(1);
 	}
-	ft_init_data(&data, list);
 	ft_init_env(&list->env);
 	list->env = ft_insert_env(envp);
-	organisation_shell_loop(list, &data);
+	organisation_shell_loop(list, data);
 	return (0); // Il faut l'exit code.
 }

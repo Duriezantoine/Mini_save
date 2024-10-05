@@ -113,8 +113,10 @@ void ft_insert_data_data_echo_s(t_save **save, t_echo *data_echo, int iterateur_
         return;
     }
 
-
+    
     new_node->str= ft_strdup(data_echo->str_s_quot[iterateur_s].str );
+    free(data_echo->str_s_quot[iterateur_s].str);
+    data_echo->str_s_quot[iterateur_s].order = -2;
     new_node->bool = 0; // Initialisation de l'attribut bool (vous pouvez le définir selon vos besoins)
     new_node->next = NULL;
 
@@ -428,6 +430,7 @@ int ft_init_token_space(t_echo *data_echo, char *input, int i)
                 {
                     if((input[i]== '<' && input[i+1] == '<')||(input[i]== '>' && input[i+1] == '>'))
                     {
+                        printf("Je passe ici\n");
                          i= i+2;
                          ss_quot++;
                          break;
@@ -449,7 +452,7 @@ int ft_init_token_space(t_echo *data_echo, char *input, int i)
     }
     data_echo->s_quot = ss_quot;
     data_echo->w_quot = wt_quot;
-    // printf("S_quot = |%d| W_quot|%d|\n", data_echo->s_quot, data_echo->w_quot);
+    printf("S_quot = |%d| W_quot|%d|\n", data_echo->s_quot, data_echo->w_quot);
     return (0);
 }
 

@@ -125,6 +125,8 @@ typedef struct s_command
 
 } t_command;
 
+/////////////////////////////////////////Utils pour le parsing///////////////////////////////////////////////////////////////////////////////
+
 typedef struct s_data
 {
 	int nbr_command;
@@ -152,7 +154,7 @@ typedef struct s_echo
 
 int main(int argc, char **argv, char **envp);
 int shell_loop(t_node *list, t_data **data, t_env **env);
-void organisation_shell_loop(t_node *list, t_data **data);
+void organisation_shell_loop(t_node *list, t_data *data);
 void ft_insert_cmd(t_command **command, t_data **data, char *input);
 void free_tokens(char **tokens, int len);
 void ft_insert_token(t_command **command, t_data **data);
@@ -178,7 +180,6 @@ int ft_nbr_quot(char *input, int i);
 void ft_parsing_init(t_command **command, t_data *data, char *input);
 int ft_parsing(t_node *list, t_data **data, char *input);
 char **split_string(char *str, int *len);
-void ft_init_data(t_data **data, t_node *list);
 int ft_init_token_space(t_echo *data_echo, char *input, int i);
 void ft_init_echo_malloc(t_echo *data_echo);
 void ft_insert_data_w_quot(t_echo *data_echo, char *input, int *i, int *place_tab_w_quot);
@@ -192,6 +193,7 @@ char *ft_strcpy(char *dest, char *src);
 char *ft_strcat(char *dest, char src);
 void ft_insert_new_data_with_data(t_save **save, t_echo *data_echo);
 void ft_insert_data_data_echo_s(t_save **save, t_echo *data_echo, int iterateur_s);
+void ft_init_data(t_data ***data, t_node *list);
 
 void print_list(t_node *list);
 int ft_strcmp(char *s1, char *s2);
@@ -229,7 +231,9 @@ void	ft_open_infile(t_node **list, char *infile);
 //Ce qui permet de mettre en place l'execution 
 void	ft_exceve(t_node *list, t_data *data);//Hesitation a mettre un double pointeur mais normarlement c'est l'exec rien ne doit etre modifier quand on va a l'interieur 
 //Cee qui permet de free
-void free_node(t_node *list) ;
+void free_node(t_node *list, t_data *data);
+void 	ft_free_data_echo(t_echo *data_echo);
+
 
 
 #endif

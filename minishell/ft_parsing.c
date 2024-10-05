@@ -84,6 +84,7 @@ int ft_parsing(t_node *list, t_data **data, char *input)
             tmp = tmp->next;
         }
         free_list(save);
+        // ft_free_data_echo(&data_echo);
         i++;
 
     }
