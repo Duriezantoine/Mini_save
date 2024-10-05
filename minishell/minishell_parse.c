@@ -89,24 +89,23 @@ int shell_loop(t_node *list, t_data **data, t_env **env)
 	}
 	return (0);
 }
-void init_env_node(t_env *new_env, char **tmp, char *envp_i)
-{
-	new_env->key = strdup(tmp[0]);
-	new_env->value = (char **)malloc(sizeof(char *) * (strlen(envp_i) + 1));
-	if (new_env->value == NULL)
-	{
-		perror("malloc");
-		exit(EXIT_FAILURE);
-	}
-
-	int j = 0;
-	for (int k = 1; tmp[k] != NULL; k++)
-	{
-		new_env->value[j] = strdup(tmp[k]);
-		j++;
-	}
-	new_env->value[j] = NULL;
-}
+// void init_env_node(t_env *new_env, char **tmp, char *envp_i)
+// {
+// 	new_env->key = strdup(tmp[0]);
+// 	new_env->value = (char **)malloc(sizeof(char *) * (strlen(envp_i) + 1));
+// 	if (new_env->value == NULL)
+// 	{
+// 		perror("malloc");
+// 		exit(EXIT_FAILURE);
+// 	}
+// 	int j = 0;
+// 	for (int k = 1; tmp[k] != NULL; k++)
+// 	{
+// 		new_env->value[j] = strdup(tmp[k]);
+// 		j++;
+// 	}
+// 	new_env->value[j] = NULL;
+// }
 
 void add_env_to_list(t_env **head, t_env **current, t_env *new_env, char *envp_i)
 {
@@ -122,12 +121,6 @@ void add_env_to_list(t_env **head, t_env **current, t_env *new_env, char *envp_i
 		*current = new_env;
 	}
 
-	// // printf("\n|%s", new_env->key);
-	// for (int j = 0; new_env->value[j] != NULL; j++)
-	// {
-	// 	printf("\nARG|%s|", new_env->value[j]);
-	// }
-	// printf("\nTOtal|%s|\n\n\n", envp_i);
 }
 
 
@@ -137,29 +130,39 @@ t_env *ft_insert_env(char **envp)
 	char **tmp;
 	t_env *head = NULL;
 	t_env *current = NULL;
+	int x;
 
 	i = 0;
 	while (envp[i])
 	{
 		tmp = ft_split((const char *)envp[i], '=');
-		if (tmp == NULL || tmp[0] == NULL)
-		{
-			i++;
-			continue;
-		}
+		
 		t_env *new_env = (t_env *)malloc(sizeof(t_env));
-		if (new_env == NULL)
-		{
-			perror("malloc");
-			exit(EXIT_FAILURE);
-		}
-		init_env_node(new_env, tmp, envp[i]);
+		new_env->key  = ft_strdup(tmp[0]);
+        new_env->value = ft_strdup(tmp[1]);
+
+        // Concatenate the values if there are more than one
+        x = 2;
+        while (tmp[x]) {
+            char *temp = new_env->value;
+            new_env->value = ft_strjoin(new_env->value, tmp[x]);
+            free(temp);
+            x++;
+        }
+
 		new_env->next = NULL;
 		add_env_to_list(&head, &current, new_env, envp[i]);
 		i++;
 		free(tmp);
 	}
 	return (head);
+}
+void print_env(t_env *head) {
+    t_env *current = head;
+    while (current != NULL) {
+        printf("Key: %s, Value: %s\n", current->key, current->value);
+        current = current->next;
+    }
 }
 
 int main(int argc, char **argv, char **envp)
@@ -187,6 +190,7 @@ int main(int argc, char **argv, char **envp)
 	}
 	ft_init_env(&list->env);
 	list->env = ft_insert_env(envp);
+	//print_env(list->env);
 	organisation_shell_loop(list, data);
 	return (0); // Il faut l'exit code.
 }

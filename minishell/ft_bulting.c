@@ -32,72 +32,11 @@ int ft_search_n(t_cmd *cmd, int i)
     }
     return(1);
 }
-// void	ft_display_envp(t_env *envp)
-// {
-// 	int	i;
 
-// 	i = 0;
-// 	sort_envp(copy_envp);
-// 	printf("\n 1er|%s|\n", copy_envp[0]);
-// 	while (copy_envp[i])
-// 	{
-// 		printf("declare -x %s\n", copy_envp[i]);
-// 		i++;
-// 	}
-// }
-// void    bulting_export(t_cmd *cmd, t_node *list)
-// {
-//     //Il permet d'afficher tous l'environnement besoin
-//     ft_display_envp(list->env);
-    
-// }
-
-t_env *copy_env(t_env *env) {
-    t_env *copy = NULL;
-    t_env *current = env;
-    t_env *prev = NULL;
-
-    while (current != NULL) {
-        t_env *new_node = (t_env *)malloc(sizeof(t_env));
-        if (new_node == NULL) {
-            perror("malloc");
-            exit(EXIT_FAILURE);
-        }
-        new_node->key = strdup(current->key);
-
-        // Copier les valeurs
-        int num_values = 0;
-        while (current->value[num_values] != NULL) {
-            num_values++;
-        }
-        new_node->value = (char **)malloc((num_values + 1) * sizeof(char *));
-        if (new_node->value == NULL) {
-            perror("malloc");
-            exit(EXIT_FAILURE);
-        }
-        for (int i = 0; i < num_values; i++) {
-            new_node->value[i] = strdup(current->value[i]);
-        }
-        new_node->value[num_values] = NULL;
-
-        new_node->next = NULL;
-
-        if (copy == NULL) {
-            copy = new_node;
-        } else {
-            prev->next = new_node;
-        }
-        prev = new_node;
-        current = current->next;
-    }
-    return copy;
-}
-
-// Fonction pour trier les variables d'environnement
 void sort_envp(t_env **env) {
     t_env *current, *index;
     char *tmp_key;
-    char **tmp_value;
+    char *tmp_value;
 
     for (current = *env; current != NULL; current = current->next) {
         for (index = current->next; index != NULL; index = index->next) {
@@ -115,11 +54,33 @@ void sort_envp(t_env **env) {
         }
     }
 }
+
+t_env *copy_env(t_env *env) 
+{
+    t_env *copy = NULL;
+    t_env *current = env;
+    t_env *prev = NULL;
+
+    while (current != NULL) {
+        t_env *new_node = (t_env *)malloc(sizeof(t_env));
+        if (new_node == NULL) {
+            perror("malloc");
+            exit(EXIT_FAILURE);
+        }
+        new_node->key = strdup(current->key);
+        new_node->value = strdup(current->value);
+        new_node->next = NULL;
+        if (copy == NULL) 
+            copy = new_node;
+         else 
+            prev->next = new_node;
+        prev = new_node;
+        current = current->next;
+    }
+    return copy;
+}
 void bulting_env(t_cmd *cmd, t_node *list) {
     (void)cmd;
-    printf("\nJe passe dans le bulting env \n");
-    printf("Je suis la première clé |%s|\n", list->env->key);
-
     // Créer une copie temporaire de la liste t_env
     t_env *tmp = copy_env(list->env);
 
@@ -129,14 +90,7 @@ void bulting_env(t_cmd *cmd, t_node *list) {
     // Afficher les variables d'environnement triées
     t_env *current = tmp;
     while (current != NULL) {
-        printf("%s=", current->key);
-        for (int i = 0; current->value[i] != NULL; i++) {
-            printf("%s", current->value[i]);
-            if (current->value[i + 1] != NULL) {
-                printf(",");
-            }
-        }
-        printf("\n");
+        printf("%s=%s\n", current->key, current->value);
         current = current->next;
     }
 
@@ -145,15 +99,102 @@ void bulting_env(t_cmd *cmd, t_node *list) {
     while (current != NULL) {
         t_env *next = current->next;
         free(current->key);
-        for (int i = 0; current->value[i] != NULL; i++) {
-            free(current->value[i]);
-        }
         free(current->value);
         free(current);
         current = next;
     }
 }
 
+int   ft_search_envp(t_env *env, char *search)
+{
+    //IL va falloir faire attention si il y a plusieurs argumment
+    t_env *tmp = env;
+    (void)search;
+    while(tmp)
+    {
+        if (strncmp(tmp->key, search, ft_strlen(search)) == 0)
+        {
+            return(1);
+        }
+        tmp = tmp->next;
+    }
+    return(0);
+
+}
+
+void   ft_delete_unset(t_env *env, char *search)
+{   
+    //Attention il faut faire une conditition si elle existe mais on peux pas la supprimer
+    t_env *tmp = env;
+    (void)search;
+
+    while(tmp)
+    {
+        //Conditions permettant ce que je dois remplace
+        if (strncmp(tmp->key, search, ft_strlen(search)) == 0)
+        {
+            if (tmp->next != NULL) 
+            {
+                free(tmp->value);
+                free(tmp->key);
+                tmp =tmp->next;
+            } 
+            else
+             { //la fin de la liste
+                free(tmp->value);
+                free(tmp->key);
+                tmp = NULL;
+            }
+        }
+        tmp = tmp->next;
+    }
+}
+
+void    bulting_unset(t_cmd *cmd, t_node *list)
+{
+    //1) il faut cherche dans l'environnement
+    char  **tmp = cmd->cmd_and_args;
+    int x = 1;
+    while(tmp[x])
+    {
+        if(ft_search_envp(list->env, cmd->cmd_and_args[x])==0)
+        {
+            printf("\nVariables not exist\n");
+        }
+        else 
+        {
+            printf("\nJe dois deleat\n");
+            ft_delete_unset(list->env, cmd->cmd_and_args[x]);
+            	//print_env(list->env);
+
+        }
+        x++;
+    }
+}
+
+// void    bulting_export(t_cmd *cmd, int i)
+// {
+//     (void)cmd;
+//     char  **tmp = cmd->cmd_and_args;
+//     int x = 1;
+//     while(tmp[x])
+//     {
+//         if(ft_search_envp(list->env, cmd->cmd_and_args[x])==0)
+//         {
+
+//             printf("\nVariables not exist\n");//Je dois donc la mettre a la creer et l'inserer
+//         }
+//         else 
+//         {
+//             printf("\nJe dois deleat\n");
+//             ft_delete_unset(list->env, cmd->cmd_and_args[x]);//Je dois donc mmodifier la variables qui est a l'interieur 
+//             	//print_env(list->env);
+
+//         }
+//         x++;
+//     }
+
+// }
 
 void    bulting_echo(t_cmd *cmd, int i)
 {

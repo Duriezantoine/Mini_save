@@ -56,7 +56,7 @@ typedef struct
 typedef struct s_env
 {
 	char *key;
-	char **value;
+	char *value;
 	struct s_env *next;
 
 } t_env;
@@ -237,7 +237,9 @@ void 	ft_free_data_echo(t_echo *data_echo);
 ///////////////////////////////////////Pour les bultings///////////////////////////////////////////////
 
 void    bulting_echo(t_cmd *cmd, int i);
-void    bulting_env(t_cmd *cmd, t_node *list);
+void bulting_env(t_cmd *cmd, t_node *list);
+void    ft_delete_unset(t_env *env, char *search);
+void    bulting_unset(t_cmd *cmd, t_node *list);
 
 
 
