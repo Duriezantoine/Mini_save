@@ -70,16 +70,30 @@ void print_directory_contents()
     closedir(dir); // Ferme le répertoire
 }
 
+void print_environment(t_env *env)
+{
+    t_env *current = env;
+
+    while (current != NULL)
+    {
+        printf("%s=%s\n", current->key, current->value);
+        current = current->next;
+    }
+}
+
+
 int shell_loop(t_node *list, t_data **data, t_env **env)
 {
 	char *input;
 	(void)data;
 	(void)env;
 	while (1)
-	{
-		print_directory_contents();//Permet de verifier dans qu'elle repertoire je suis.
+	{    
+		//print_environment(*env);
+		//printf("\n\n\n\n\n\n\n");
+		//print_directory_contents();//Permet de verifier dans qu'elle repertoire je suis.
 		// print_env(list->env);//Permet de verifier si l'environnement a bien ete modifier 
-		printf("\nminishell\n");
+		//printf("\nminishell\n");
 		ft_init_data(&data, list);
 
 		// Creation de l'input

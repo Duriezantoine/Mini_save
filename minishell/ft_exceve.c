@@ -30,7 +30,7 @@ void ft_exceve_bulting(t_cmd *cmd, t_node *list, t_env ***env)
         bulting_export(cmd,list, *env);
     }
     if (strncmp(cmd->cmd_and_args[0], "cd", 2) == 0) {
-        bulting_cd(cmd, *env);
+        bulting_cd(cmd,list,  *env);
     }
 }
 
