@@ -49,17 +49,25 @@ void organisation_shell_loop(t_node *list, t_data *data)
 	shell_loop(list, &data, &list->env);
 	// free la command_line
 }
-void print_current_working_directory()
+// Fonction pour afficher le contenu du répertoire courant
+void print_directory_contents()
 {
-    char cwd[1024]; // Déclare un tableau de caractères pour stocker le chemin du répertoire de travail courant
-    if (getcwd(cwd, sizeof(cwd)) != NULL) // Utilise getcwd pour obtenir le chemin du répertoire de travail courant
+    DIR *dir; // Pointeur vers un répertoire
+    struct dirent *entry; // Structure pour stocker les entrées du répertoire
+
+    dir = opendir("."); // Ouvre le répertoire courant
+    if (dir == NULL) // Vérifie si l'ouverture du répertoire a échoué
     {
-        printf("Current working directory: %s\n", cwd); // Affiche le répertoire de travail courant
+        perror("opendir"); // Affiche un message d'erreur
+        return;
     }
-    else
+
+    while ((entry = readdir(dir)) != NULL) // Lit les entrées du répertoire une par une
     {
-        perror("getcwd() error"); // Affiche un message d'erreur si getcwd échoue
+        printf("%s\n", entry->d_name); // Affiche le nom de l'entrée
     }
+
+    closedir(dir); // Ferme le répertoire
 }
 
 int shell_loop(t_node *list, t_data **data, t_env **env)
@@ -69,7 +77,7 @@ int shell_loop(t_node *list, t_data **data, t_env **env)
 	(void)env;
 	while (1)
 	{
-		print_current_working_directory();//Permet de verifier dans qu'elle repertoire je suis.
+		print_directory_contents();//Permet de verifier dans qu'elle repertoire je suis.
 		// print_env(list->env);//Permet de verifier si l'environnement a bien ete modifier 
 		printf("\nminishell\n");
 		ft_init_data(&data, list);

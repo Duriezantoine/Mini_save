@@ -399,13 +399,107 @@ void    bulting_echo(t_cmd *cmd, int i)
             }
         }    
 }
-void    bulting_cd (t_cmd *cmd)
+char *ft_execute_cd_home(t_env **env, int i)
+{
+
+    t_env *tmp;
+    tmp = *env;
+    char *dest;
+    printf ("Je rentre dans la contions si l'argument est vide");
+    while(tmp)
+    {
+        if (strncmp("HOME", tmp->key, 4) == 0)
+        {
+            printf("Je suis le home value|%s|", tmp->value);
+            if( i ==0)
+            {
+                if(chdir(tmp->value)!= 0)
+                {
+                    printf("IL y a une erreur dans le chemin");
+                }
+                return(NULL);
+            }
+            if(i ==1)
+            {
+                dest = ft_strdup(tmp->value);
+                return(dest);
+            }
+        } 
+        tmp = tmp->next;
+    }
+    return(NULL);
+}
+
+int     ft_no_cd_(char *s)
+{
+    int i;
+
+    i = 0;
+    while(s[i])
+    {
+        if(s[i]== '~')
+            return(1);
+        i++;
+    }
+    return(0);
+}
+
+void    ft_simple_cd(char *s)
+{
+    printf("Je passe dans simple cds = |%s|\n", s);
+    if(chdir(s)!= 0)
+        printf("Probleme");
+}
+
+char    *new_path_cd(char *s, t_env **env)
+{
+    char *dest;
+    int i;
+    int x;
+
+    x = 0;
+    i=0;
+    dest = NULL;
+    while(s[i])
+    {
+        if(s[i]== '~')
+            break;
+        i++;
+    }
+    dest = ft_execute_cd_home(env, 1);
+    x = ft_strlen(dest);
+    while(s[++i])
+    {
+        dest[x++] = s[i];
+    }
+    dest[x] = '\0';
+    return(dest);
+}
+
+void    ft_exceve_cd(t_cmd *cmd, t_env **env)
+{
+    char *dest;
+    if (ft_no_cd_(cmd->cmd_and_args[1])==0)
+        ft_simple_cd(cmd->cmd_and_args[1]);
+    else
+    {
+        dest = new_path_cd(cmd->cmd_and_args[1], env);
+        chdir(dest);
+        free(dest);
+    }
+}
+void    bulting_cd (t_cmd *cmd, t_env **env)
 {
     printf("\nCD\n");
+
     if(cmd->cmd_and_args[1] !=NULL)
     {
-        //Mise en place de chdir pour la premiere fois 
-        if (chdir(cmd->cmd_and_args[1]) != 0)//Cette fonctionne fonctionne il ne manque plus qu'avoir les cas chiants 
-            printf("Je n'ai pas pu acceder au repertoire courants");
+        
+        if ((cmd->cmd_and_args[1]) != NULL)
+        {
+            ft_exceve_cd(cmd, env);
+        }
     }
+    else
+        ft_execute_cd_home(env, 0);
 }
