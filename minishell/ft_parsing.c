@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/11 10:51:14 by dpoltura          #+#    #+#             */
-/*   Updated: 2024/10/01 18:22:24 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/06 19:29:50 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,6 +80,7 @@ int ft_parsing(t_node *list, t_data **data, char *input)
         t_save *tmp = save;
         while (tmp)
         { // Boucle permettant d'introduire dans la list->arg
+            list->arg = NULL;
             list->arg = ft_init_list(list, &data_echo, tmp);
             tmp = tmp->next;
         }

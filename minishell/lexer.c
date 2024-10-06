@@ -169,6 +169,9 @@ int is_builtin(const char *command) {
     if (strncmp(command, "pwd", 3) == 0) {
         return 1;
     }
+    if (strncmp(command, "exit", 4) == 0) {
+        return 1;
+    }
     // Ajoutez d'autres commandes built-in ici
     return 0;
 }
