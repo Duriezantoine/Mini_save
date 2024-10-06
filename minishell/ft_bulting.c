@@ -293,6 +293,26 @@ int     ft_search_key_envp(t_env *env, char *key)
 
 } 
 
+void    ft_change_envp(t_env **env, char *key, char *value)
+{
+    t_env *tmp;
+
+    tmp = *env;
+    while(tmp)
+    {
+        if (strncmp(tmp->key, key, ft_strlen(key)) == 0) 
+        {
+            printf("\n\nJe suis dedans\n \n");
+            //Je veux juste la valeur de value est que ca marche
+            free(tmp->value);
+            tmp->value = ft_strdup(value);
+            return;
+        }
+        tmp = tmp->next;
+    }
+    return ;
+}
+
 void    ft_delim_envp( t_env **env, char *str)
 {
     (void) env;
@@ -317,7 +337,7 @@ void    ft_delim_envp( t_env **env, char *str)
         ft_insert_envp(env, key, value);
     }
     else
-        printf("\n\n\n\nJe dois modifier la value\n\n\n\n");
+        ft_change_envp(env, key,value);
     free(key);
     free(value);
     // print_env(env);
