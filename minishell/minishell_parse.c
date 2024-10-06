@@ -57,6 +57,7 @@ int shell_loop(t_node *list, t_data **data, t_env **env)
 	(void)env;
 	while (1)
 	{
+		print_env(list->env);
 		printf("\nminishell\n");
 		ft_init_data(&data, list);
 
@@ -81,7 +82,7 @@ int shell_loop(t_node *list, t_data **data, t_env **env)
 		// print_arg_arg(list->arg);//Permet de verifier toutes les argument du noeuds 
 		t_node *tmp = list;
 		print_all_cmds(tmp);//Permet de verifier toutes les commandes 
-		ft_exceve(list, *data);
+		ft_exceve(list, *data, &list->env);
 		free_node(list, *data);
 		// Libérer l'input après utilisation
 

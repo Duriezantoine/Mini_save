@@ -12,7 +12,7 @@
 
 #include "minishell.h"
 
-void ft_exceve_bulting(t_cmd *cmd, t_node *list)
+void ft_exceve_bulting(t_cmd *cmd, t_node *list, t_env ***env)
 {
     int i;
 
@@ -27,11 +27,11 @@ void ft_exceve_bulting(t_cmd *cmd, t_node *list)
         bulting_unset(cmd, list);
     }    
       if (strncmp(cmd->cmd_and_args[0], "export", 6) == 0) {
-        bulting_export(cmd,list->env);
+        bulting_export(cmd,list, *env);
     }
 }
 
-void    ft_exceve(t_node *list, t_data *data)
+void    ft_exceve(t_node *list, t_data *data, t_env **env)
 {
     (void)list;
     (void)data;
@@ -39,7 +39,7 @@ void    ft_exceve(t_node *list, t_data *data)
     while(tmp)
     {
         if (tmp->is_builtin==1)
-            ft_exceve_bulting(tmp, list);
+            ft_exceve_bulting(tmp, list, &env);
         tmp = tmp->next;
     }
 

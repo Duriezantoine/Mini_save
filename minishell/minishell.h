@@ -229,7 +229,8 @@ void print_all_cmds(t_node *list);
 void	ft_open_infile(t_node **list, char *infile);
 
 //Ce qui permet de mettre en place l'execution 
-void	ft_exceve(t_node *list, t_data *data);//Hesitation a mettre un double pointeur mais normarlement c'est l'exec rien ne doit etre modifier quand on va a l'interieur 
+void    ft_exceve(t_node *list, t_data *data, t_env **env);//Hesitation a mettre un double pointeur mais normarlement c'est l'exec rien ne doit etre modifier quand on va a l'interieur 
+
 //Cee qui permet de free
 void free_node(t_node *list, t_data *data);
 void 	ft_free_data_echo(t_echo *data_echo);
@@ -240,9 +241,11 @@ void    bulting_echo(t_cmd *cmd, int i);
 void bulting_env(t_cmd *cmd, t_node *list);
 void    ft_delete_unset(t_env *env, char *search);
 void    bulting_unset(t_cmd *cmd, t_node *list);
-void    bulting_export(t_cmd *cmd, t_env *env);
+void    bulting_export(t_cmd *cmd, t_node *list, t_env **env);
 int     ft_verif_export_equal(char *str);
 int		 ft_verif_export_space(char *str);
+void print_env(t_env *env);
+
 
 
 

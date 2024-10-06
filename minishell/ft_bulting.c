@@ -105,10 +105,10 @@ void bulting_env(t_cmd *cmd, t_node *list) {
     }
 }
 
-int   ft_search_envp(t_env *env, char *search)
+int   ft_search_envp(t_env **env, char *search)
 {
     //IL va falloir faire attention si il y a plusieurs argumment
-    t_env *tmp = env;
+    t_env *tmp = *env;
     (void)search;
     while(tmp)
     {
@@ -157,7 +157,7 @@ void    bulting_unset(t_cmd *cmd, t_node *list)
     int x = 1;
     while(tmp[x])
     {
-        if(ft_search_envp(list->env, cmd->cmd_and_args[x])==0)
+        if(ft_search_envp(&list->env, cmd->cmd_and_args[x])==0)
         {
             printf("\nVariables not exist\n");
         }
@@ -261,7 +261,7 @@ void print_env(t_env *env)
         env = env->next;
     }
 }
-void    ft_insert_envp(t_env **env, char *key, char *value)
+void ft_insert_envp(t_env **env, char *key, char *value)
 {
     t_env *new_node = (t_env *)malloc(sizeof(t_env));
     if (new_node == NULL)
@@ -276,8 +276,24 @@ void    ft_insert_envp(t_env **env, char *key, char *value)
     new_node->next = *env;
     *env = new_node;
 }
+int     ft_search_key_envp(t_env *env, char *key)
+{
+    //Je dois boucler dessus pour determiner si elle est dedans
+    t_env *tmp;
 
-void    ft_delim_envp( t_env *env, char *str)
+    tmp = env;
+    while(tmp)
+    {
+        printf("\nJe compare |%s|%s|result = |%d|", tmp->key, key,strncmp(tmp->key, key, ft_strlen(key)) );
+        if (strncmp(tmp->key, key, ft_strlen(key)) == 0) 
+            return 0;
+        tmp = tmp->next;
+    }
+    return(1);
+
+} 
+
+void    ft_delim_envp( t_env **env, char *str)
 {
     (void) env;
     (void)str;
@@ -295,13 +311,16 @@ void    ft_delim_envp( t_env *env, char *str)
         printf("\nCe n'est pas passer ft_insert_envp\n");
         return;
     }
-    ft_insert_envp(&env, key, value);
+    if(ft_search_key_envp(*env, key)==1)
+    {
+        printf("\n\n\n ICI JE LA CREE \n\n\n\n");
+        ft_insert_envp(env, key, value);
+    }
+    else
+        printf("\n\n\n\nJe dois modifier la value\n\n\n\n");
     free(key);
     free(value);
-    print_env(env);
-
-    printf("\n clef a inserer|%s|Value a inserer|%s|\n", key, value);
-
+    // print_env(env);
 }
 
 int     ft_verif_export_equal(char *str)
@@ -320,10 +339,11 @@ int     ft_verif_export_equal(char *str)
 
 }
 
-void    bulting_export(t_cmd *cmd, t_env *env)
+void    bulting_export(t_cmd *cmd, t_node *list, t_env **env)
 {
     (void)env;
     (void)cmd;
+    (void)list;
     char **tmp = cmd->cmd_and_args;
     int x = 1;
     while(tmp[x])
@@ -337,11 +357,6 @@ void    bulting_export(t_cmd *cmd, t_env *env)
 
                     printf("\nVariables not exist\n");//Je dois donc la mettre a la creer et l'inserer
                     ft_delim_envp(env, tmp[x]);
-                }
-                else 
-                {
-                    printf("\nJe dois Modifier la variable deje existante\n");
-                        //print_env(list->env);
                 }
 
             }
