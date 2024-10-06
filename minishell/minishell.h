@@ -244,9 +244,10 @@ void    bulting_unset(t_cmd *cmd, t_node *list);
 void    bulting_export(t_cmd *cmd, t_node *list, t_env **env);
 int     ft_verif_export_equal(char *str);
 int		 ft_verif_export_space(char *str);
-void print_env(t_env *env);
+void	print_env(t_env *env);
 void    bulting_cd (t_cmd *cmd,t_node *list ,t_env **env);
 void    ft_change_env(char *save, t_env ***env);
+void	bulting_pwd();
 
 
 

@@ -32,6 +32,10 @@ void ft_exceve_bulting(t_cmd *cmd, t_node *list, t_env ***env)
     if (strncmp(cmd->cmd_and_args[0], "cd", 2) == 0) {
         bulting_cd(cmd,list,  *env);
     }
+    if (strncmp(cmd->cmd_and_args[0], "pwd", 3) == 0) {
+        
+        bulting_pwd();
+    }
 }
 
 void    ft_exceve(t_node *list, t_data *data, t_env **env)

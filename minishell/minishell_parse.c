@@ -125,24 +125,6 @@ int shell_loop(t_node *list, t_data **data, t_env **env)
 	}
 	return (0);
 }
-// void init_env_node(t_env *new_env, char **tmp, char *envp_i)
-// {
-// 	new_env->key = strdup(tmp[0]);
-// 	new_env->value = (char **)malloc(sizeof(char *) * (strlen(envp_i) + 1));
-// 	if (new_env->value == NULL)
-// 	{
-// 		perror("malloc");
-// 		exit(EXIT_FAILURE);
-// 	}
-// 	int j = 0;
-// 	for (int k = 1; tmp[k] != NULL; k++)
-// 	{
-// 		new_env->value[j] = strdup(tmp[k]);
-// 		j++;
-// 	}
-// 	new_env->value[j] = NULL;
-// }
-
 void add_env_to_list(t_env **head, t_env **current, t_env *new_env, char *envp_i)
 {
 	(void)envp_i;

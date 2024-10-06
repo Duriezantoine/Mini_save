@@ -561,3 +561,13 @@ void    bulting_cd (t_cmd *cmd,t_node *list ,t_env **env)
     else
         ft_execute_cd_home(env, 0);
 }
+
+void bulting_pwd()
+{
+    char str[1200];
+
+    if (getcwd(str, sizeof(str)) != NULL)
+    {
+        printf("\n%s\n", str);
+    }
+}
