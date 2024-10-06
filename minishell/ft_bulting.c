@@ -202,14 +202,107 @@ int     ft_verif_export(char *str)
     }
     return(1);
 }
+char    *ft_copy_end(char *str, char c)
+{
+    char *dest;
+    int x;
+    int i;
 
-// void    ft_insert_envp(char *str, t_env env)
-// {
-//     (void) env;
-//     (void)str;
-//     printf("\n Je suis ce que je dois inserer\n");
+    x = 0;
+    i =0;
 
-// }
+    while(str[x])
+    {   
+        if(str[x]==c)
+            break;
+        x++;
+    }
+    // printf("Je suis ft_strlen = |%d|, x = |%d|, les deux |%d| strx= |%c|", ft_strlen(str),x, (ft_strlen(str) - x),str[x]  );
+    dest = malloc((sizeof(char *) *(ft_strlen(str) - x)));//It's ok
+    x++;
+    while(str[x])
+    {
+        dest[i] = str[x];
+        i++;
+        x++;
+    }
+    dest[i] = '\0';
+    return(dest);
+}
+
+char    *ft_copy_start(char *str, char c)
+{   
+    int x;
+    char *dest;
+    int i;
+
+    i = 0;
+    x = 0;
+    while(str[x])
+    {
+        if (str[x] == c)
+            break;
+        x++;
+    }
+    dest = malloc(sizeof(char *)*(x));//Il n'y a pas le plus car nous sommes a la fin de la boucle.
+    while(i<x)
+    {
+        dest[i] = str[i];
+        i++;
+    }
+    dest[i]= '\0';
+    return(dest);
+}
+void print_env(t_env *env)
+{
+    while (env != NULL)
+    {
+        printf("Key: %s, Value: %s\n", env->key, env->value);
+        env = env->next;
+    }
+}
+void    ft_insert_envp(t_env **env, char *key, char *value)
+{
+    t_env *new_node = (t_env *)malloc(sizeof(t_env));
+    if (new_node == NULL)
+    {
+        free(key);
+        free(value);
+        return;
+    }
+
+    new_node->key = ft_strdup(key);
+    new_node->value = ft_strdup(value);
+    new_node->next = *env;
+    *env = new_node;
+}
+
+void    ft_delim_envp( t_env *env, char *str)
+{
+    (void) env;
+    (void)str;
+    char *key;
+    char *value;
+    //IL faut faire la difference entre la clef et la valeur
+    key = ft_copy_start(str, '=');//A inserer dans ma libft
+    value = ft_copy_end(str, '=');//A inserer dans ma libft
+
+    //Creation d'une protection
+    if (key == NULL || value == NULL)
+    {
+        free(key);
+        free(value);
+        printf("\nCe n'est pas passer ft_insert_envp\n");
+        return;
+    }
+    ft_insert_envp(&env, key, value);
+    free(key);
+    free(value);
+    print_env(env);
+
+    printf("\n clef a inserer|%s|Value a inserer|%s|\n", key, value);
+
+}
 
 int     ft_verif_export_equal(char *str)
 {
@@ -243,7 +336,7 @@ void    bulting_export(t_cmd *cmd, t_env *env)
                 {
 
                     printf("\nVariables not exist\n");//Je dois donc la mettre a la creer et l'inserer
-                    // ft_insert_envp(env, tmp[x]);
+                    ft_delim_envp(env, tmp[x]);
                 }
                 else 
                 {

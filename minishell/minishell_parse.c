@@ -157,14 +157,6 @@ t_env *ft_insert_env(char **envp)
 	}
 	return (head);
 }
-void print_env(t_env *head) {
-    t_env *current = head;
-    while (current != NULL) {
-        printf("Key: %s, Value: %s\n", current->key, current->value);
-        current = current->next;
-    }
-}
-
 int main(int argc, char **argv, char **envp)
 {
 	t_data *data = 	NULL;
