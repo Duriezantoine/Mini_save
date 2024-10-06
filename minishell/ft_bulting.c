@@ -284,7 +284,7 @@ int     ft_search_key_envp(t_env *env, char *key)
     tmp = env;
     while(tmp)
     {
-        printf("\nJe compare |%s|%s|result = |%d|", tmp->key, key,strncmp(tmp->key, key, ft_strlen(key)) );
+        // printf("\nJe compare |%s|%s|result = |%d|", tmp->key, key,strncmp(tmp->key, key, ft_strlen(key)) );
         if (strncmp(tmp->key, key, ft_strlen(key)) == 0) 
             return 0;
         tmp = tmp->next;
@@ -302,7 +302,7 @@ void    ft_change_envp(t_env **env, char *key, char *value)
     {
         if (strncmp(tmp->key, key, ft_strlen(key)) == 0) 
         {
-            printf("\n\nJe suis dedans\n \n");
+            // printf("\n\nJe suis dedans\n \n");
             //Je veux juste la valeur de value est que ca marche
             free(tmp->value);
             tmp->value = ft_strdup(value);
@@ -398,4 +398,14 @@ void    bulting_echo(t_cmd *cmd, int i)
                 i++;
             }
         }    
+}
+void    bulting_cd (t_cmd *cmd)
+{
+    printf("\nCD\n");
+    if(cmd->cmd_and_args[1] !=NULL)
+    {
+        //Mise en place de chdir pour la premiere fois 
+        if (chdir(cmd->cmd_and_args[1]) != 0)//Cette fonctionne fonctionne il ne manque plus qu'avoir les cas chiants 
+            printf("Je n'ai pas pu acceder au repertoire courants");
+    }
 }

@@ -160,7 +160,10 @@ int is_builtin(const char *command) {
     if (strncmp(command, "unset", 4) == 0) {
         return 1;
     }
-        if (strncmp(command, "export", 6) == 0) {
+    if (strncmp(command, "export", 6) == 0) {
+        return 1;
+    }
+    if (strncmp(command, "cd", 2) == 0) {
         return 1;
     }
     // Ajoutez d'autres commandes built-in ici

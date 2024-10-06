@@ -49,6 +49,18 @@ void organisation_shell_loop(t_node *list, t_data *data)
 	shell_loop(list, &data, &list->env);
 	// free la command_line
 }
+void print_current_working_directory()
+{
+    char cwd[1024]; // Déclare un tableau de caractères pour stocker le chemin du répertoire de travail courant
+    if (getcwd(cwd, sizeof(cwd)) != NULL) // Utilise getcwd pour obtenir le chemin du répertoire de travail courant
+    {
+        printf("Current working directory: %s\n", cwd); // Affiche le répertoire de travail courant
+    }
+    else
+    {
+        perror("getcwd() error"); // Affiche un message d'erreur si getcwd échoue
+    }
+}
 
 int shell_loop(t_node *list, t_data **data, t_env **env)
 {
@@ -57,7 +69,8 @@ int shell_loop(t_node *list, t_data **data, t_env **env)
 	(void)env;
 	while (1)
 	{
-		print_env(list->env);
+		print_current_working_directory();//Permet de verifier dans qu'elle repertoire je suis.
+		// print_env(list->env);//Permet de verifier si l'environnement a bien ete modifier 
 		printf("\nminishell\n");
 		ft_init_data(&data, list);
 
