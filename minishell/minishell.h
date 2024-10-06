@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/09 17:05:05 by dpoltura          #+#    #+#             */
-/*   Updated: 2024/10/01 11:41:08 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/06 18:57:12 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -175,7 +175,6 @@ int ft_isalnum(int c);
 
 // Parsing
 void ft_init_tab_echo_malloc(t_echo *data_echo, char *input, int i);
-
 int ft_nbr_quot(char *input, int i);
 void ft_parsing_init(t_command **command, t_data *data, char *input);
 int ft_parsing(t_node *list, t_data **data, char *input);
@@ -194,7 +193,6 @@ char *ft_strcat(char *dest, char src);
 void ft_insert_new_data_with_data(t_save **save, t_echo *data_echo);
 void ft_insert_data_data_echo_s(t_save **save, t_echo *data_echo, int iterateur_s);
 void ft_init_data(t_data ***data, t_node *list);
-
 void print_list(t_node *list);
 int ft_strcmp(char *s1, char *s2);
 void type_insert_cmd(t_arg *new_node);
@@ -208,7 +206,6 @@ t_arg *ft_init_list(t_node *list, t_echo *data_echo, t_save *save);
 void lexer(t_node *head);
 
 // Fonction pour free
-
 void free_t_echo(t_echo *echo);
 
 // Fonction pour les signauxx
@@ -236,18 +233,58 @@ void free_node(t_node *list, t_data *data);
 void 	ft_free_data_echo(t_echo *data_echo);
 
 ///////////////////////////////////////Pour les bultings///////////////////////////////////////////////
+////////////////////////////////Pour le bulting cd/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+void    bulting_cd (t_cmd *cmd,t_node *list ,t_env **env);
+void    ft_simple_cd(char *s, t_env **env);
+void    ft_change_env(char *save, t_env ***env);
+char    *new_path_cd(char *s, t_env **env);
+void    ft_exceve_cd(t_cmd *cmd, t_env **env);
+char 	*ft_execute_cd_home(t_env **env, int i);
+int     ft_no_cd_(char *s);
+char 	*save_pwd(t_env **env);
+
+////////////////////////////////Pour le bulting echo/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void    bulting_echo(t_cmd *cmd, int i);
-void bulting_env(t_cmd *cmd, t_node *list);
-void    ft_delete_unset(t_env *env, char *search);
-void    bulting_unset(t_cmd *cmd, t_node *list);
+int 	ft_search_n(t_cmd *cmd, int i);
+/////////////////////////////////Pour le bulting pwd/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void	bulting_pwd();
+/////////////////////////////////Pour le bulting export//////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void    bulting_export(t_cmd *cmd, t_node *list, t_env **env);
 int     ft_verif_export_equal(char *str);
+void    ft_delim_envp( t_env **env, char *str);
+void    ft_change_envp(t_env **env, char *key, char *value);
+int     ft_search_key_envp(t_env *env, char *key);
+void ft_insert_envp(t_env **env, char *key, char *value);
+char    *ft_copy_end(char *str, char c);
+char    *ft_copy_start(char *str, char c);
+int ft_verif_export_space(char *str);
+int     ft_verif_export(char *str);
+int     ft_verif_export_equal(char *str);
 int		 ft_verif_export_space(char *str);
-void	print_env(t_env *env);
-void    bulting_cd (t_cmd *cmd,t_node *list ,t_env **env);
-void    ft_change_env(char *save, t_env ***env);
-void	bulting_pwd();
+
+/////////////////////////////////Pour le bulting unset//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void    bulting_unset(t_cmd *cmd, t_node *list);
+int   ft_search_envp(t_env **env, char *search);
+void   ft_delete_unset(t_env *env, char *search);
+/////////////////////////////////Pour le bulting env//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void bulting_env(t_cmd *cmd, t_node *list);
+void sort_envp(t_env **env);
+t_env *copy_env(t_env *env) ;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

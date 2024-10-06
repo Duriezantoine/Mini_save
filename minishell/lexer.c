@@ -302,7 +302,6 @@ void lexer(t_node *list)
 }
 
 static void set_spec(t_arg *elem) // sets redirection and pipes
-
 {
     while (elem)
     {

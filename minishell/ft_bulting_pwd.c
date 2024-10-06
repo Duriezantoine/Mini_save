@@ -1,27 +1,23 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_exceve.c                                        :+:      :+:    :+:   */
+/*   ft_free.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/10/01 11:35:23 by aduriez           #+#    #+#             */
-/*   Updated: 2024/10/06 19:04:20 by aduriez          ###   ########.fr       */
+/*   Created: 2024/10/03 15:51:36 by aduriez           #+#    #+#             */
+/*   Updated: 2024/10/03 15:52:24 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include"minishell.h"
 
-void    ft_exceve(t_node *list, t_data *data, t_env **env)
+void bulting_pwd()
 {
-    (void)list;
-    (void)data;
-    t_cmd *tmp = list->cmd;
-    while(tmp)
-    {
-        if (tmp->is_builtin==1)
-            ft_exceve_bulting(tmp, list, &env);
-        tmp = tmp->next;
-    }
+    char str[1200];
 
+    if (getcwd(str, sizeof(str)) != NULL)
+    {
+        printf("\n%s\n", str);
+    }
 }
