@@ -300,7 +300,7 @@ void lexer(t_node *list)
         set_cmd(list->arg);
         set_arg(list->arg);
         list = list->next;
-        printf("\nXXX\n");
+        printf("\nXXX %p\n", list);
     }
 }
 

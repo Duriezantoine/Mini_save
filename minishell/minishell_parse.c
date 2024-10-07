@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/09 17:08:04 by dpoltura          #+#    #+#             */
-/*   Updated: 2024/10/07 22:39:19 by tdelage          ###   ########.fr       */
+/*   Updated: 2024/10/08 00:16:28 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,9 +20,9 @@ void print_cmd(t_node *list) {
 
 	printf("\nNext Node\n");
     printf("Command: |%s| Command: int |%d|\n", list->cmd->cmd_and_args[0], list->cmd->cmd);
-    for (int i = 1; list->cmd->cmd_and_args[i] != NULL; i++) {
-        printf("Argument %d: %s\n", i, list->cmd->cmd_and_args[i]);
-    }
+	for (int i = 1; list->cmd->cmd_and_args[i] != NULL; i++) {
+		printf("Argument %d: %s\n", i, list->cmd->cmd_and_args[i]);
+	}
 }
 
 // Fonction pour boucler sur tous les nœuds de la liste
@@ -98,7 +98,7 @@ int shell_loop(t_node *list, t_data **data, t_env **env)
 
 		// Creation de l'input
 		input = readline("minishell$ ");
-		if (!input)
+		if (!input || ft_strlen(input) == 0) // todo or input is full whitespace
 			ft_out_exit(1);
 		
 		// if((*data) == NULL)
@@ -121,6 +121,7 @@ int shell_loop(t_node *list, t_data **data, t_env **env)
 		print_all_cmds(tmp);//Permet de verifier toutes les commandes 
 		i = ft_exceve(list, *data, &list->env);
 		free_node(list->next, *data);
+		list->next = NULL;
                 ft_free_arg(list->arg);
                 ft_free_cmd(list->cmd);
                 list->arg = NULL;
@@ -128,6 +129,7 @@ int shell_loop(t_node *list, t_data **data, t_env **env)
                 list->pipe[0] = -1;
 		// Libérer l'input après utilisation
 	}
+	printf("yes\n");
         //Penser a free l'env
         if(list->save[0] >= 0) close(list->save[0]);
         if(list->save[1] >= 0) close(list->save[1]);
@@ -136,6 +138,7 @@ int shell_loop(t_node *list, t_data **data, t_env **env)
                 envt = (*env)->next;
                 free((*env)->key);
                 free((*env)->value);
+				printf("freeing ptr %p\n", *env);
                 free(*env);
                 *env = envt;
         }
@@ -168,9 +171,10 @@ t_env *ft_insert_env(char **envp)
         while (envp[i])
         {
                 t_env *new_env = (t_env *)malloc(sizeof(t_env));
+				printf("allocating ptr %p\n", new_env);
                 new_env->key = ft_copy_start(envp[i], '=');
                 new_env->value = ft_copy_end(envp[i], '=');
-                printf("%s => \n\n%s\n\n\n\n\n\n", new_env->key, new_env->value);
+                // printf("%s => \n\n%s\n\n\n\n\n\n", new_env->key, new_env->value);
                 new_env->next = NULL;
                 add_env_to_list(&head, &current, new_env);
                 i++;
