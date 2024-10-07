@@ -1,14 +1,27 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_init_env.c                                      :+:      :+:    :+:   */
+/*   ft_llist_pop.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
+/*   By: tdelage <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/09/27 16:31:49 by aduriez           #+#    #+#             */
-/*   Updated: 2024/10/07 22:09:30 by tdelage          ###   ########.fr       */
+/*   Created: 2024/05/10 20:30:42 by tdelage           #+#    #+#             */
+/*   Updated: 2024/05/10 20:34:20 by tdelage          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "libft.h"
 
+struct s_llist_node	*ft_llist_pop(struct s_llist *list)
+{
+	struct s_llist_node	*ret;
+
+	ret = list->head;
+	if (ret)
+		list->head = ret->next;
+	else
+		list->head = NULL;
+	if (list->size > 0)
+		list->size--;
+	return (ret);
+}

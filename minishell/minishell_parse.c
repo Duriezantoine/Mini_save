@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/09 17:08:04 by dpoltura          #+#    #+#             */
-/*   Updated: 2024/10/03 15:56:07 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/07 22:39:19 by tdelage          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,6 @@ void print_arg_arg(t_arg *head) {
 
 void organisation_shell_loop(t_node *list, t_data *data)
 {
-	(void)list;
 	// Declaration des signaux
 	shell_loop(list, &data, &list->env);
 	// free la command_line
@@ -87,7 +86,8 @@ int shell_loop(t_node *list, t_data **data, t_env **env)
 	char *input;
 	(void)data;
 	(void)env;
-	while (1)
+        int i = 0;
+	while (i == 0)
 	{    
 		//print_environment(*env);
 		//printf("\n\n\n\n\n\n\n");
@@ -110,24 +110,40 @@ int shell_loop(t_node *list, t_data **data, t_env **env)
 		if (ft_parsing(list, data, input) == 1)
 		{
 			// Il faut changer le return
-			return (1);
+                        free(input);
+			break;
 		} // Mise en place d'une structure
+		free(input);
 		lexer(list);//celui la est bon 
 		lexer_cmd(list, *data);//Here__cod present ici dans le parsing
 		// print_arg_arg(list->arg);//Permet de verifier toutes les argument du noeuds 
 		t_node *tmp = list;
 		print_all_cmds(tmp);//Permet de verifier toutes les commandes 
-		ft_exceve(list, *data, &list->env);
-		free_node(list, *data);
+		i = ft_exceve(list, *data, &list->env);
+		free_node(list->next, *data);
+                ft_free_arg(list->arg);
+                ft_free_cmd(list->cmd);
+                list->arg = NULL;
+                list->cmd = NULL;
+                list->pipe[0] = -1;
 		// Libérer l'input après utilisation
-
-		free(input);
 	}
+        //Penser a free l'env
+        if(list->save[0] >= 0) close(list->save[0]);
+        if(list->save[1] >= 0) close(list->save[1]);
+        t_env *envt;
+        while(*env) {
+                envt = (*env)->next;
+                free((*env)->key);
+                free((*env)->value);
+                free(*env);
+                *env = envt;
+        }
+        free(list);
 	return (0);
 }
-void add_env_to_list(t_env **head, t_env **current, t_env *new_env, char *envp_i)
+void add_env_to_list(t_env **head, t_env **current, t_env *new_env)
 {
-	(void)envp_i;
 	if (*head == NULL)
 	{
 		*head = new_env;
@@ -144,36 +160,22 @@ void add_env_to_list(t_env **head, t_env **current, t_env *new_env, char *envp_i
 
 t_env *ft_insert_env(char **envp)
 {
-	int i;
-	char **tmp;
-	t_env *head = NULL;
-	t_env *current = NULL;
-	int x;
+        int i;
+        t_env *head = NULL;
+        t_env *current = NULL;
 
-	i = 0;
-	while (envp[i])
-	{
-		tmp = ft_split((const char *)envp[i], '=');
-		
-		t_env *new_env = (t_env *)malloc(sizeof(t_env));
-		new_env->key  = ft_strdup(tmp[0]);
-        new_env->value = ft_strdup(tmp[1]);
-
-        // Concatenate the values if there are more than one
-        x = 2;
-        while (tmp[x]) {
-            char *temp = new_env->value;
-            new_env->value = ft_strjoin(new_env->value, tmp[x]);
-            free(temp);
-            x++;
+        i = 0;
+        while (envp[i])
+        {
+                t_env *new_env = (t_env *)malloc(sizeof(t_env));
+                new_env->key = ft_copy_start(envp[i], '=');
+                new_env->value = ft_copy_end(envp[i], '=');
+                printf("%s => \n\n%s\n\n\n\n\n\n", new_env->key, new_env->value);
+                new_env->next = NULL;
+                add_env_to_list(&head, &current, new_env);
+                i++;
         }
-
-		new_env->next = NULL;
-		add_env_to_list(&head, &current, new_env, envp[i]);
-		i++;
-		free(tmp);
-	}
-	return (head);
+        return (head);
 }
 int main(int argc, char **argv, char **envp)
 {
@@ -192,15 +194,18 @@ int main(int argc, char **argv, char **envp)
 		ft_putstr_fd("No environment", 2);
 		exit(1);
 	}
-	list = malloc(sizeof(t_node));
+	list = ft_calloc(1, sizeof(t_node));
 	if (list == NULL)
 	{
 		fprintf(stderr, "Memory allocation failed for data\n");
 		exit(1);
 	}
-	ft_init_env(&list->env);
+        list->save[0] = dup(STDIN_FILENO);
+        list->save[1] = dup(STDOUT_FILENO);
+        list->pipe[0] = -1;
 	list->env = ft_insert_env(envp);
 	//print_env(list->env);
 	organisation_shell_loop(list, data);
+
 	return (0); // Il faut l'exit code.
 }

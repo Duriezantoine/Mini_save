@@ -1,14 +1,26 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_init_env.c                                      :+:      :+:    :+:   */
+/*   ft_iodef.h                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
+/*   By: tdelage <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/09/27 16:31:49 by aduriez           #+#    #+#             */
-/*   Updated: 2024/10/07 22:09:30 by tdelage          ###   ########.fr       */
+/*   Created: 2024/01/25 22:16:36 by tdelage           #+#    #+#             */
+/*   Updated: 2024/05/08 21:26:53 by tdelage          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#ifndef FT_IODEF_H
+# define FT_IODEF_H
 
+# define STDIN 0
+# define STDOUT 1
+# define STDERR 2
+
+# define OPEN_MAX 1024
+
+# define FD_ERR -1
+
+# define TUX_PAGE_SIZE 4096000
+
+#endif // IODEF_H

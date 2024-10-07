@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/11 10:51:14 by dpoltura          #+#    #+#             */
-/*   Updated: 2024/10/06 19:29:50 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/07 22:07:08 by tdelage          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,56 +64,41 @@ int ft_parsing(t_node *list, t_data **data, char *input)
     i = 0;
     t_save *save = NULL;
     t_echo data_echo;
-    t_command *command = NULL;
+    char **tokens;
 
-    ft_parsing_init(&command, *data, input); // IL faut mettre des conditions pour verifier les signaux
-    t_node *pointeur = list;                 // IL faut mettre des conditions pour verifier le parsing
+    tokens = ft_parsing_init(*data, input); // IL faut mettre des conditions pour verifier les signaux
     while ((data != NULL) && (*data != NULL) && i < (*data)->nbr_command)
     {
         save = NULL;
         if (i != 0)
             ft_inser_init_list_arg(&list); // Je pense qu'il faut utliser un pointeur pour mettre next in function demander a titouan
-        if (ft_split_with_space(&data_echo, command[i].input_split) == 1)
+        if (ft_split_with_space(&data_echo, tokens[i]) == 1)
             return (1); // Voir comment acceder a ma data
-        init_t_save(&save);
+        save = NULL;
         ft_insert_new_data_with_data(&save, &data_echo);
         t_save *tmp = save;
         while (tmp)
         { // Boucle permettant d'introduire dans la list->arg
-            list->arg = NULL;
             list->arg = ft_init_list(list, &data_echo, tmp);
             tmp = tmp->next;
         }
         free_list(save);
-        // ft_free_data_echo(&data_echo);
+        ft_free_data_echo(&data_echo);
         i++;
 
     }
-    list = pointeur;
+    free_tokens(tokens, (*data)->nbr_command);
     return (0);
 }
 
-void ft_parsing_init(t_command **command, t_data *data, char *input)
+char **ft_parsing_init(t_data *data, char *input)
 {
-    if (command == NULL || data == NULL)
+    if (data == NULL)
         ft_out_exit(5);
-    int i = 0;
     int len;
     char **tokens = split_string(input, &len); // Appeler la fonction split_string
     if (tokens == NULL)
         ft_out_exit(4);
-    // printf("LONGEUR= %d", len);
-    *command = malloc((len + 1) * sizeof(t_command));
-    if (*command == NULL)
-        ft_out_exit(3);
-    while (i < len)
-    {
-        (*command)[i].input_split = malloc(sizeof(char *) * (ft_strlen(tokens[i]) + 1));
-        (*command)[i].b = 2;
-        (*command)[i].input_split = ft_strdup(tokens[i]);
-        // printf("\n|Jqe suis la cmd|%s|n", (*command)[i].input_split);
-        i++;
-    }
     (*data).nbr_command = len;
-    // free_tokens(tokens, len); // Libérer les tokens
+    return tokens;
 }

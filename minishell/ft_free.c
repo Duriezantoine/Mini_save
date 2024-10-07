@@ -6,50 +6,26 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/03 15:51:36 by aduriez           #+#    #+#             */
-/*   Updated: 2024/10/03 15:52:24 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/07 21:33:57 by tdelage          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include"minishell.h"
 
-void free_t_str(t_str *str) {
-    if (str != NULL) {
-        if (str->str != NULL) {
-            free(str->str);
-        }
-        free(str);
-    }
-}
-
 void     ft_free_data_echo(t_echo *data_echo)
 {
-    int i;
-    int iterateur_w;
-    int iterateur_s;
-    i = 0;
-
-        while (++i < data_echo->w_quot + data_echo->s_quot)//Bonne pratique
-    {
-        iterateur_s = 0;
-        while (iterateur_s < data_echo->s_quot)
-        {
-            if (data_echo->str_s_quot[iterateur_s].order == i)
-                printf("FREE|%s|\n",data_echo->str_w_quot[iterateur_s].str );
-                
-                // free_t_str(data_echo->str_w_quot[iterateur_s]);
-            iterateur_s++;
+        int i = 0;
+        while(i < data_echo->s_quot) {
+                free(data_echo->str_s_quot[i].str);
+                i++;
         }
-        iterateur_w = 0;
-        while (iterateur_w < data_echo->w_quot)
-        {
-            if (data_echo->str_w_quot[iterateur_w].order == i)
-                // ft_insert_data_data_echo_w(save, data_echo, iterateur_w);
-            iterateur_w++;
+        i = 0;
+        while(i < data_echo->w_quot) {
+                free(data_echo->str_w_quot[i].str);
+                i++;
         }
-    }
-    // free_t_str(echo->str_s_quot);
-
-
+        free(data_echo->str_s_quot);
+        free(data_echo->str_w_quot);
 }
 void ft_free_arg(t_arg *tmp)
 {
@@ -57,18 +33,33 @@ void ft_free_arg(t_arg *tmp)
 
     while (tmp != NULL) {
         next_tmp = tmp->next;
-        if (tmp->str_command != NULL) {
-            free(tmp->str_command);
-        }
+        free(tmp->str_command);
         free(tmp);
         tmp = next_tmp;
     }
 }
 
-void ft_free_cmd(char *cmd)
+void free_dt_c(char **dt) {
+        int i = 0;
+        if(!dt) return;
+        while(dt[i] != NULL) {
+                free(dt[i]);
+                i++;
+        }
+        free(dt);
+}
+
+void ft_free_cmd(t_cmd *tmp)
 {
-    if (cmd != NULL) {
-        free(cmd);
+    t_cmd *next_tmp;
+
+    while (tmp != NULL) {
+        next_tmp = tmp->next;
+        if (tmp->cmd_and_args != NULL) {
+            free_dt_c(tmp->cmd_and_args);
+        }
+        free(tmp);
+        tmp = next_tmp;
     }
 }
 
@@ -87,7 +78,7 @@ void free_node(t_node *list, t_data *data)
     while (current != NULL) {
         next = current->next;
         ft_free_arg(current->arg);
-        // ft_free_cmd(current->cmd);
+        ft_free_cmd(current->cmd);
         free(current);
         current = next;
     }

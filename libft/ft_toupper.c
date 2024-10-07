@@ -1,14 +1,20 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_init_env.c                                      :+:      :+:    :+:   */
+/*   ft_toupper.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
+/*   By: tdelage <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/09/27 16:31:49 by aduriez           #+#    #+#             */
-/*   Updated: 2024/10/07 22:09:30 by tdelage          ###   ########.fr       */
+/*   Created: 2023/10/31 15:49:31 by tdelage           #+#    #+#             */
+/*   Updated: 2023/10/31 15:52:13 by tdelage          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "libft.h"
 
+int	ft_toupper(int c)
+{
+	if (ft_isalpha(c) && c >= 'a')
+		return (c - 32);
+	return (c);
+}

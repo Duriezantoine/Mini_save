@@ -52,7 +52,7 @@ void ft_insert_double_tab(t_cmd **list, t_arg *list_arg)
     t_arg *args = list_arg;
     int count_arg;
     count_arg = ft_search_arg(list_arg); // Commencer l'initialisation du double tableau d'arguments
-    (*list)->cmd_and_args = malloc((count_arg * sizeof(char *) + 1));
+    (*list)->cmd_and_args = malloc((count_arg + 1) * sizeof(char *));
     count_arg = 0;
     while (args)
     {

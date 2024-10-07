@@ -6,12 +6,12 @@
 #    By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/04/09 17:09:10 by dpoltura          #+#    #+#              #
-#    Updated: 2024/10/06 18:53:55 by aduriez          ###   ########.fr        #
+#    Updated: 2024/10/07 22:39:36 by tdelage          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 CFLAGS = -Wall -Wextra -Werror -g -fPIE -Wno-unused-command-line-argument
-LDFLAGS = -lreadline
+LDFLAGS = -lreadline #-fsanitize=address
 
 SRCS =	minishell_parse.c \
 		ft_exit.c \
@@ -44,9 +44,9 @@ $(NAME): $(OBJS)
 	$(CC) $(CFLAGS) $(OBJS) $(LDFLAGS) -o $(NAME)
 
 clean:
-	rm $(OBJS)
+	rm -fr $(OBJS)
 
 fclean: clean
-	rm $(NAME)
+	rm -fr $(NAME)
 
 re: fclean all

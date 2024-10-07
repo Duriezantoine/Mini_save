@@ -1,14 +1,31 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_init_env.c                                      :+:      :+:    :+:   */
+/*   ft_striteri.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
+/*   By: tdelage <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/09/27 16:31:49 by aduriez           #+#    #+#             */
-/*   Updated: 2024/10/07 22:09:30 by tdelage          ###   ########.fr       */
+/*   Created: 2023/10/31 16:14:03 by tdelage           #+#    #+#             */
+/*   Updated: 2023/11/01 18:05:48 by tdelage          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "libft.h"
 
+void	ft_striteri(char *s, void (*f)(unsigned int, char *))
+{
+	size_t	len;
+	size_t	i;
+
+	if (!s)
+		return ;
+	if (!f)
+		return ;
+	len = ft_strlen(s);
+	i = 0;
+	while (i < len)
+	{
+		f(i, s + i);
+		i++;
+	}
+}

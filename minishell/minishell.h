@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/09 17:05:05 by dpoltura          #+#    #+#             */
-/*   Updated: 2024/10/06 19:10:08 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/07 22:37:17 by tdelage          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -119,7 +119,7 @@ typedef struct s_save
 typedef struct s_command
 {
 	// Chaque command est separer par une pipe
-	char *input_split;
+	char **input_split;
 	t_token_str_two *name;
 	int b;
 
@@ -176,7 +176,7 @@ int ft_isalnum(int c);
 // Parsing
 void ft_init_tab_echo_malloc(t_echo *data_echo, char *input, int i);
 int ft_nbr_quot(char *input, int i);
-void ft_parsing_init(t_command **command, t_data *data, char *input);
+char **ft_parsing_init(t_data *data, char *input);
 int ft_parsing(t_node *list, t_data **data, char *input);
 char **split_string(char *str, int *len);
 int ft_init_token_space(t_echo *data_echo, char *input, int i);
@@ -226,12 +226,14 @@ void print_all_cmds(t_node *list);
 void	ft_open_infile(t_node **list, char *infile);
 
 //Ce qui permet de mettre en place l'execution 
-void    ft_exceve(t_node *list, t_data *data, t_env **env);//Hesitation a mettre un double pointeur mais normarlement c'est l'exec rien ne doit etre modifier quand on va a l'interieur 
+int    ft_exceve(t_node *list, t_data *data, t_env **env);//Hesitation a mettre un double pointeur mais normarlement c'est l'exec rien ne doit etre modifier quand on va a l'interieur 
 void ft_exceve_bulting(t_cmd *cmd, t_node *list, t_env ***env);
 
 //Cee qui permet de free
 void free_node(t_node *list, t_data *data);
 void 	ft_free_data_echo(t_echo *data_echo);
+void ft_free_arg(t_arg *tmp);
+void ft_free_cmd(t_cmd *cmd);
 
 ///////////////////////////////////////Pour les bultings///////////////////////////////////////////////
 ////////////////////////////////Pour le bulting cd/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -272,26 +274,5 @@ void   ft_delete_unset(t_env *env, char *search);
 void bulting_env(t_cmd *cmd, t_node *list);
 void sort_envp(t_env **env);
 t_env *copy_env(t_env *env) ;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 #endif

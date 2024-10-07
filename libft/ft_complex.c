@@ -1,14 +1,21 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_init_env.c                                      :+:      :+:    :+:   */
+/*   ft_complex.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
+/*   By: tdelage <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/09/27 16:31:49 by aduriez           #+#    #+#             */
-/*   Updated: 2024/10/07 22:09:30 by tdelage          ###   ########.fr       */
+/*   Created: 2024/01/25 23:38:11 by tdelage           #+#    #+#             */
+/*   Updated: 2024/05/08 21:23:08 by tdelage          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+#include "libft.h"
 
-#include "minishell.h"
+struct s_complex	ft_complex_create(double real, double imag)
+{
+	struct s_complex	clx;
 
+	clx.r = real;
+	clx.i = imag;
+	return (clx);
+}

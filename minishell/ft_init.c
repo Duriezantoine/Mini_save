@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/09 17:08:04 by dpoltura          #+#    #+#             */
-/*   Updated: 2024/10/01 09:47:00 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/07 21:38:38 by tdelage          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ void ft_init_data_list(t_node **list)
 
 void ft_init_data(t_data ***data, t_node *list)
 {
-    (**data) = malloc(sizeof(t_data));
+    (**data) = ft_calloc(1, sizeof(t_data));
     (**data)->count = '1';
 
     if ((**data) == NULL)
@@ -40,20 +40,9 @@ void ft_init_data(t_data ***data, t_node *list)
         fprintf(stderr, "Memory allocation failed for data\n");
         exit(1);
     }
-    list = malloc(sizeof(t_node));
-    if (list == NULL)
-    {
-        fprintf(stderr, "Memory allocation failed for data\n");
-        exit(1);
-    }
-    list->arg = NULL;
-    list->cmd = NULL;
-    list->save[0] = dup(STDIN_FILENO);
-    list->save[1] = dup(STDOUT_FILENO);
-    list->pipe[0] = -1;
-    list->prev = NULL;
-    list->next = NULL;
+    (void)list;
 }
+
 void ft_init_echo_malloc(t_echo *data_echo)
 {
     data_echo->str_w_quot = malloc(data_echo->w_quot * sizeof(t_str));
@@ -92,13 +81,13 @@ t_arg *ft_init_list(t_node *list, t_echo *data_echo, t_save *save)
     }
     if (list->arg == NULL)
     {
-        // printf("\n  Je suis le 1 , NEW_NODE %s\n", new_node->str_command);
+//         printf("\n  Je suis le 1 , NEW_NODE %s\n", new_node->str_command);
         list->arg = new_node;
         list->arg->prev = NULL;
     }
     else
     {
-        // printf("\n  Je suis le 2 , NEW_NODE %s\n", new_node->str_command);
+//         printf("\n  Je suis le 2 , NEW_NODE %s\n", new_node->str_command);
         t_arg *tmp = list->arg;
 
         while (tmp->next)

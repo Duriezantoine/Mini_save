@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/11 10:51:14 by dpoltura          #+#    #+#             */
-/*   Updated: 2024/10/01 18:33:37 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/07 22:23:56 by tdelage          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,8 +100,6 @@ void ft_insert_data_data_echo_w(t_save **save, t_echo *data_echo, int iterateur_
         }
         current->next = new_node;
     }
-
-    free(data_echo->str_w_quot[iterateur_w].str);
 }
 
 void ft_insert_data_data_echo_s(t_save **save, t_echo *data_echo, int iterateur_s)
@@ -115,7 +113,6 @@ void ft_insert_data_data_echo_s(t_save **save, t_echo *data_echo, int iterateur_
 
     
     new_node->str= ft_strdup(data_echo->str_s_quot[iterateur_s].str );
-    free(data_echo->str_s_quot[iterateur_s].str);
     data_echo->str_s_quot[iterateur_s].order =-2;
     new_node->bool = 0; // Initialisation de l'attribut bool (vous pouvez le définir selon vos besoins)
     new_node->next = NULL;
@@ -190,8 +187,6 @@ void ft_insert_data_s_whith_tab(t_echo *data_echo, char *input, int *i, int *cle
     data_echo->str_s_quot[(*clef_tab_s_quot)].bool = 0;
 
     // printf("\nSave_with_tab_s|Nbr_occurence=%d|clef=%d|Save=%s|Sorti=%c", iterateur_tab_s_quot, (*clef_tab_s_quot), data_echo->str_s_quot[(*clef_tab_s_quot)].str, input[*i]);
-    if(input[*i + 1] ==  '<' | input[*i + 1]== '>')
-        (*i)++;
     // printf("\n2Sorti de la boucle|%c|\n", input[*i]);
 
 }
@@ -296,10 +291,6 @@ void ft_insert_data_s_quot(t_echo *data_echo, char *input, int *i, int *place_ta
     data_echo->str_s_quot[(*place_tab_s_quot)].str = malloc(sizeof(char *) * occurence + 1);
     //IL faut faire une protection de mall9oc dans ce cas la
     (*place_tab_s_quot)++;
-    if((input[*i+1])== '<' || input[*i+1]== '>')
-    {
-             (*i)++;
-    }
 }
 
 void ft_insert_data_w_quot(t_echo *data_echo, char *input, int *i, int *place_tab_w_quot)
@@ -459,7 +450,7 @@ int ft_nbr_quot(char *input, int i)
 
 int ft_isalnum(int c)
 {
-    if ((c >= 48 && c <= 57) || (c >= 97 && c <= 122) || (c >= 65 && c <= 90) || (c == 62) || (c == 45) || (c == 61) || (c==46) || (c == 126) || (c == 47))
+    if ((c >= 48 && c <= 57) || (c >= 97 && c <= 122) || (c >= 65 && c <= 90) || (c == 45) || (c == 61) || (c==46) || (c == 126) || (c == 47))
     {
         if (c == 45)
             printf("\nCa passe\n");
@@ -591,10 +582,9 @@ char *ft_strdup(char *src)
     if (!src)
         return (NULL);
     i = ft_strlen(src);
-    dest = (char *)malloc(sizeof(char) * (i + 1));
+    dest = (char *)ft_calloc(i + 1, sizeof(char));
     if (dest == 0)
         return (0);
-    dest[i] = '\0';
     while (i-- != 0)
         dest[i] = src[i];
     return (dest);

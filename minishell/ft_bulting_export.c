@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/06 17:56:21 by aduriez           #+#    #+#             */
-/*   Updated: 2024/10/06 18:46:17 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/07 22:36:35 by tdelage          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -151,7 +151,7 @@ char    *ft_copy_end(char *str, char c)
         x++;
     }
     // printf("Je suis ft_strlen = |%d|, x = |%d|, les deux |%d| strx= |%c|", ft_strlen(str),x, (ft_strlen(str) - x),str[x]  );
-    dest = malloc((sizeof(char *) *(ft_strlen(str) - x)));//It's ok
+    dest = malloc((sizeof(char *) *(ft_strlen(str) - x + 1)));//It's ok
     x++;
     while(str[x])
     {
@@ -177,7 +177,7 @@ char    *ft_copy_start(char *str, char c)
             break;
         x++;
     }
-    dest = malloc(sizeof(char *)*(x));//Il n'y a pas le plus car nous sommes a la fin de la boucle.
+    dest = malloc(sizeof(char *)*(x + 1));//Il n'y a pas le plus car nous sommes a la fin de la boucle.
     while(i<x)
     {
         dest[i] = str[i];
