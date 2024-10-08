@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/09 17:05:05 by dpoltura          #+#    #+#             */
-/*   Updated: 2024/10/07 22:37:17 by tdelage          ###   ########.fr       */
+/*   Updated: 2024/10/08 12:57:11 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -274,5 +274,9 @@ void   ft_delete_unset(t_env *env, char *search);
 void bulting_env(t_cmd *cmd, t_node *list);
 void sort_envp(t_env **env);
 t_env *copy_env(t_env *env) ;
+/////////////////////////////////Pour le free//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void ft_free_end(t_node *list, t_env **env);
+void 	ft_free_return_loop(t_node *list, t_data *data);
+
 
 #endif

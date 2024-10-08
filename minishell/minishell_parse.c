@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/09 17:08:04 by dpoltura          #+#    #+#             */
-/*   Updated: 2024/10/08 11:51:26 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/08 12:57:28 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,19 +118,31 @@ int shell_loop(t_node *list, t_data **data, t_env **env)
 		lexer_cmd(list, *data);//Here__cod present ici dans le parsing
 		// print_arg_arg(list->arg);//Permet de verifier toutes les argument du noeuds 
 		t_node *tmp = list;
-	//	print_all_cmds(tmp);//Permet de verifier toutes les commandes 
+		print_all_cmds(tmp);//Permet de verifier toutes les commandes 
 		i = ft_exceve(list, *data, &list->env);
-		free_node(list->next, *data);
+		
+		ft_free_return_loop(list, *data);
+		// Libérer l'input après utilisation
+	}
+	ft_free_end(list, env);
+	printf("yes\n");
+        //Penser a free l'env
+	return (0);
+}
+void 	ft_free_return_loop(t_node *list, t_data *data)
+{
+		free_node(list->next, data);
 		list->next = NULL;
                 ft_free_arg(list->arg);
                 ft_free_cmd(list->cmd);
                 list->arg = NULL;
                 list->cmd = NULL;
                 list->pipe[0] = -1;
-		// Libérer l'input après utilisation
-	}
-	printf("yes\n");
-        //Penser a free l'env
+
+}
+
+void ft_free_end(t_node *list, t_env **env)
+{
         if(list->save[0] >= 0) close(list->save[0]);
         if(list->save[1] >= 0) close(list->save[1]);
         t_env *envt;
@@ -143,8 +155,8 @@ int shell_loop(t_node *list, t_data **data, t_env **env)
                 *env = envt;
         }
         free(list);
-	return (0);
 }
+
 void add_env_to_list(t_env **head, t_env **current, t_env *new_env)
 {
 	if (*head == NULL)
