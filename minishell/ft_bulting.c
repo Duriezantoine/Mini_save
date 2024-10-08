@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/09 17:08:04 by dpoltura          #+#    #+#             */
-/*   Updated: 2024/10/07 23:40:08 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/08 11:46:04 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,9 +35,9 @@ void ft_exceve_bulting(t_cmd *cmd, t_node *list, t_env ***env)
     if (strncmp(cmd->cmd_and_args[0], "pwd", 3) == 0) {
         bulting_pwd();
     }
-    if (strncmp(cmd->cmd_and_args[0], "exit",4) == 0) {
-        // exit(EXIT_SUCCESS);
-    }
+    // if (strncmp(cmd->cmd_and_args[0], "exit",4) == 0) {
+    //     // exit(EXIT_SUCCESS);
+    // }
     
 }
 

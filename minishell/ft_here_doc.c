@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/27 10:32:48 by aduriez           #+#    #+#             */
-/*   Updated: 2024/09/30 12:48:42 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/08 11:26:42 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -138,8 +138,8 @@ char *ft_here_doc(t_data *data, t_node *list, char *limiteur)
     initialize_here_doc_input(&here_doc_data);
     while (1) 
 	{
-        here_doc_data.test = strcmp(here_doc_data.write_here_do, limiteur);
-        if (here_doc_data.ret == 0 || here_doc_data.test - 10 == 0)
+        here_doc_data.test = strncmp(here_doc_data.write_here_do, limiteur, ft_strlen(limiteur));
+        if (here_doc_data.ret == 0 || here_doc_data.test == 0)
             break;
         handle_signal_recu(signal_recu, list, data, &here_doc_data);
         if (signal_recu == -2) 
@@ -150,6 +150,7 @@ char *ft_here_doc(t_data *data, t_node *list, char *limiteur)
             if (error) 
                 return error;
         }
+        printf("write=|%s|demande=|%s|test_delimiteur |%d|",here_doc_data.write_here_do, limiteur, here_doc_data.test );
         read_input(&here_doc_data);
     }
     if (list->cmd->cmd != 0)

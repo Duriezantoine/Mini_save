@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/09 17:08:04 by dpoltura          #+#    #+#             */
-/*   Updated: 2024/10/08 00:16:28 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/08 11:51:26 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,7 +118,7 @@ int shell_loop(t_node *list, t_data **data, t_env **env)
 		lexer_cmd(list, *data);//Here__cod present ici dans le parsing
 		// print_arg_arg(list->arg);//Permet de verifier toutes les argument du noeuds 
 		t_node *tmp = list;
-		print_all_cmds(tmp);//Permet de verifier toutes les commandes 
+	//	print_all_cmds(tmp);//Permet de verifier toutes les commandes 
 		i = ft_exceve(list, *data, &list->env);
 		free_node(list->next, *data);
 		list->next = NULL;

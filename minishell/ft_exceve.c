@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/01 11:35:23 by aduriez           #+#    #+#             */
-/*   Updated: 2024/10/07 20:17:11 by tdelage          ###   ########.fr       */
+/*   Updated: 2024/10/08 11:49:27 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,11 @@ int    ft_exceve(t_node *list, t_data *data, t_env **env)
             ft_exceve_bulting(tmp, list, &env);
         tmp = tmp->next;
     }
-    if(ft_strcmp(list->cmd->cmd_and_args[0], "exit") == 0) return 1;
-                    return 0;
+
+    printf("CMD= %s| ", list->cmd->cmd_and_args[0]);
+    if ( list->cmd->cmd_and_args[0] != NULL)
+         if(strncmp(list->cmd->cmd_and_args[0], "exit", ft_strlen(list->cmd->cmd_and_args[0])) == 0) 
+              return 1;
+    return 0;
 
 }
