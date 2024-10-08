@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/06 17:44:24 by aduriez           #+#    #+#             */
-/*   Updated: 2024/10/06 17:50:09 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/08 15:06:05 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,6 @@ void    bulting_cd (t_cmd *cmd,t_node *list ,t_env **env)
 
     if(cmd->cmd_and_args[1] !=NULL)
     {
-        
         if ((cmd->cmd_and_args[1]) != NULL)
         {
             ft_exceve_cd(cmd, env);
@@ -70,6 +69,7 @@ void    ft_simple_cd(char *s, t_env **env)
         printf("Probleme");
     ft_change_env(save, &env);
 }
+
 void ft_change_env(char *save, t_env ***env)
 {
     t_env *tmp;
@@ -96,7 +96,6 @@ void ft_change_env(char *save, t_env ***env)
         }
         tmp = tmp->next;
     }
-
     free(save); // Libérez save après avoir terminé toutes les modifications
 }
 char    *new_path_cd(char *s, t_env **env)
@@ -131,24 +130,20 @@ char *ft_execute_cd_home(t_env **env, int i)
     tmp = *env;
     char *dest;
     char *save;
-    printf ("Je rentre dans la contions si l'argument est vide");
+
     while(tmp)
     {
         if (strncmp("HOME", tmp->key, 4) == 0)
         {
-            printf("Je suis le home value|%s|", tmp->value);
-            if( i ==0)
+            if( i == 0)
             {
                 save = save_pwd(env);
                 if(chdir(tmp->value)!= 0)
-                {
                     printf("IL y a une erreur dans le chemin");
-                }
                 ft_change_env(save, &env);
-
                 return(NULL);
             }
-            if(i ==1)
+            if(i == 1)
             {
                 dest = ft_strdup(tmp->value);
                 return(dest);

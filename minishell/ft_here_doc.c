@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/27 10:32:48 by aduriez           #+#    #+#             */
-/*   Updated: 2024/10/08 12:37:00 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/08 16:55:45 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,7 +70,8 @@ int 	open_file_here_doc(int tmp_fd, char *temp_file_name, char *write_here_do)
     }
 	return (tmp_fd);
 }
-t_here_doc_data init_here_doc_data() {
+t_here_doc_data init_here_doc_data() 
+{
     t_here_doc_data data;
     data.write_here_do = NULL;
     data.ret = 0;
@@ -79,7 +80,9 @@ t_here_doc_data init_here_doc_data() {
     data.tmp_fd = 0;
     return data;
 }
-void free_here_doc_data(t_here_doc_data *data) {
+
+void free_here_doc_data(t_here_doc_data *data)
+{
     if (data->write_here_do) {
         free(data->write_here_do);
     }
@@ -89,20 +92,23 @@ void free_here_doc_data(t_here_doc_data *data) {
 }
 
 void setup_here_doc_files(t_here_doc_data *here_doc_data, t_data *data, t_node *list, char *write_here_do) {
-    if (list->cmd->cmd != 0) {
+    if (list->cmd->cmd != 0)
+    {
         here_doc_data->temp_file_name = create_file_name(here_doc_data->temp_file_name, data, write_here_do);
         here_doc_data->tmp_fd = open_file_here_doc(here_doc_data->tmp_fd, here_doc_data->temp_file_name, write_here_do);
     }
 }
 
-void initialize_here_doc_input(t_here_doc_data *here_doc_data) {
+void initialize_here_doc_input(t_here_doc_data *here_doc_data) 
+{
     ft_init_signaux(&here_doc_data->action, &here_doc_data->write_here_do);
     tcgetattr(STDIN_FILENO, &here_doc_data->term_attr);
     here_doc_data->ret = read(0, here_doc_data->write_here_do, 1023);
     here_doc_data->write_here_do[here_doc_data->ret] = '\n';
 }
 
-char *handle_write_error(t_here_doc_data *here_doc_data) {
+char *handle_write_error(t_here_doc_data *here_doc_data)
+{
     if (write(here_doc_data->tmp_fd, here_doc_data->write_here_do, here_doc_data->ret) == -1) {
         perror("write");
         free(here_doc_data->write_here_do);
@@ -111,26 +117,32 @@ char *handle_write_error(t_here_doc_data *here_doc_data) {
     return NULL;
 }
 
-void read_input(t_here_doc_data *here_doc_data) {
+void read_input(t_here_doc_data *here_doc_data)
+{
     here_doc_data->ret = read(0, here_doc_data->write_here_do, 1023);
     here_doc_data->write_here_do[here_doc_data->ret] = '\0';
 }
 
-char *close_and_return_temp_file(t_here_doc_data *here_doc_data) {
+char *close_and_return_temp_file(t_here_doc_data *here_doc_data)
+{
     close(here_doc_data->tmp_fd);
-    return here_doc_data->temp_file_name;
+    if (here_doc_data->write_here_do) {
+        free(here_doc_data->write_here_do);
+    }
+    return here_doc_data->temp_file_name;//Pourquoi je retourne le nom
 }
 
-void handle_signal_recu(int signal_recu, t_node *list, t_data *data, t_here_doc_data *here_doc_data) {
+void handle_signal_recu(int signal_recu, t_node *list, t_data *data, t_here_doc_data *here_doc_data)
+{
     (void)here_doc_data;
 
 	if (signal_recu == -2) {
-        // free_here_doc_data(here_doc_data);//Je ne comprends pas apparement il se free deja
+        free_here_doc_data(here_doc_data);//Je ne comprends pas apparement il se free deja
         shell_loop(list, &data, &list->env);
     }
 }
 
-char *ft_here_doc(t_data *data, t_node *list, char *limiteur) 
+char *ft_here_doc(t_data *data, t_node *list, char *limiteur)
 {
     t_here_doc_data here_doc_data = init_here_doc_data();
     //iL manque free
@@ -150,7 +162,7 @@ char *ft_here_doc(t_data *data, t_node *list, char *limiteur)
             if (error) 
                 return error;
         }
-        printf("write=|%s|demande=|%s|test_delimiteur |%d|",here_doc_data.write_here_do, limiteur, here_doc_data.test );
+        //printf("write=|%s|demande=|%s|test_delimiteur |%d|",here_doc_data.write_here_do, limiteur, here_doc_data.test );
         read_input(&here_doc_data);
     }
     if (list->cmd->cmd != 0)

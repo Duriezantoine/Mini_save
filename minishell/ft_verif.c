@@ -1,18 +1,19 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   arg_to_cmd.c                                       :+:      :+:    :+:   */
+/*   ft_verif.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/11 10:51:14 by dpoltura          #+#    #+#             */
-/*   Updated: 2024/06/24 13:54:25 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/08 15:30:08 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void free_t_echo(t_echo *echo) {
+void free_t_echo(t_echo *echo)
+{
     if (echo == NULL) return;
 
     // Libérer la mémoire allouée pour str_w_quot
@@ -30,7 +31,6 @@ void free_t_echo(t_echo *echo) {
         }
         free(echo->str_s_quot);
     }
-
     // Libérer la mémoire allouée pour la structure t_echo
     free(echo);
 }

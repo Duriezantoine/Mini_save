@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/09 17:08:04 by dpoltura          #+#    #+#             */
-/*   Updated: 2024/10/08 12:57:28 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/08 16:29:16 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,6 +80,19 @@ void print_environment(t_env *env)
     }
 }
 
+int	ft_white_space(char *str)
+{
+	int i;
+
+	i = 0;
+	while(str[i])
+	{
+		if (str[i] != 95 || str[i] != '\n')//IL faudra l'inmplementer plus pour le testeur parsing
+			return(1);
+	}
+	return(0);
+}
+
 
 int shell_loop(t_node *list, t_data **data, t_env **env)
 {
@@ -89,55 +102,35 @@ int shell_loop(t_node *list, t_data **data, t_env **env)
         int i = 0;
 	while (i == 0)
 	{    
-		//print_environment(*env);
-		//printf("\n\n\n\n\n\n\n");
-		//print_directory_contents();//Permet de verifier dans qu'elle repertoire je suis.
-		// print_env(list->env);//Permet de verifier si l'environnement a bien ete modifier 
-		//printf("\nminishell\n");
 		ft_init_data(&data, list);
-
-		// Creation de l'input
 		input = readline("minishell$ ");
-		if (!input || ft_strlen(input) == 0) // todo or input is full whitespace
+		if ((!input || ft_strlen(input)) && ft_white_space(input) == 0)
 			ft_out_exit(1);
-		
-		// if((*data) == NULL)
-		// {
-		// 	printf("data_echo vide");
-		// 	return(1);
-		// }
 		// Mise en place d'une structure pour les signaux *2
 		if (ft_parsing(list, data, input) == 1)
 		{
-			// Il faut changer le return
-                        free(input);
+            free(input);
 			break;
 		} // Mise en place d'une structure
 		free(input);
 		lexer(list);//celui la est bon 
 		lexer_cmd(list, *data);//Here__cod present ici dans le parsing
-		// print_arg_arg(list->arg);//Permet de verifier toutes les argument du noeuds 
-		t_node *tmp = list;
-		print_all_cmds(tmp);//Permet de verifier toutes les commandes 
 		i = ft_exceve(list, *data, &list->env);
-		
 		ft_free_return_loop(list, *data);
-		// Libérer l'input après utilisation
 	}
 	ft_free_end(list, env);
-	printf("yes\n");
-        //Penser a free l'env
+	printf("\nAAAA\n");
 	return (0);
 }
 void 	ft_free_return_loop(t_node *list, t_data *data)
 {
 		free_node(list->next, data);
 		list->next = NULL;
-                ft_free_arg(list->arg);
-                ft_free_cmd(list->cmd);
-                list->arg = NULL;
-                list->cmd = NULL;
-                list->pipe[0] = -1;
+		ft_free_arg(list->arg);
+		ft_free_cmd(list->cmd);
+		list->arg = NULL;
+		list->cmd = NULL;
+		list->pipe[0] = -1;
 
 }
 
@@ -201,24 +194,15 @@ int main(int argc, char **argv, char **envp)
 	(void)argc;
 
 	if (argc == 2)
-	{
-		ft_putstr_fd("Error arguments", 2);
-		exit(2);
-	}
+		ft_out_exit(1);
 	if (!envp || !*envp)
-	{
-		ft_putstr_fd("No environment", 2);
-		exit(1);
-	}
+		ft_out_exit(2);
 	list = ft_calloc(1, sizeof(t_node));
 	if (list == NULL)
-	{
-		fprintf(stderr, "Memory allocation failed for data\n");
-		exit(1);
-	}
-        list->save[0] = dup(STDIN_FILENO);
-        list->save[1] = dup(STDOUT_FILENO);
-        list->pipe[0] = -1;
+		ft_out_exit(3);
+	list->save[0] = dup(STDIN_FILENO);
+	list->save[1] = dup(STDOUT_FILENO);
+	list->pipe[0] = -1;
 	list->env = ft_insert_env(envp);
 	//print_env(list->env);
 	organisation_shell_loop(list, data);

@@ -103,7 +103,8 @@ void delete_node(t_arg **head, t_arg *node_to_delete) {
 }
 
 
-void ft_insert_cmd_here_doc(t_node *list, t_cmd **list_cmd, t_arg *list_arg, t_data *data) {
+void ft_insert_cmd_here_doc(t_node *list, t_cmd **list_cmd, t_arg *list_arg, t_data *data)
+{
     (void)data;
     (void)list_cmd;
     char *tmp_file_name;
@@ -117,15 +118,17 @@ void ft_insert_cmd_here_doc(t_node *list, t_cmd **list_cmd, t_arg *list_arg, t_d
             if (list->cmd->cmd != 0) // Ce qui permet de ne pas creer d'infile car il n'y a pas de commande
             {
                 printf("\nJe suis le neouds |%s| et le type |%d|\n",current->str_command, current->type);
-                // if (current->prev != NULL) {
-                //  // Supprimer le nœud à partir d'ici
-                // //Demander a mon colleg pour faire plus propre
-                // }
+                free(current->str_command);
                 current->str_command = tmp_file_name;
                 current ->type = HEREDOC_INFILE;
                 printf("\nJe suis le neouds |%s| et le type |%d|\n",current->str_command, current->type);
+
             }
-            printf("\nName tmp_file_name|%s|\n", tmp_file_name);
+            if(strncmp(tmp_file_name, "No_tmp_name",(size_t) (ft_strlen(tmp_file_name)== 0)))
+            {
+                printf("\nJe suis%s\n", tmp_file_name);
+                free(tmp_file_name);
+            }
         }
         current = current->next;
     }

@@ -6,13 +6,14 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/06 18:48:02 by aduriez           #+#    #+#             */
-/*   Updated: 2024/10/06 18:54:31 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/08 15:08:53 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void bulting_env(t_cmd *cmd, t_node *list) {
+void bulting_env(t_cmd *cmd, t_node *list)
+{
     (void)cmd;
     // Créer une copie temporaire de la liste t_env
     t_env *tmp = copy_env(list->env);
@@ -38,15 +39,18 @@ void bulting_env(t_cmd *cmd, t_node *list) {
     }
 }
 
-
-void sort_envp(t_env **env) {
+void sort_envp(t_env **env) 
+{
     t_env *current, *index;
     char *tmp_key;
     char *tmp_value;
 
-    for (current = *env; current != NULL; current = current->next) {
-        for (index = current->next; index != NULL; index = index->next) {
-            if (strcmp(current->key, index->key) > 0) {
+    for (current = *env; current != NULL; current = current->next) 
+    {
+        for (index = current->next; index != NULL; index = index->next) 
+        {
+            if (strcmp(current->key, index->key) > 0) 
+            {
                 // Échanger les clés
                 tmp_key = current->key;
                 current->key = index->key;

@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/09 17:05:05 by dpoltura          #+#    #+#             */
-/*   Updated: 2024/10/08 12:57:11 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/08 16:20:17 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -277,6 +277,9 @@ t_env *copy_env(t_env *env) ;
 /////////////////////////////////Pour le free//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void ft_free_end(t_node *list, t_env **env);
 void 	ft_free_return_loop(t_node *list, t_data *data);
+
+void ft_insert_nodes(t_node *list, t_arg *new_node);
+int ft_handle_redirection(char *input, int *i, int *ss_quot);
 
 
 #endif

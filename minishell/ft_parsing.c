@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/11 10:51:14 by dpoltura          #+#    #+#             */
-/*   Updated: 2024/10/07 23:58:35 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/08 15:07:43 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,8 +69,6 @@ int ft_parsing(t_node *list, t_data **data, char *input)
     tokens = ft_parsing_init(*data, input); // IL faut mettre des conditions pour verifier les signaux
     while ((data != NULL) && (*data != NULL) && i < (*data)->nbr_command)
     {
-        
-        save = NULL;
         if (i != 0)
             ft_inser_init_list_arg(&list); // Je pense qu'il faut utliser un pointeur pour mettre next in function demander a titouan
         if (ft_split_with_space(&data_echo, tokens[i]) == 1)
@@ -86,7 +84,6 @@ int ft_parsing(t_node *list, t_data **data, char *input)
         free_list(save);
         ft_free_data_echo(&data_echo);
         i++;
-
     }
     free_tokens(tokens, (*data)->nbr_command);
     return (0);

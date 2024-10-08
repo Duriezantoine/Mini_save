@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/03 15:51:36 by aduriez           #+#    #+#             */
-/*   Updated: 2024/10/07 21:33:57 by tdelage          ###   ########.fr       */
+/*   Updated: 2024/10/08 15:12:12 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,9 +72,6 @@ void free_node(t_node *list, t_data *data)
     if (data != NULL) {
         free(data);
     }
-
-    // printf("\nJe passe ici\n");
-
     while (current != NULL) {
         next = current->next;
         ft_free_arg(current->arg);

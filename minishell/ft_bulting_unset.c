@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/06 18:43:21 by aduriez           #+#    #+#             */
-/*   Updated: 2024/10/06 18:45:04 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/08 15:11:55 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,6 @@ void    bulting_unset(t_cmd *cmd, t_node *list)
             printf("\nJe dois deleat\n");
             ft_delete_unset(list->env, cmd->cmd_and_args[x]);
             	//print_env(list->env);
-
         }
         x++;
     }

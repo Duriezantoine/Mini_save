@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/11 10:51:14 by dpoltura          #+#    #+#             */
-/*   Updated: 2024/10/08 11:42:10 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/08 16:19:58 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -376,7 +376,7 @@ int ft_init_token_space(t_echo *data_echo, char *input, int i)
 
     if (ft_nbr_quot(input, i) == 1)
     {
-        printf("Ce n'est pas paire ");
+        printf("Ce n'est pas paire ");//Il faut faire une sortie d'erreur ici
         return (1);
     }
     while (input[i])
@@ -395,27 +395,11 @@ int ft_init_token_space(t_echo *data_echo, char *input, int i)
             wt_quot++;
             i++;
         }
-
-        if (input[i]== '<' | input[i] =='>' )
-        {
-            if((input[i]== '<' && input[i+1] == '<')||(input[i]== '>' && input[i+1] == '>'))
-            {
-                i= i+2;
-                ss_quot++;
-            }
-            else
-            {
-                i++;
-                ss_quot++;
-            }
-        }
+        ft_handle_redirection(input, &i, &ss_quot);
         if (((ft_isalnum(input[i]) == 1)) && input[i] != '"' && input[i] != '\'')
         {
             while (((ft_isalnum(input[i]) == 1)) && input[i] != '\'' && input[i] != '"')//Il faut commencer ici 
-            {
                 i++;
-            }
-
             ss_quot++;
         }
         if (!(input[i] != '"' || input[i] != '\''))
@@ -425,6 +409,24 @@ int ft_init_token_space(t_echo *data_echo, char *input, int i)
     data_echo->w_quot = wt_quot;
     // printf("S_quot = |%d| W_quot|%d|\n", data_echo->s_quot, data_echo->w_quot);
     return (0);
+}
+
+int ft_handle_redirection(char *input, int *i, int *ss_quot)
+{
+    if (input[*i] == '<' || input[*i] == '>')
+    {
+        if ((input[*i] == '<' && input[*i + 1] == '<') || (input[*i] == '>' && input[*i + 1] == '>'))
+        {
+            *i += 2;
+            (*ss_quot)++;
+        }
+        else
+        {
+            (*i)++;
+            (*ss_quot)++;
+        }
+    }
+    return 0;
 }
 
 int ft_nbr_quot(char *input, int i)

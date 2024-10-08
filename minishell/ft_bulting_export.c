@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/06 17:56:21 by aduriez           #+#    #+#             */
-/*   Updated: 2024/10/07 22:36:35 by tdelage          ###   ########.fr       */
+/*   Updated: 2024/10/08 15:10:24 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,6 @@ void    bulting_export(t_cmd *cmd, t_node *list, t_env **env)
             {
                 if(ft_search_envp(env, tmp[x])==0)
                 {
-
                     printf("\nVariables not exist\n");//Je dois donc la mettre a la creer et l'inserer
                     ft_delim_envp(env, tmp[x]);
                 }
@@ -80,7 +79,6 @@ void    ft_delim_envp( t_env **env, char *str)
         ft_change_envp(env, key,value);
     free(key);
     free(value);
-    // print_env(env);
 }
 
 void    ft_change_envp(t_env **env, char *key, char *value)

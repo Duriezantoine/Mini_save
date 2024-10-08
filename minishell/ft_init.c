@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/09 17:08:04 by dpoltura          #+#    #+#             */
-/*   Updated: 2024/10/07 21:38:38 by tdelage          ###   ########.fr       */
+/*   Updated: 2024/10/08 15:26:53 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,24 +72,23 @@ t_arg *ft_init_list(t_node *list, t_echo *data_echo, t_save *save)
         free(new_node);
         return NULL;
     }
-
-    // printf("Voila ce que je viens d'introduire: |%s|\n", new_node->str_command);
-    new_node->next = NULL;
-    if (list==NULL)
-    {
+        if (list==NULL)
         printf("\nCa beug\n");
-    }
+    ft_insert_nodes(list, new_node);
+    // printf("Voila ce que je viens d'introduire: |%s|\n", new_node->str_command);
+    return list->arg;
+}
+
+void ft_insert_nodes(t_node *list, t_arg *new_node)
+{
     if (list->arg == NULL)
     {
-//         printf("\n  Je suis le 1 , NEW_NODE %s\n", new_node->str_command);
         list->arg = new_node;
         list->arg->prev = NULL;
     }
     else
     {
-//         printf("\n  Je suis le 2 , NEW_NODE %s\n", new_node->str_command);
         t_arg *tmp = list->arg;
-
         while (tmp->next)
         {
             tmp = tmp->next;
@@ -97,5 +96,4 @@ t_arg *ft_init_list(t_node *list, t_echo *data_echo, t_save *save)
         tmp->next = new_node;
         new_node->prev = tmp;
     }
-    return list->arg;
 }
