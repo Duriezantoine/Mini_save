@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/01 11:35:23 by aduriez           #+#    #+#             */
-/*   Updated: 2024/10/10 13:02:00 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/10 13:49:54 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,7 +68,7 @@ char **env_list_to_array(t_env *env)
         i++;
     }
     array[i] = NULL; // Terminer le tableau avec NULL
-    printf("ARRAY|%s|",array[2]);
+//     printf("ARRAY|%s|",array[2]);
     return (array);
 }
 
@@ -94,7 +94,7 @@ int ft_count_arg(t_cmd *cmd)
         tmp = cmd->cmd_and_args;
         while(tmp[i])
                 i++;
-        printf("Je suis le nbrarg de cmd[%d]", i);
+        // printf("Je suis le nbrarg de cmd[%d]", i);
         return(i);
 
 }
@@ -112,7 +112,7 @@ int ft_count_arg(t_cmd *cmd)
                 }
                 i++;
         }
-        printf("\nVoicisSV |%s|\n", str);
+        // printf("\nVoicisSV |%s|\n", str);
         return(str);
  }
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -144,9 +144,9 @@ char *get_path(char *str)
 
         if (access(full_path, F_OK | X_OK) != -1)
         {
-            printf("Chemin trouvé: %s\n", full_path);
+        //     printf("Chemin trouvé: %s\n", full_path);
             // free_split(split_path);
-            printf("Chemin non trouvé pour: %s\n", str);
+        //     printf("Chemin non trouvé pour: %s\n", str);
             return(full_path);
         }
 
@@ -178,7 +178,7 @@ int lst_len(t_node *list) {
                 ret++;
                 list = list->next;
         }
-        printf("Je suis le nbr de commande%d", ret);
+        // printf("Je suis le nbr de commande%d", ret);
         return ret;
 }
 
@@ -195,7 +195,7 @@ struct s_ituple {
 
 int ft_fork(int exit_err, void (*func)(struct s_exec *, int, int), struct s_exec *data, struct s_ituple il) {
         int pid;
-                printf("\n4Je passe \n");
+                // printf("\n4Je passe \n");
 
         if (!func)
                 return -1;
@@ -210,16 +210,33 @@ int ft_fork(int exit_err, void (*func)(struct s_exec *, int, int), struct s_exec
 }
 
 int ft_wait_all(struct s_exec *execs, int len) {
-        int i;
-        int ret;
+    int i;
+    int ret;
+    int status;
 
-        ret = 0;
-        i = 0;
-        while (i < len) {
-                waitpid(execs[i].pid, &ret, 0);
-                i++;
+    ret = 0;
+    i = 0;
+    while (i < len) {
+        pid_t pid = waitpid(execs[i].pid, &status, WNOHANG);
+        if (pid == -1) {
+            // Gérer l'erreur si nécessaire
+            perror("waitpid");
+            return -1;
+        } else if (pid == 0) {
+            // Le processus n'a pas encore terminé
+            continue;
+        } else {
+            // Le processus a terminé
+            if (WIFEXITED(status)) {
+                ret = WEXITSTATUS(status);
+            } else {
+                // Gérer d'autres cas de terminaison si nécessaire
+                ret = -1;
+            }
         }
-        return WEXITSTATUS(ret);
+        i++;
+    }
+    return ret;
 }
 void free_exec(struct s_exec e) {
         free(e.exec);
@@ -230,7 +247,7 @@ void free_exec(struct s_exec e) {
         }
         free(e.argv);
         i = 0;
-        printf("1Environnemnt ");
+        // printf("1Environnemnt ");
         // while (e.envp && e.envp[i]) {
         //         free(e.envp[i]);
         //         i++;
@@ -238,7 +255,7 @@ void free_exec(struct s_exec e) {
         // free(e.envp);
         // if (e.in > 2) close(e.in);
         // if (e.out > 2) close(e.out);
-        printf("2Environnemnt ");
+        // printf("2Environnemnt ");
 
 }
 
@@ -302,7 +319,7 @@ void builtin(char *name, char **argv, char **envp) {
         if (strequ(name, "env")) {
                 int i = 0;
                 while (envp && envp[i]) {
-                        printf("%s\n", envp[i]);
+                        // printf("%s\n", envp[i]);
                         i++;
                 }
         }
@@ -321,13 +338,13 @@ void ft_exec(struct s_exec *execs, int idx, int len) {
         //         printf("\n5Je passe \n");
         //          exit(1);
         // }
-        printf("\n6Je passe \n");
+        // printf("\n6Je passe \n");
 
         dup2(self.in, 0);
         dup2(self.out, 1);
         
         free_all_exec(execs, len);
-        printf("\nJe CMD=|%s|\n",self.exec);
+        // printf("\nJe CMD=|%s|\n",self.exec);
         execve(self.exec, self.argv, self.envp);
         exit(1);
 }
@@ -341,46 +358,38 @@ void    ft_change_data(t_node *list,struct  s_exec **lst, int len)
         t_node *tmp ;
         tmp = list;
         (*lst)[0].envp = env_list_to_array(list->env);
-        printf("\nVALUEQWE|%s|\n", (*lst)[0].envp[2]);
+        // printf("\nVALUEQWE|%s|\n", (*lst)[0].envp[2]);
 
         while(i<len)
         {
                 if(i != 0)
                         (*lst)[i].envp= (*lst)[0].envp;
                 x = 0;  
-                printf("\n1 \n\n");
-
                 count = ft_count_arg(tmp->cmd);
-                                printf("\n2 \n\n");
-
                 (*lst)[i].in = tmp->cmd->input;
-                                printf("\n3 \n\n");
-
+                // printf("\n3 \n\n");
                 (*lst)[i].out= tmp->cmd->output;
-                printf("\n4 \n\n");
+                // printf("\n4 \n\n");
                 (*lst)[i].argv= malloc(sizeof(char *) *(count+1));//Ce qui permet de malloc l'entierte de la chaine de la double chaine de caractere
-                printf("\n5 \n\n");
-
+                // printf("\n5 \n\n");
                 while(x<count)
                 {
                         // printf("\nXXX\n");
                         (*lst)[i].argv[x]=ft_insert_arg_excve( tmp->cmd->cmd_and_args, x); 
                         x++;
                 }
-                                printf("\n6 \n\n");
-                printf("\nPATH= |%s| \n\n",(*lst)[i].exec );
                 (*lst)[i].exec =get_path((*lst)[i].argv[0]);
-                 printf("\nPATH= |%s| \n\n",(*lst)[i].exec );
+                //  printf("\nPATH= |%s| \n\n",(*lst)[i].exec );
 
                 //Il faut aller cherche dans c
                 i++;
                 tmp = tmp->next;
-                printf("\n9 \n\n");
+                // printf("\n9 \n\n");
 
         }
         // free(env);
 
-        printf("\n10 \n\n");
+        // printf("\n10 \n\n");
 
 }
 
@@ -391,12 +400,12 @@ int ft_exceve(t_node *list, t_data *data, t_env **env) {
         struct s_exec *lst = lst_to_execs(list, &len);
         //Verification du changement 
         ft_change_data(list, &lst, len);
-        printf("\nVALUEQWE|%s|\n", lst[0].envp[2]);
+        // printf("\nVALUEQWE|%s|\n", lst[0].envp[2]);
         if (!lst) return 1;
 
         int last_in = 0;
         int p[2];
-                printf("\n2Je passe \n");
+                // printf("\n2Je passe \n");
 
         for (int i = 0; i < len; i++) {
                 if (i < len - 1) {
@@ -413,7 +422,7 @@ int ft_exceve(t_node *list, t_data *data, t_env **env) {
                 } else {
                         if (lst[i].out <= 0) lst[i].out = 1;
                 }
-                printf("\n3Je passe \n");
+                // printf("\n3Je passe \n");
 
                 lst[i].pid = ft_fork(255, ft_exec, lst, (struct s_ituple){i, len});
                 if (lst[i].pid < 0) {
