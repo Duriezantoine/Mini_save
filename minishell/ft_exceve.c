@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/01 11:35:23 by aduriez           #+#    #+#             */
-/*   Updated: 2024/10/10 11:35:55 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/10 13:02:00 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,7 @@ int count_env_list(t_env *env)
 char **env_list_to_array(t_env *env)
 {
     int count = count_env_list(env);
-    char **array = malloc((count + 1) * sizeof(char *)); // +1 pour le NULL final
+    char **array = malloc((count + 1) * sizeof(char * )); // +1 pour le NULL final
     if (!array)
         return NULL;
 
@@ -68,7 +68,8 @@ char **env_list_to_array(t_env *env)
         i++;
     }
     array[i] = NULL; // Terminer le tableau avec NULL
-    return array;
+    printf("ARRAY|%s|",array[2]);
+    return (array);
 }
 
 void print_env_array(char **env)
@@ -115,17 +116,57 @@ int ft_count_arg(t_cmd *cmd)
         return(str);
  }
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////Fonction pour modifier la data pour le double tableau de chaine de caractere//////////////////////////////////////////////////////////////////////////////////////////////////////////
+char *get_path(char *str)
+{
+    char *path;
+    char **split_path;
+    char *full_path;
+    int i;
 
+    path = getenv("PATH");
+    if (!path) {
+        fprintf(stderr, "Erreur: La variable d'environnement PATH n'est pas définie.\n");
+        return("R");
+    }
+
+    split_path = ft_split(path, ':');
+    if (!split_path) {
+        fprintf(stderr, "Erreur: Impossible de diviser le chemin.\n");
+        return("S");
+    }
+
+    i = 0;
+    while (split_path[i])
+    {
+        full_path = ft_strjoin(split_path[i], "/");
+        full_path = ft_strjoin(full_path, str);
+
+        if (access(full_path, F_OK | X_OK) != -1)
+        {
+            printf("Chemin trouvé: %s\n", full_path);
+            // free_split(split_path);
+            printf("Chemin non trouvé pour: %s\n", str);
+            return(full_path);
+        }
+
+        free(full_path);
+        i++;
+    }
+    return(str);
+    // free_split(split_path);
+}
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 int strequ(char *s1, char *s2) {
         return strcmp(s1, s2) == 0;
 }
 
 struct s_exec {
-        char *exec;
+        char *exec;//it's ok
         char **argv;//it's ok
         char **envp;//it's ok
-        int in ;
+        int in ;//Ca doit pour 
         int out;
         int pid;
 };
@@ -189,13 +230,16 @@ void free_exec(struct s_exec e) {
         }
         free(e.argv);
         i = 0;
-        while (e.envp && e.envp[i]) {
-                free(e.envp[i]);
-                i++;
-        }
-        free(e.envp);
-        if (e.in > 2) close(e.in);
-        if (e.out > 2) close(e.out);
+        printf("1Environnemnt ");
+        // while (e.envp && e.envp[i]) {
+        //         free(e.envp[i]);
+        //         i++;
+        // }
+        // free(e.envp);
+        // if (e.in > 2) close(e.in);
+        // if (e.out > 2) close(e.out);
+        printf("2Environnemnt ");
+
 }
 
 int cdt_len(char **a) {
@@ -279,40 +323,65 @@ void ft_exec(struct s_exec *execs, int idx, int len) {
         // }
         printf("\n6Je passe \n");
 
-        printf("\nJe CMD=|%s|Argv=|%s|\n",self.exec, self.argv[0]);
         dup2(self.in, 0);
         dup2(self.out, 1);
         
         free_all_exec(execs, len);
-        exec(self.exec, self.argv, self.envp);
+        printf("\nJe CMD=|%s|\n",self.exec);
+        execve(self.exec, self.argv, self.envp);
         exit(1);
 }
 
-void    ft_change_data(t_node *list,struct  s_exec *lst, int len)
+void    ft_change_data(t_node *list,struct  s_exec **lst, int len)
 {
         int i;
-        char **env;
         int count;
         i = 0;
         int x;
+        t_node *tmp ;
+        tmp = list;
+        (*lst)[0].envp = env_list_to_array(list->env);
+        printf("\nVALUEQWE|%s|\n", (*lst)[0].envp[2]);
 
-        env = env_list_to_array(list->env);
         while(i<len)
         {
+                if(i != 0)
+                        (*lst)[i].envp= (*lst)[0].envp;
                 x = 0;  
-                count = ft_count_arg(list->cmd);
-                lst[i].argv= malloc(sizeof(char *) *(count+1));//Ce qui permet de malloc l'entierte de la chaine de la double chaine de caractere
+                printf("\n1 \n\n");
+
+                count = ft_count_arg(tmp->cmd);
+                                printf("\n2 \n\n");
+
+                (*lst)[i].in = tmp->cmd->input;
+                                printf("\n3 \n\n");
+
+                (*lst)[i].out= tmp->cmd->output;
+                printf("\n4 \n\n");
+                (*lst)[i].argv= malloc(sizeof(char *) *(count+1));//Ce qui permet de malloc l'entierte de la chaine de la double chaine de caractere
+                printf("\n5 \n\n");
+
                 while(x<count)
                 {
                         // printf("\nXXX\n");
-                        lst[i].argv[x]=ft_insert_arg_excve( list->cmd->cmd_and_args, x); 
+                        (*lst)[i].argv[x]=ft_insert_arg_excve( tmp->cmd->cmd_and_args, x); 
                         x++;
                 }
-                lst[i].exec = ft_strdup(lst[i].argv[0]);
-                lst[i].envp =env;//tableau de l'environnement est ok
+                                printf("\n6 \n\n");
+                printf("\nPATH= |%s| \n\n",(*lst)[i].exec );
+                (*lst)[i].exec =get_path((*lst)[i].argv[0]);
+                 printf("\nPATH= |%s| \n\n",(*lst)[i].exec );
+
+                //Il faut aller cherche dans c
                 i++;
+                tmp = tmp->next;
+                printf("\n9 \n\n");
+
         }
-        //free(env);
+        // free(env);
+
+        printf("\n10 \n\n");
+
 }
 
 int ft_exceve(t_node *list, t_data *data, t_env **env) {
@@ -321,7 +390,8 @@ int ft_exceve(t_node *list, t_data *data, t_env **env) {
         int len;
         struct s_exec *lst = lst_to_execs(list, &len);
         //Verification du changement 
-        ft_change_data(list, lst, len);
+        ft_change_data(list, &lst, len);
+        printf("\nVALUEQWE|%s|\n", lst[0].envp[2]);
         if (!lst) return 1;
 
         int last_in = 0;
