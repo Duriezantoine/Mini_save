@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/09 17:05:05 by dpoltura          #+#    #+#             */
-/*   Updated: 2024/10/08 16:20:17 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/10 09:45:47 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -152,6 +152,7 @@ typedef struct s_echo
 	int order_occurence;
 } t_echo;
 
+
 int main(int argc, char **argv, char **envp);
 int shell_loop(t_node *list, t_data **data, t_env **env);
 void organisation_shell_loop(t_node *list, t_data *data);
@@ -204,6 +205,8 @@ void print_liste(t_arg *list);
 void ft_insert_double_tab(t_cmd **list, t_arg *list_arg);
 t_arg *ft_init_list(t_node *list, t_echo *data_echo, t_save *save);
 void lexer(t_node *head);
+
+
 
 // Fonction pour free
 void free_t_echo(t_echo *echo);
@@ -280,6 +283,9 @@ void 	ft_free_return_loop(t_node *list, t_data *data);
 
 void ft_insert_nodes(t_node *list, t_arg *new_node);
 int ft_handle_redirection(char *input, int *i, int *ss_quot);
+/////////////////////////////////Pour le free//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+int strequ(char *s1, char *s2);
 
 
 #endif

@@ -277,6 +277,7 @@ void    ft_check_outfile(t_node *list, t_cmd **cmd, t_arg *arg)
 void lexer_cmd(t_node *list, t_data *data) // Cette fonction permet d'implementer list->cmd
 {
     (void)data;
+
     // verification acces list->arg//Start with list->arglist->cmd =
     while (list)
     {

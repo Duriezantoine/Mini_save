@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/09 17:08:04 by dpoltura          #+#    #+#             */
-/*   Updated: 2024/10/08 16:29:16 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/10 10:14:09 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -143,7 +143,7 @@ void ft_free_end(t_node *list, t_env **env)
                 envt = (*env)->next;
                 free((*env)->key);
                 free((*env)->value);
-				printf("freeing ptr %p\n", *env);
+				// printf("freeing ptr %p\n", *env);
                 free(*env);
                 *env = envt;
         }
@@ -176,7 +176,7 @@ t_env *ft_insert_env(char **envp)
         while (envp[i])
         {
                 t_env *new_env = (t_env *)malloc(sizeof(t_env));
-				printf("allocating ptr %p\n", new_env);
+				// printf("allocating ptr %p\n", new_env);
                 new_env->key = ft_copy_start(envp[i], '=');
                 new_env->value = ft_copy_end(envp[i], '=');
                 // printf("%s => \n\n%s\n\n\n\n\n\n", new_env->key, new_env->value);

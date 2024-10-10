@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/11 10:51:14 by dpoltura          #+#    #+#             */
-/*   Updated: 2024/10/08 16:19:58 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/10 11:35:32 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,7 @@ int ft_strcmp(char *s1, char *s2)
     int c;
 
     c = 0;
-    printf("S1=|%s|S2=|%s|", s1, s2);
+   // printf("S1=|%s|S2=|%s|", s1, s2);
     while (s1[c] == s2[c] && (s1[c] != '\0' && s2[c] != '\0'))
         c++;
     return (s1[c] - s2[c]);
@@ -455,8 +455,7 @@ int ft_isalnum(int c)
 {
     if ((c >= 48 && c <= 57) || (c >= 97 && c <= 122) || (c >= 65 && c <= 90) || (c == 45) || (c == 61) || (c==46) || (c == 126) || (c == 47))
     {
-        if (c == 45)
-            printf("\nCa passe\n");
+        // if (c == 45)
         return (1);
     }
     else
