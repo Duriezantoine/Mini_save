@@ -6,120 +6,114 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/01 11:35:23 by aduriez           #+#    #+#             */
-/*   Updated: 2024/10/10 13:49:54 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/10 02:46:52 by tdelage          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 #include <sys/wait.h>
 
-/////////////////////////////////////////////Fonction pour changer le list-env en char **//////////////////////////////////////////////////////////////////////////////////////////////////////////
+struct s_exec {
+        char *exec;
+        char **argv;
+        char **envp;
+        int in;
+        int out;
+        int pid;
+};
 
-
-// Fonction pour concaténer key et value avec un '=' entre eux
-char *concat_key_value(const char *key, const char *value)
-{
-    size_t key_len = strlen(key);
-    size_t value_len = strlen(value);
-    char *result = malloc(key_len + value_len + 2); // +2 pour '=' et '\0'
-    if (!result)
-        return NULL;
-
-    strcpy(result, key);
-    strcat(result, "=");
-    strcat(result, value);
-    return result;
-}
-
-int count_env_list(t_env *env)
-{
-    int count = 0;
-    while (env)
-    {
-        count++;
-        env = env->next;
-    }
-    return count;
-}
-
-
-// Fonction pour convertir la liste chaînée en char **
-char **env_list_to_array(t_env *env)
-{
-    int count = count_env_list(env);
-    char **array = malloc((count + 1) * sizeof(char * )); // +1 pour le NULL final
-    if (!array)
-        return NULL;
-
-    int i = 0;
-    t_env *current = env;
-    while (current)
-    {
-        array[i] = concat_key_value(current->key, current->value);
-        if (!array[i])
-        {
-            // Libérer la mémoire allouée en cas d'échec
-            for (int j = 0; j < i; j++)
-                free(array[j]);
-            free(array);
-            return NULL;
-        }
-        current = current->next;
-        i++;
-    }
-    array[i] = NULL; // Terminer le tableau avec NULL
-//     printf("ARRAY|%s|",array[2]);
-    return (array);
-}
-
-void print_env_array(char **env)
-{
-    if (!env)
-        return;
-
-    for (int i = 0; env[i]; i++)
-    {
-        printf("%s\n", env[i]);
-    }
-}
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////Fonction pour changer le list->cmd_cmd_and_args en tableau de double//////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-int ft_count_arg(t_cmd *cmd)
-{
-        char **tmp;
-        int i;
-
-        i = 0;
-        tmp = cmd->cmd_and_args;
-        while(tmp[i])
+int cdt_len(char **a) {
+        if(!a) return 0;
+        int i = 0;
+        while(a[i]) {
                 i++;
-        // printf("Je suis le nbrarg de cmd[%d]", i);
-        return(i);
-
+        }
+        return i;
 }
 
- char  *ft_insert_arg_excve( char **double_table,int x)
- {
-        int i;
-        i = 0;
-        char *str;
-        while(double_table[i])
-        {
-                if (i == x)
-                {
-                        str = ft_strdup(double_table[i]);
+
+int lst_len(t_node *list) {
+        int ret = 0;
+        while(list) {
+                ret++;
+                list = list->next;
+        }
+        return ret;
+}
+
+int env_len(t_env *list) {
+        int ret = 0;
+        while(list) {
+                ret++;
+                list = list->next;
+        }
+        return ret;
+}
+
+void real_strcat(char *dest, char *src) {
+        int start = ft_strlen(dest);
+        int i = 0;
+        while(i < (int)ft_strlen(src)) {
+                dest[start + i] = src[i];
+        }
+        dest[start + i] = 0;
+}
+
+char **get_env_cdt(t_env *env) {
+        int len = env_len(env);
+        char **ret = ft_calloc(len + 1, sizeof(char *));
+        if(!ret) return NULL;
+        int i = 0;
+        while(env) {
+                ret[i] = ft_calloc(ft_strlen(env->key) + ft_strlen(env->value) + 2, sizeof(char));
+                if(!ret) {
+                        int j = 0;
+                        while(j < i) {
+                                free(ret[j]);
+                        }
+                        return NULL;
+                }
+                real_strcat(ret[i], env->key);
+                ft_strcat(ret[i], '=');
+                real_strcat(ret[i], env->value);
+                i++;
+                env = env->next;
+        }
+        return ret;
+}
+
+char **clone_cdt(char **table) {
+        int len = cdt_len(table);
+        char **ret = ft_calloc(len + 1, sizeof(char **));
+        if(!ret) return NULL;
+        int i = 0;
+        while(i < len) {
+                ret[i] = ft_strdup(table[i]);
+                if(!ret) {
+                        int j = 0;
+                        while(j < i) {
+                                free(ret[j]);
+                        }
+                        return NULL;
                 }
                 i++;
         }
-        // printf("\nVoicisSV |%s|\n", str);
-        return(str);
- }
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////Fonction pour modifier la data pour le double tableau de chaine de caractere//////////////////////////////////////////////////////////////////////////////////////////////////////////
-char *get_path(char *str)
-{
-    char *path;
+        return ret;
+}
+
+void free_split(char **split) {
+        int i = 0;
+        if(!split) return;
+        while(split[i]) {
+                free(split[i]);
+                i++;
+        }
+        free(split);
+}
+
+char *get_program_name(char *name, int builtin) {
+        if(builtin) return ft_strdup(name);
+        char *path;
     char **split_path;
     char *full_path;
     int i;
@@ -127,64 +121,51 @@ char *get_path(char *str)
     path = getenv("PATH");
     if (!path) {
         fprintf(stderr, "Erreur: La variable d'environnement PATH n'est pas définie.\n");
-        return("R");
+        return NULL;
     }
 
     split_path = ft_split(path, ':');
     if (!split_path) {
         fprintf(stderr, "Erreur: Impossible de diviser le chemin.\n");
-        return("S");
+        return NULL;
     }
 
     i = 0;
     while (split_path[i])
     {
-        full_path = ft_strjoin(split_path[i], "/");
-        full_path = ft_strjoin(full_path, str);
+        char *tmp = ft_strjoin(split_path[i], "/");
+        full_path = ft_strjoin(full_path, name);
+        free(tmp);
 
         if (access(full_path, F_OK | X_OK) != -1)
         {
-        //     printf("Chemin trouvé: %s\n", full_path);
-            // free_split(split_path);
-        //     printf("Chemin non trouvé pour: %s\n", str);
+            free_split(split_path);
             return(full_path);
         }
 
         free(full_path);
         i++;
     }
-    return(str);
-    // free_split(split_path);
-}
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-int strequ(char *s1, char *s2) {
-        return strcmp(s1, s2) == 0;
-}
-
-struct s_exec {
-        char *exec;//it's ok
-        char **argv;//it's ok
-        char **envp;//it's ok
-        int in ;//Ca doit pour 
-        int out;
-        int pid;
-};
-
-int lst_len(t_node *list) {
-        int ret = 0;
-
-        while (list) {
-                ret++;
-                list = list->next;
-        }
-        // printf("Je suis le nbr de commande%d", ret);
-        return ret;
+    free_split(split_path);
+    return NULL;
 }
 
 struct s_exec *lst_to_execs(t_node *list, int *len) {
         *len = lst_len(list);
-        struct s_exec *ret = ft_calloc(*len, sizeof(struct s_exec));
+        struct s_exec *ret = ft_calloc((size_t)len, sizeof(struct s_exec));
+        if(!ret) return NULL;
+        char **env = get_env_cdt(list->env);
+        int i = 0;
+        while(list) {
+                ret[i].exec = get_program_name(list->cmd->cmd_and_args[0], list->cmd->is_builtin);
+                ret[i].argv = clone_cdt(list->cmd->cmd_and_args);
+                ret[i].envp = clone_cdt(env);
+                ret[i].in = list->cmd->input;
+                ret[i].out = list->cmd->output;
+                ret[i].pid = -1;
+                i++;
+                list = list->next;
+        }
         return ret;
 }
 
@@ -195,251 +176,133 @@ struct s_ituple {
 
 int ft_fork(int exit_err, void (*func)(struct s_exec *, int, int), struct s_exec *data, struct s_ituple il) {
         int pid;
-                // printf("\n4Je passe \n");
 
-        if (!func)
+        if(!func)
                 return -1;
         pid = fork();
-        if (pid < 0)
+        if(pid < 0)
                 return -1;
-        if (pid == 0) {
+        if(pid == 0) {
                 func(data, il.idx, il.len);
                 exit(exit_err);
         }
         return pid;
 }
 
-int ft_wait_all(struct s_exec *execs, int len) {
-    int i;
-    int ret;
-    int status;
+int ft_wait_all(struct s_exec *execs, size_t len) {
+      int i;
+      int ret;
 
-    ret = 0;
-    i = 0;
-    while (i < len) {
-        pid_t pid = waitpid(execs[i].pid, &status, WNOHANG);
-        if (pid == -1) {
-            // Gérer l'erreur si nécessaire
-            perror("waitpid");
-            return -1;
-        } else if (pid == 0) {
-            // Le processus n'a pas encore terminé
-            continue;
-        } else {
-            // Le processus a terminé
-            if (WIFEXITED(status)) {
-                ret = WEXITSTATUS(status);
-            } else {
-                // Gérer d'autres cas de terminaison si nécessaire
-                ret = -1;
-            }
-        }
-        i++;
-    }
-    return ret;
+      ret = 0;
+      i = 0;
+      while(i < len) {
+              waitpid(execs[i].pid, &ret, 0);
+              i++;
+      }
+      return WEXITSTATUS(ret);
 }
+
 void free_exec(struct s_exec e) {
         free(e.exec);
         int i = 0;
-        while (e.argv && e.argv[i]) {
+        while(e.argv[i]) {
                 free(e.argv[i]);
                 i++;
         }
-        free(e.argv);
         i = 0;
-        // printf("1Environnemnt ");
-        // while (e.envp && e.envp[i]) {
-        //         free(e.envp[i]);
-        //         i++;
-        // }
-        // free(e.envp);
-        // if (e.in > 2) close(e.in);
-        // if (e.out > 2) close(e.out);
-        // printf("2Environnemnt ");
-
-}
-
-int cdt_len(char **a) {
-        if (!a) return 0;
-        int i = 0;
-        while (a[i]) {
+        while(e.envp[i]) {
+                free(e.argv[i]);
                 i++;
         }
-        return i;
+        if(e.in > 2) close(e.in);
+        if(e.out > 2) close(e.out);
 }
 
 void free_all_exec(struct s_exec *execs, int len) {
-        int i = 0;
-        while (i < len) {
+        int i;
+        i = 0;
+        while(i < len) {
                 free_exec(execs[i]);
                 i++;
         }
-        free(execs);
 }
 
 struct s_exec dup_exec(struct s_exec e) {
-        struct s_exec ret = {0};
+        struct s_exec ret;
         ret.exec = ft_strdup(e.exec);
-        if (!ret.exec) return ret;
-
-        int argv_len = cdt_len(e.argv);
-        int envp_len = cdt_len(e.envp);
-        
-        ret.argv = ft_calloc(argv_len + 1, sizeof(char *));
-        ret.envp = ft_calloc(envp_len + 1, sizeof(char *));
-        
-        if (!ret.argv || !ret.envp) {
-                free_exec(ret);
-                return (struct s_exec){0};
-        }
-
-        for (int i = 0; i < argv_len && e.argv[i]; i++) {
+        ret.argv = ft_calloc(cdt_len(e.argv), sizeof(char *));
+        ret.envp = ft_calloc(cdt_len(e.envp), sizeof(char *));
+        int i = 0;
+        while(ret.argv && e.argv[i]) {
                 ret.argv[i] = ft_strdup(e.argv[i]);
-                if (!ret.argv[i]) {
-                        free_exec(ret);
-                        return (struct s_exec){0};
-                }
+                i++;
         }
-
-        for (int i = 0; i < envp_len && e.envp[i]; i++) {
+        i = 0;
+        while(ret.envp && e.envp[i]) {
                 ret.envp[i] = ft_strdup(e.envp[i]);
-                if (!ret.envp[i]) {
-                        free_exec(ret);
-                        return (struct s_exec){0};
-                }
+                i++;
         }
-
         ret.in = e.in;
         ret.out = e.out;
         return ret;
 }
 
-void builtin(char *name, char **argv, char **envp) {
-        (void)argv;
-        if (strequ(name, "env")) {
-                int i = 0;
-                while (envp && envp[i]) {
-                        // printf("%s\n", envp[i]);
-                        i++;
-                }
+int strequ(char *s1, char *s2) {
+        return strcmp(s1, s2) == 0;
+}
+
+int builtin(char *name, char **argv, char **envp) {
+        int founded = 0;
+        if(strequ(name, "env")) {
+                printf("env\n");
+                founded = 1;
         }
-        // Ajoutez d'autres built-ins ici si nécessaire
+        return founded;
 }
 
 void exec(char *name, char **argv, char **envp) {
-        builtin(name, argv, envp);
-        execve(name, argv, envp);
+        if(!builtin(name, argv, envp))
+                execve(name, argv, envp);
 }
 
 void ft_exec(struct s_exec *execs, int idx, int len) {
         struct s_exec self = dup_exec(execs[idx]);
-        // if (!self.exec)
-        // {
-        //         printf("\n5Je passe \n");
-        //          exit(1);
-        // }
-        // printf("\n6Je passe \n");
-
         dup2(self.in, 0);
         dup2(self.out, 1);
-        
         free_all_exec(execs, len);
-        // printf("\nJe CMD=|%s|\n",self.exec);
-        execve(self.exec, self.argv, self.envp);
-        exit(1);
+        exec(self.exec, self.argv, self.envp);
+        free_exec(self);
 }
 
-void    ft_change_data(t_node *list,struct  s_exec **lst, int len)
+int    ft_exceve(t_node *list, t_data *data, t_env **env)
 {
-        int i;
-        int count;
-        i = 0;
-        int x;
-        t_node *tmp ;
-        tmp = list;
-        (*lst)[0].envp = env_list_to_array(list->env);
-        // printf("\nVALUEQWE|%s|\n", (*lst)[0].envp[2]);
-
-        while(i<len)
-        {
-                if(i != 0)
-                        (*lst)[i].envp= (*lst)[0].envp;
-                x = 0;  
-                count = ft_count_arg(tmp->cmd);
-                (*lst)[i].in = tmp->cmd->input;
-                // printf("\n3 \n\n");
-                (*lst)[i].out= tmp->cmd->output;
-                // printf("\n4 \n\n");
-                (*lst)[i].argv= malloc(sizeof(char *) *(count+1));//Ce qui permet de malloc l'entierte de la chaine de la double chaine de caractere
-                // printf("\n5 \n\n");
-                while(x<count)
-                {
-                        // printf("\nXXX\n");
-                        (*lst)[i].argv[x]=ft_insert_arg_excve( tmp->cmd->cmd_and_args, x); 
-                        x++;
-                }
-                (*lst)[i].exec =get_path((*lst)[i].argv[0]);
-                //  printf("\nPATH= |%s| \n\n",(*lst)[i].exec );
-
-                //Il faut aller cherche dans c
-                i++;
-                tmp = tmp->next;
-                // printf("\n9 \n\n");
-
-        }
-        // free(env);
-
-        // printf("\n10 \n\n");
-
-}
-
-int ft_exceve(t_node *list, t_data *data, t_env **env) {
-        (void)data;
-        (void)env;
         int len;
         struct s_exec *lst = lst_to_execs(list, &len);
-        //Verification du changement 
-        ft_change_data(list, &lst, len);
-        // printf("\nVALUEQWE|%s|\n", lst[0].envp[2]);
-        if (!lst) return 1;
-
         int last_in = 0;
         int p[2];
-                // printf("\n2Je passe \n");
-
-        for (int i = 0; i < len; i++) {
-                if (i < len - 1) {
-                        if (pipe(p) < 0) {
-                                perror("pipe");
-                                free_all_exec(lst, len);
-                                return 1;
-                        }
+        int i = 0;
+        while(i < len - 1) {
+                if(pipe(p) < 0) {
+                        printf("WARNING: pipe syscall broke [some commands might not work as excpected]\n");
+                        break;
                 }
-
-                if (lst[i].in < 0) lst[i].in = last_in;
-                if (i < len - 1) {
-                        if (lst[i].out < 0) lst[i].out = p[1];
-                } else {
-                        if (lst[i].out <= 0) lst[i].out = 1;
-                }
-                // printf("\n3Je passe \n");
-
-                lst[i].pid = ft_fork(255, ft_exec, lst, (struct s_ituple){i, len});
-                if (lst[i].pid < 0) {
-                        perror("fork");
-                        free_all_exec(lst, len);
-                        return 1;
-                }
-
-                if (last_in > 2) close(last_in);
-                if (i < len - 1) {
-                        close(p[1]);
-                        last_in = p[0];
-                }
+                if(lst[i].in < 0) lst[i].in = last_in;
+                if(lst[i].out < 0) lst[i].out = p[1];
+                if(last_in > 0) close(last_in);
+                if(p[1] >= 0) close(p[1]);
+                last_in = p[0];
+                ft_fork(255, ft_exec, lst, (struct s_ituple){i, len});
+                i++;
         }
-
-        if (last_in > 2) close(last_in);
+        if(lst[i].in < 0) lst[i].in = last_in;
+        if(lst[i].out <= 0) lst[i].out = 1;
+        ft_fork(255, ft_exec, lst, (struct s_ituple){i, len});
+        if(last_in > 0) close(last_in);
         int ret = ft_wait_all(lst, len);
-        free_all_exec(lst, len);
+        i = 0;
+        while(i < len) {
+                free_exec(lst[i]);
+                i++;
+        }
         return ret;
 }

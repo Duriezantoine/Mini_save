@@ -239,7 +239,7 @@ void ft_insert_tab_echo(t_echo *data_echo, char *input, int i)
             ft_insert_data_w_whith_tab(data_echo, input, &i, &clef_tab_w_quot);
             clef_tab_w_quot++;
         }
-        if(input[i]== '<' | input[i]== '>')
+        if(input[i]== '<' || input[i]== '>')
         {
             if((input[i]== '<' && input[i+1] == '<')||(input[i]== '>' && input[i+1] == '>'))
             {
