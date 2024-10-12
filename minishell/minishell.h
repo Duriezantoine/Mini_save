@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/09 17:05:05 by dpoltura          #+#    #+#             */
-/*   Updated: 2024/10/12 12:34:28 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/12 17:28:53 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -253,27 +253,27 @@ int     ft_no_cd_(char *s);
 char 	*save_pwd(t_env **env);
 
 ////////////////////////////////Pour le bulting echo/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void    bulting_echo(char **cmd, int i);
+int    bulting_echo(char **cmd, int i);
 int 	ft_search_n(char **cmd, int i);
 /////////////////////////////////Pour le bulting pwd/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void	bulting_pwd();
 /////////////////////////////////Pour le bulting export//////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void    bulting_export(t_cmd *cmd, t_node *list, t_env **env);
+void    bulting_export(char **argv, char ***env);
 int     ft_verif_export_equal(char *str);
-void    ft_delim_envp( t_env **env, char *str);
-void    ft_change_envp(t_env **env, char *key, char *value);
-int     ft_search_key_envp(t_env *env, char *key);
-void ft_insert_envp(t_env **env, char *key, char *value);
+void    ft_change_envp(char **env, char *key, char *value);
+int     ft_search_key_envp(char  **env, char *key);
+void ft_insert_envp(char  ***env, char *key, char *value);
 char    *ft_copy_end(char *str, char c);
 char    *ft_copy_start(char *str, char c);
 int ft_verif_export_space(char *str);
 int     ft_verif_export(char *str);
 int     ft_verif_export_equal(char *str);
 int		 ft_verif_export_space(char *str);
+void    ft_delim_envp( char  ***env, char *str);
 
 /////////////////////////////////Pour le bulting unset//////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void    bulting_unset(t_cmd *cmd, t_node *list);
-int   ft_search_envp(t_env **env, char *search);
+int   ft_search_envp(char  **env, char *search);
 void   ft_delete_unset(t_env *env, char *search);
 /////////////////////////////////Pour le bulting env//////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void bulting_env(t_cmd *cmd, t_node *list);
@@ -288,6 +288,24 @@ int ft_handle_redirection(char *input, int *i, int *ss_quot);
 /////////////////////////////////Pour le free//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 int strequ(char *s1, char *s2);
+
+
+char **ft_add_string_to_array(char **arr, char *str);
+int ft_get_array_size(char **arr);
+char **ft_allocate_new_array(int size);
+int ft_copy_strings(char **new_arr, char **arr, int size);
+void ft_free_new_array(char **new_arr, int size);
+void ft_free_array(char **arr);
+int ft_add_new_string(char **new_arr, char *str, int size);
+void print_env(char **envp);
+
+t_env *ft_insert_env(char **envp);
+void print_env_list(t_env *env);
+
+
+
+
+
 
 
 #endif

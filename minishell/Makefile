@@ -6,7 +6,7 @@
 #    By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/04/09 17:09:10 by dpoltura          #+#    #+#              #
-#    Updated: 2024/10/07 22:39:36 by tdelage          ###   ########.fr        #
+#    Updated: 2024/10/12 16:20:22 by aduriez          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -33,6 +33,7 @@ SRCS =	minishell_parse.c \
 		ft_bulting_export.c \
 		ft_bulting_unset.c \
 		ft_bulting_env.c \
+		ft_insert_new_tab.c \
 
 OBJS = $(SRCS:%.c=%.o)
 

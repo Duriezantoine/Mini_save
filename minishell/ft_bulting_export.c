@@ -6,18 +6,17 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/06 17:56:21 by aduriez           #+#    #+#             */
-/*   Updated: 2024/10/08 15:10:24 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/12 17:29:47 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void    bulting_export(t_cmd *cmd, t_node *list, t_env **env)
+void    bulting_export(char **argv, char ***env)
 {
     (void)env;
-    (void)cmd;
-    (void)list;
-    char **tmp = cmd->cmd_and_args;
+
+    char **tmp = argv;
     int x = 1;
     while(tmp[x])
     {
@@ -25,11 +24,16 @@ void    bulting_export(t_cmd *cmd, t_node *list, t_env **env)
             printf("NOT VALID");
         else
             {
-                if(ft_search_envp(env, tmp[x])==0)
+                printf("Command est valide");
+                if(ft_search_envp(*env, tmp[x])==0)
                 {
                     printf("\nVariables not exist\n");//Je dois donc la mettre a la creer et l'inserer
                     ft_delim_envp(env, tmp[x]);
+                    // print_env(env);
                 }
+                else
+                     printf("\nExist\n");//Je dois donc la mettre a la creer et l'inserer
+
 
             }
         x++;
@@ -52,7 +56,7 @@ int     ft_verif_export_equal(char *str)
 
 }
 
-void    ft_delim_envp( t_env **env, char *str)
+void    ft_delim_envp( char  ***env, char *str)
 {
     (void) env;
     (void)str;
@@ -62,7 +66,8 @@ void    ft_delim_envp( t_env **env, char *str)
     key = ft_copy_start(str, '=');//A inserer dans ma libft
     value = ft_copy_end(str, '=');//A inserer dans ma libft
 
-    //Creation d'une protection
+    printf("Value = |%s| Key=|%s|", key, value);    
+   // Creation d'une protection
     if (key == NULL || value == NULL)
     {
         free(key);
@@ -70,67 +75,42 @@ void    ft_delim_envp( t_env **env, char *str)
         printf("\nCe n'est pas passer ft_insert_envp\n");
         return;
     }
-    if(ft_search_key_envp(*env, key)==1)
-    {
-        printf("\n\n\n ICI JE LA CREE \n\n\n\n");
-        ft_insert_envp(env, key, value);
-    }
-    else
-        ft_change_envp(env, key,value);
+    ft_insert_envp(env, key, value);
     free(key);
     free(value);
 }
 
-void    ft_change_envp(t_env **env, char *key, char *value)
+void    ft_change_envp(char **env, char *key, char *value)
 {
-    t_env *tmp;
-
-    tmp = *env;
-    while(tmp)
-    {
-        if (strncmp(tmp->key, key, ft_strlen(key)) == 0) 
-        {
-            // printf("\n\nJe suis dedans\n \n");
-            //Je veux juste la valeur de value est que ca marche
-            free(tmp->value);
-            tmp->value = ft_strdup(value);
-            return;
-        }
-        tmp = tmp->next;
-    }
+    // t_env *tmp;
+    (void)env;
+    (void)key;
+    (void)value;
+    // tmp = *env;
+    // while(tmp)
+    // {
+    //     if (strncmp(tmp->key, key, ft_strlen(key)) == 0) 
+    //     {
+    //         // printf("\n\nJe suis dedans\n \n");
+    //         //Je veux juste la valeur de value est que ca marche
+    //         free(tmp->value);
+    //         tmp->value = ft_strdup(value);
+    //         return;
+    //     }
+    //     tmp = tmp->next;
+    // }
     return ;
 }
 
-int     ft_search_key_envp(t_env *env, char *key)
+void ft_insert_envp(char  ***env, char *key, char *value)
 {
-    //Je dois boucler dessus pour determiner si elle est dedans
-    t_env *tmp;
+    (void)env;
+    (void)value;
+    char *str;
+    str =ft_strjoin(key, "=");
+    str = ft_strjoin(str, value);
 
-    tmp = env;
-    while(tmp)
-    {
-        // printf("\nJe compare |%s|%s|result = |%d|", tmp->key, key,strncmp(tmp->key, key, ft_strlen(key)) );
-        if (strncmp(tmp->key, key, ft_strlen(key)) == 0) 
-            return 0;
-        tmp = tmp->next;
-    }
-    return(1);
-
-} 
-void ft_insert_envp(t_env **env, char *key, char *value)
-{
-    t_env *new_node = (t_env *)malloc(sizeof(t_env));
-    if (new_node == NULL)
-    {
-        free(key);
-        free(value);
-        return;
-    }
-
-    new_node->key = ft_strdup(key);
-    new_node->value = ft_strdup(value);
-    new_node->next = *env;
-    *env = new_node;
+    *env = ft_add_string_to_array(*env, str);
 }
 
 char    *ft_copy_end(char *str, char c)

@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/09 17:08:04 by dpoltura          #+#    #+#             */
-/*   Updated: 2024/10/12 12:35:00 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/12 17:34:45 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,7 +92,13 @@ int	ft_white_space(char *str)
 	}
 	return(0);
 }
-
+void print_env_list(t_env *env) {
+    t_env *current = env;
+    while (current != NULL) {
+        printf("Key: %s, Value: %s\n", current->key, current->value);
+        current = current->next;
+    }
+}
 
 int shell_loop(t_node *list, t_data **data, t_env **env)
 {
@@ -118,8 +124,11 @@ int shell_loop(t_node *list, t_data **data, t_env **env)
 
 		exitcode = ft_exceve(list, *data, &list->env);
 		ft_free_return_loop(list, *data);
+		// print_env_list(list->env);
+
 	}
 	ft_free_end(list, env);
+	exit(exitcode);
 	return (0);
 }
 void 	ft_free_return_loop(t_node *list, t_data *data)

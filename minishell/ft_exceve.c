@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/01 11:35:23 by aduriez           #+#    #+#             */
-/*   Updated: 2024/10/12 12:29:09 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/12 17:45:26 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -221,16 +221,45 @@ char *get_program_name(char *name, int builtin)
         return NULL;
 }
 
+int ft_replace_var(char **str, t_env *env)
+{
+        //Pas dur que ca modifier la variables il faut alors verfifier 
+        char *tmp;
+        
+        while(env)
+        {
+                tmp = ft_strjoin("$",env->key);
+            if (strncmp(tmp, (*str), ft_strlen(tmp)) == 0)
+                {
+                        free(str);
+                        (*str) = env->value;
+                        return(1);
+                }
+                env = env->next;
+        }
+        return(0);
+
+}
+
 struct s_exec *lst_to_execs(t_node *list, int *len) {
         *len = lst_len(list);
         struct s_exec *ret = ft_calloc(*len, sizeof(struct s_exec)); // Correction: Suppression du cast (size_t)
         if(!ret) return NULL;
         char **env = get_env_cdt(list->env);
+        t_env *tmp;
+        tmp = list->env;//Ce  qui permet de garder la lise chaine pour le FT_REPLACE_var
         int i = 0;
         while(list) {
                 ret[i].exec = get_program_name(list->cmd->cmd_and_args[0], list->cmd->is_builtin);
                 ret[i].argv = clone_cdt(list->cmd->cmd_and_args);
                 ret[i].envp = clone_cdt(env);
+                //Verification pour la commande
+                if (ret[i].exec[0]== '$')
+                        if(ft_replace_var(&ret[i].exec, tmp)==1)
+                                printf("La variable recherche n'existe pas ");
+                //Verification pour les arguments
+
+
                 ret[i].in = list->cmd->input;
                 ret[i].out = list->cmd->output;
                 ret[i].pid = -1;
@@ -268,12 +297,12 @@ int ft_wait_all(struct s_exec *execs, int len) {
     for (i = 0; i < len; i++) {
         if (waitpid(execs[i].pid, &status, 0) == -1) {
             perror("waitpid");
-            return EXIT_FAILURE;
+
         }
         if (WIFEXITED(status)) {
             last_exit_status = WEXITSTATUS(status);
         } else if (WIFSIGNALED(status)) {
-            fprintf(stderr, "Command terminated by signal %d\n", WTERMSIG(status));
+        //     fprintf(stderr, "Command terminated by signal %d\n", WTERMSIG(status));
             last_exit_status = 128 + WTERMSIG(status);
         }
     }
@@ -308,6 +337,7 @@ void free_all_exec(struct s_exec *execs, int len) {
         free(execs); // Correction: Libération de execs
 }
 
+
 struct s_exec dup_exec(struct s_exec e) {
         struct s_exec ret;
         ret.exec = ft_strdup(e.exec);
@@ -340,13 +370,25 @@ int builtin(char *name, char **argv, char **envp) {
                 printf("env\n");
                 founded = 1;
         }
+                if(strequ(name, "echo")) {
+                // printf("env\n");
+                founded = 2;
+        }
+                if(strequ(name, "export")) {
+                // printf("env\n");
+                founded = 3;
+        }
         return founded;
 }
 
-void exec(char *name, char **argv, char **envp) {
-        if(!builtin(name, argv, envp))
+int exec(char *name, char **argv, char ***envp, struct s_exec **lst) {
+       int built;
+        int i;
+        i = 0;
+       built = builtin(name, argv, (*envp) );
+        if(!builtin(name, argv, (*envp) ))
         {    
-                
+                // printf("nIci\n");
                 // Imprimer name
                 //printf("name: %s\n", name);
                 name = get_path(name);
@@ -358,23 +400,37 @@ void exec(char *name, char **argv, char **envp) {
                 //printf("envp:\n");
                 //print_env(envp);
                 
-                execve(name, argv, envp);
+                execve(name, argv, (*envp));
+                return(0);
         }
-        else    
+       else if (built == 2) 
         {
-                bulting_echo(argv, 0);
-                return;
+                // printf("Je susi bulting echo");
+                bulting_echo(argv,1);
+                return(0);
         }
+         else if (built == 3) 
+        {
+                printf("Je susi bulting Export");
+               bulting_export(argv, envp);
+               while((*lst[i]->envp))
+               {
+                        (*lst)[i].envp= (*envp);
+                        i++;
+               }      
+        }
+        print_env((*envp));
+        return(0);
 }
 
-void ft_exec(struct s_exec *execs, int idx, int len) {
-        struct s_exec self = dup_exec(execs[idx]);
-        dup2(self.in, 0);
-        dup2(self.out, 1);
-        free_all_exec(execs, len);
-        exec(self.exec, self.argv, self.envp);
-        free_exec(self);
-}
+// void ft_exec(struct s_exec *execs, int idx, int len) {
+//         struct s_exec self = dup_exec(execs[idx]);
+//         dup2(self.in, 0);
+//         dup2(self.out, 1);
+//         free_all_exec(execs, len);
+//         exec(self.exec, self.argv, self.envp, &exec);
+//         free_exec(self);
+// }
 
 int ft_exceve(t_node *list, t_data *data, t_env **env)
 {
@@ -383,6 +439,8 @@ int ft_exceve(t_node *list, t_data *data, t_env **env)
     int last_in = 0;
     int p[2];
     int i = 0;
+    int ret;
+    ret = -1;
 
     (void)data; // Pour éviter l'avertissement de paramètre non utilisé
     (void)env;  // Pour éviter l'avertissement de paramètre non utilisé
@@ -413,10 +471,11 @@ int ft_exceve(t_node *list, t_data *data, t_env **env)
                 dup2(lst[i].out, 1);
                 close(lst[i].out);
             }
-            exec(lst[i].exec, lst[i].argv, lst[i].envp);
+            ret = exec(lst[i].exec, lst[i].argv, &lst[i].envp, &lst);
             exit(1);  // En cas d'échec de exec
         }
 
+        print_env(lst[0].envp);
         // Code du processus parent
         if (last_in > 0) close(last_in);
         if (i < len - 1) {
@@ -425,10 +484,14 @@ int ft_exceve(t_node *list, t_data *data, t_env **env)
         }
 
         i++;
-    }
+         }
+        if  (ret!=0)
+     {
+        ret = ft_wait_all(lst, len);
+     }
 
-    int ret = ft_wait_all(lst, len);
+     list->env = ft_insert_env(lst[0].envp);
     free_all_exec(lst, len);
-    exit(ret);
+//     exit(ret);
     return ret;
 }

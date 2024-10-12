@@ -6,25 +6,39 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/06 17:51:35 by aduriez           #+#    #+#             */
-/*   Updated: 2024/10/12 12:18:42 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/12 14:06:19 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void    bulting_echo(char **cmd, int i)
+int    bulting_echo(char **cmd, int i)
 {
     (void)cmd;
+    int n;
+
+    n = 0;
      if (ft_search_n(cmd, i)== 0)
+     {
+        // printf("ici");
         bulting_echo(cmd, i+1);
+     }
     else
         {
+            if (i != 1)
+                n=1;
             while(cmd[i] )
             {
-                printf("%s", cmd[i]);
+                if(i != 0)
+                {
+                    printf("%s", cmd[i]);
+                }
                 i++;
             }
-        }    
+                if(n !=1)
+                printf("\n");
+        }   
+    return(0);
 }
 
 int ft_search_n(char **cmd, int i)
@@ -34,7 +48,13 @@ int ft_search_n(char **cmd, int i)
     while(cmd[i][x])
     {
         if (cmd[i][x]== '-' && cmd[i][x+1] == 'n')
+        {
             x = x+2;
+            if (cmd[i][x+3]== '\0')
+            {
+            return (0);
+            }
+        }
         else 
             return(1);
         while(cmd[i][x]== 'n')
@@ -42,7 +62,7 @@ int ft_search_n(char **cmd, int i)
     }
     if (cmd[i][x]== '\0')
     {
-        printf("\nJe suis a la fin de l'atguments\n");
+        // printf("\nJe suis a la fin de l'atguments\n");
         return(0);
     }
     return(1);
