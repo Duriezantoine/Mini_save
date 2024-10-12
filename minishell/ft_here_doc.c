@@ -6,12 +6,12 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/27 10:32:48 by aduriez           #+#    #+#             */
-/*   Updated: 2024/10/08 16:55:45 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/12 12:34:25 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-static volatile sig_atomic_t signal_recu = 0;
+volatile sig_atomic_t signal_recu = 0;
 
 void ft_init_signaux(struct sigaction *action, char **write_here_do)
 {

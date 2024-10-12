@@ -6,12 +6,74 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/01 11:35:23 by aduriez           #+#    #+#             */
-/*   Updated: 2024/10/10 02:46:52 by tdelage          ###   ########.fr       */
+/*   Updated: 2024/10/12 12:29:09 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 #include <sys/wait.h>
+
+void print_args(char **argv) {
+    if (argv == NULL) {
+        printf("(null)\n");
+        return;
+    }
+    while (*argv != NULL) {
+        printf("%s ", *argv);
+        argv++;
+    }
+    printf("\n");
+}
+
+void print_env(char **envp) {
+    if (envp == NULL) {
+        printf("(null)\n");
+        return;
+    }
+    while (*envp != NULL) {
+        printf("%s\n", *envp);
+        envp++;
+    }
+}
+char *get_path(char *str)
+{
+    char *path;
+    char **split_path;
+    char *full_path;
+    int i;
+
+    path = getenv("PATH");
+    if (!path) {
+        fprintf(stderr, "Erreur: La variable d'environnement PATH n'est pas définie.\n");
+        return("R");
+    }
+
+    split_path = ft_split(path, ':');
+    if (!split_path) {
+        fprintf(stderr, "Erreur: Impossible de diviser le chemin.\n");
+        return("S");
+    }
+
+    i = 0;
+    while (split_path[i])
+    {
+        full_path = ft_strjoin(split_path[i], "/");
+        full_path = ft_strjoin(full_path, str);
+
+        if (access(full_path, F_OK | X_OK) != -1)
+        {
+        //     printf("Chemin trouvé: %s\n", full_path);
+            // free_split(split_path);
+        //     printf("Chemin non trouvé pour: %s\n", str);
+            return(full_path);
+        }
+
+        free(full_path);
+        i++;
+    }
+    return(str);
+    // free_split(split_path);
+}
 
 struct s_exec {
         char *exec;
@@ -30,6 +92,7 @@ int cdt_len(char **a) {
         }
         return i;
 }
+
 
 
 int lst_len(t_node *list) {
@@ -55,6 +118,7 @@ void real_strcat(char *dest, char *src) {
         int i = 0;
         while(i < (int)ft_strlen(src)) {
                 dest[start + i] = src[i];
+                i++; // Correction: Ajout de l'incrémentation de i
         }
         dest[start + i] = 0;
 }
@@ -66,15 +130,17 @@ char **get_env_cdt(t_env *env) {
         int i = 0;
         while(env) {
                 ret[i] = ft_calloc(ft_strlen(env->key) + ft_strlen(env->value) + 2, sizeof(char));
-                if(!ret) {
+                if(!ret[i]) {
                         int j = 0;
                         while(j < i) {
                                 free(ret[j]);
+                                j++;
                         }
+                        free(ret); // Correction: Libération de ret
                         return NULL;
                 }
                 real_strcat(ret[i], env->key);
-                ft_strcat(ret[i], '=');
+                ret[i][ft_strlen(env->key)] = '='; // Correction: Ajout direct du caractère '='
                 real_strcat(ret[i], env->value);
                 i++;
                 env = env->next;
@@ -84,16 +150,18 @@ char **get_env_cdt(t_env *env) {
 
 char **clone_cdt(char **table) {
         int len = cdt_len(table);
-        char **ret = ft_calloc(len + 1, sizeof(char **));
+        char **ret = ft_calloc(len + 1, sizeof(char *));
         if(!ret) return NULL;
         int i = 0;
         while(i < len) {
                 ret[i] = ft_strdup(table[i]);
-                if(!ret) {
+                if(!ret[i]) {
                         int j = 0;
                         while(j < i) {
                                 free(ret[j]);
+                                j++;
                         }
+                        free(ret); // Correction: Libération de ret
                         return NULL;
                 }
                 i++;
@@ -111,48 +179,51 @@ void free_split(char **split) {
         free(split);
 }
 
-char *get_program_name(char *name, int builtin) {
+char *get_program_name(char *name, int builtin) 
+{
         if(builtin) return ft_strdup(name);
         char *path;
-    char **split_path;
-    char *full_path;
-    int i;
+        char **split_path;
+        char *full_path = NULL; // Correction: Initialisation de full_path
+        int i;
 
-    path = getenv("PATH");
-    if (!path) {
-        fprintf(stderr, "Erreur: La variable d'environnement PATH n'est pas définie.\n");
-        return NULL;
-    }
-
-    split_path = ft_split(path, ':');
-    if (!split_path) {
-        fprintf(stderr, "Erreur: Impossible de diviser le chemin.\n");
-        return NULL;
-    }
-
-    i = 0;
-    while (split_path[i])
-    {
-        char *tmp = ft_strjoin(split_path[i], "/");
-        full_path = ft_strjoin(full_path, name);
-        free(tmp);
-
-        if (access(full_path, F_OK | X_OK) != -1)
+        path = getenv("PATH");
+        if (!path) 
         {
-            free_split(split_path);
-            return(full_path);
+                fprintf(stderr, "Erreur: La variable d'environnement PATH n'est pas définie.\n");
+                return NULL;
         }
 
-        free(full_path);
-        i++;
-    }
-    free_split(split_path);
-    return NULL;
+        split_path = ft_split(path, ':');
+        if (!split_path) {
+                fprintf(stderr, "Erreur: Impossible de diviser le chemin.\n");
+                return NULL;
+        }
+
+        i = 0;
+        while (split_path[i])
+        {
+                char *tmp = ft_strjoin(split_path[i], "/");
+                full_path = ft_strjoin(tmp, name); // Correction: Utilisation de tmp au lieu de full_path
+                free(tmp);
+
+                if (access(full_path, F_OK | X_OK) != -1)
+                {
+                        free_split(split_path);
+                        return full_path;
+                }
+
+                free(full_path);
+               // full_path = NULL; // Correction: Réinitialisation de full_path
+                i++;
+        }
+        free_split(split_path);
+        return NULL;
 }
 
 struct s_exec *lst_to_execs(t_node *list, int *len) {
         *len = lst_len(list);
-        struct s_exec *ret = ft_calloc((size_t)len, sizeof(struct s_exec));
+        struct s_exec *ret = ft_calloc(*len, sizeof(struct s_exec)); // Correction: Suppression du cast (size_t)
         if(!ret) return NULL;
         char **env = get_env_cdt(list->env);
         int i = 0;
@@ -189,17 +260,24 @@ int ft_fork(int exit_err, void (*func)(struct s_exec *, int, int), struct s_exec
         return pid;
 }
 
-int ft_wait_all(struct s_exec *execs, size_t len) {
-      int i;
-      int ret;
+int ft_wait_all(struct s_exec *execs, int len) {
+    int i;
+    int status;
+    int last_exit_status = 0;
 
-      ret = 0;
-      i = 0;
-      while(i < len) {
-              waitpid(execs[i].pid, &ret, 0);
-              i++;
-      }
-      return WEXITSTATUS(ret);
+    for (i = 0; i < len; i++) {
+        if (waitpid(execs[i].pid, &status, 0) == -1) {
+            perror("waitpid");
+            return EXIT_FAILURE;
+        }
+        if (WIFEXITED(status)) {
+            last_exit_status = WEXITSTATUS(status);
+        } else if (WIFSIGNALED(status)) {
+            fprintf(stderr, "Command terminated by signal %d\n", WTERMSIG(status));
+            last_exit_status = 128 + WTERMSIG(status);
+        }
+    }
+    return last_exit_status;
 }
 
 void free_exec(struct s_exec e) {
@@ -209,11 +287,13 @@ void free_exec(struct s_exec e) {
                 free(e.argv[i]);
                 i++;
         }
+        free(e.argv); // Correction: Libération de e.argv
         i = 0;
         while(e.envp[i]) {
-                free(e.argv[i]);
+                free(e.envp[i]); // Correction: Utilisation de e.envp au lieu de e.argv
                 i++;
         }
+        free(e.envp); // Correction: Libération de e.envp
         if(e.in > 2) close(e.in);
         if(e.out > 2) close(e.out);
 }
@@ -225,13 +305,14 @@ void free_all_exec(struct s_exec *execs, int len) {
                 free_exec(execs[i]);
                 i++;
         }
+        free(execs); // Correction: Libération de execs
 }
 
 struct s_exec dup_exec(struct s_exec e) {
         struct s_exec ret;
         ret.exec = ft_strdup(e.exec);
-        ret.argv = ft_calloc(cdt_len(e.argv), sizeof(char *));
-        ret.envp = ft_calloc(cdt_len(e.envp), sizeof(char *));
+        ret.argv = ft_calloc(cdt_len(e.argv) + 1, sizeof(char *)); // Correction: +1 pour le NULL terminal
+        ret.envp = ft_calloc(cdt_len(e.envp) + 1, sizeof(char *)); // Correction: +1 pour le NULL terminal
         int i = 0;
         while(ret.argv && e.argv[i]) {
                 ret.argv[i] = ft_strdup(e.argv[i]);
@@ -252,6 +333,8 @@ int strequ(char *s1, char *s2) {
 }
 
 int builtin(char *name, char **argv, char **envp) {
+        (void)argv;
+        (void)envp;
         int founded = 0;
         if(strequ(name, "env")) {
                 printf("env\n");
@@ -262,7 +345,26 @@ int builtin(char *name, char **argv, char **envp) {
 
 void exec(char *name, char **argv, char **envp) {
         if(!builtin(name, argv, envp))
+        {    
+                
+                // Imprimer name
+                //printf("name: %s\n", name);
+                name = get_path(name);
+                // Imprimer argv
+                //printf("argv: ");
+                //print_args(argv);
+
+                // Imprimer envp
+                //printf("envp:\n");
+                //print_env(envp);
+                
                 execve(name, argv, envp);
+        }
+        else    
+        {
+                bulting_echo(argv, 0);
+                return;
+        }
 }
 
 void ft_exec(struct s_exec *execs, int idx, int len) {
@@ -274,35 +376,59 @@ void ft_exec(struct s_exec *execs, int idx, int len) {
         free_exec(self);
 }
 
-int    ft_exceve(t_node *list, t_data *data, t_env **env)
+int ft_exceve(t_node *list, t_data *data, t_env **env)
 {
-        int len;
-        struct s_exec *lst = lst_to_execs(list, &len);
-        int last_in = 0;
-        int p[2];
-        int i = 0;
-        while(i < len - 1) {
-                if(pipe(p) < 0) {
-                        printf("WARNING: pipe syscall broke [some commands might not work as excpected]\n");
-                        break;
-                }
-                if(lst[i].in < 0) lst[i].in = last_in;
-                if(lst[i].out < 0) lst[i].out = p[1];
-                if(last_in > 0) close(last_in);
-                if(p[1] >= 0) close(p[1]);
-                last_in = p[0];
-                ft_fork(255, ft_exec, lst, (struct s_ituple){i, len});
-                i++;
+    int len;
+    struct s_exec *lst = lst_to_execs(list, &len);
+    int last_in = 0;
+    int p[2];
+    int i = 0;
+
+    (void)data; // Pour éviter l'avertissement de paramètre non utilisé
+    (void)env;  // Pour éviter l'avertissement de paramètre non utilisé
+
+    while (i < len) {
+        if (i < len - 1) {
+            if (pipe(p) < 0) {
+                fprintf(stderr, "Erreur: Échec de la création du pipe.\n");
+                break;
+            }
         }
-        if(lst[i].in < 0) lst[i].in = last_in;
-        if(lst[i].out <= 0) lst[i].out = 1;
-        ft_fork(255, ft_exec, lst, (struct s_ituple){i, len});
-        if(last_in > 0) close(last_in);
-        int ret = ft_wait_all(lst, len);
-        i = 0;
-        while(i < len) {
-                free_exec(lst[i]);
-                i++;
+
+        if (lst[i].in < 0) lst[i].in = last_in;
+        if (lst[i].out < 0) lst[i].out = (i < len - 1) ? p[1] : 1;
+
+        lst[i].pid = fork();
+        if (lst[i].pid < 0) {
+            fprintf(stderr, "Erreur: Échec du fork.\n");
+            break;
+        } else if (lst[i].pid == 0) {
+            // Code du processus enfant
+            if (i < len - 1) close(p[0]);
+            if (lst[i].in != 0) {
+                dup2(lst[i].in, 0);
+                close(lst[i].in);
+            }
+            if (lst[i].out != 1) {
+                dup2(lst[i].out, 1);
+                close(lst[i].out);
+            }
+            exec(lst[i].exec, lst[i].argv, lst[i].envp);
+            exit(1);  // En cas d'échec de exec
         }
-        return ret;
+
+        // Code du processus parent
+        if (last_in > 0) close(last_in);
+        if (i < len - 1) {
+            close(p[1]);
+            last_in = p[0];
+        }
+
+        i++;
+    }
+
+    int ret = ft_wait_all(lst, len);
+    free_all_exec(lst, len);
+    exit(ret);
+    return ret;
 }

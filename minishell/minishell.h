@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/09 17:05:05 by dpoltura          #+#    #+#             */
-/*   Updated: 2024/10/10 09:45:47 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/12 12:34:28 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,8 @@
 #include <sys/wait.h>
 #include <termios.h>
 #include <unistd.h>
+
+extern volatile sig_atomic_t signal_recu;
 
 typedef enum e_tokens
 {
@@ -251,8 +253,8 @@ int     ft_no_cd_(char *s);
 char 	*save_pwd(t_env **env);
 
 ////////////////////////////////Pour le bulting echo/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void    bulting_echo(t_cmd *cmd, int i);
-int 	ft_search_n(t_cmd *cmd, int i);
+void    bulting_echo(char **cmd, int i);
+int 	ft_search_n(char **cmd, int i);
 /////////////////////////////////Pour le bulting pwd/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void	bulting_pwd();
 /////////////////////////////////Pour le bulting export//////////////////////////////////////////////////////////////////////////////////////////////////////////////

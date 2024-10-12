@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/09 17:08:04 by dpoltura          #+#    #+#             */
-/*   Updated: 2024/10/10 13:32:26 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/12 12:35:00 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,8 +99,8 @@ int shell_loop(t_node *list, t_data **data, t_env **env)
 	char *input;
 	(void)data;
 	(void)env;
-        int i = 0;
-	while (i == 0)
+	int exitcode;
+	while (signal_recu != SIGKILL)
 	{    
 		ft_init_data(&data, list);
 		input = readline("minishell$ ");
@@ -116,7 +116,7 @@ int shell_loop(t_node *list, t_data **data, t_env **env)
 		lexer(list);//celui la est bon 
 		lexer_cmd(list, *data);//Here__cod present ici dans le parsing
 
-		i = ft_exceve(list, *data, &list->env);
+		exitcode = ft_exceve(list, *data, &list->env);
 		ft_free_return_loop(list, *data);
 	}
 	ft_free_end(list, env);
