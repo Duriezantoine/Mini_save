@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/01 11:35:23 by aduriez           #+#    #+#             */
-/*   Updated: 2024/10/13 18:11:44 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/13 18:30:30 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -262,6 +262,7 @@ struct s_exec *lst_to_execs(t_node *list, int *len) {
 
                 ret[i].in = list->cmd->input;
                 ret[i].out = list->cmd->output;
+                printf("\ninfile|%d|output=|%d|\n", ret[i].in, ret[i].out);
                 ret[i].pid = -1;
                 i++;
                 list = list->next;

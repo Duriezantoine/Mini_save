@@ -200,8 +200,9 @@ void ft_check_bulting(t_cmd **cmd, t_arg *arg)
 void	ft_open_infile(t_node **list, char *infile)
 {
 	// printf("|DATAVALUE|%s|", data->value);
-	(*list)->save[0] = open(infile, O_RDONLY);
-	if ((*list)->save[0] < 0)
+    //IL famettre cmd
+	(*list)->cmd->input = open(infile, O_RDONLY);
+	if ((*list)->cmd->input < 0)
 	{
         ft_putstr_fd("Not open Infile", 2 );
 	}
@@ -218,7 +219,6 @@ void    ft_check_infile_cmd(t_node *list, t_cmd **cmd, t_arg *arg)
         if (tmp->type == INFILE || tmp->type == HEREDOC_INFILE)
         {
             //Il faut essayer d'ouvrir le fichier et le mettre dans CMD INFILE
-            (*cmd)->input++;
             ft_open_infile(&list, tmp->str_command);
         }
         tmp = tmp->next;
@@ -228,8 +228,8 @@ void ft_init_outfile(t_node **list, char *outfile, int i)
 {
     if(i == 0)
     {
-        (*list)->save[1] = open(outfile, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-        if ((*list)->save[1] < 0)
+        (*list)->cmd->output = open(outfile, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+        if ((*list)->cmd->output< 0)
         {
             perror("open");
             exit(EXIT_FAILURE);
@@ -240,8 +240,8 @@ void ft_init_outfile(t_node **list, char *outfile, int i)
     }
     if(i == 1)
     {
-        (*list)->save[1] = open(outfile, O_WRONLY | O_CREAT | O_APPEND, 0644);
-        if ((*list)->save[1]< 0)
+        (*list)->cmd->output= open(outfile, O_WRONLY | O_CREAT | O_APPEND, 0644);
+        if ((*list)->cmd->output< 0)
         {
         perror("open");
         exit(EXIT_FAILURE);
@@ -261,12 +261,11 @@ void    ft_check_outfile(t_node *list, t_cmd **cmd, t_arg *arg)
     {
         if(tmp->type == OUTFILE)
         {
-            (*cmd)->output++;
             ft_init_outfile(&list, tmp->str_command, 0);
             printf("\n |fd|%d|\n",(*cmd)->output);
         }
         if(tmp->type == APPEND)
-        {    (*cmd)->output++;
+        {   
             ft_init_outfile(&list, tmp->str_command, 1);
             printf("\n |fd|%d|\n",(*cmd)->output);
         }
