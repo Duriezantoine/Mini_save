@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/01 11:35:23 by aduriez           #+#    #+#             */
-/*   Updated: 2024/10/13 18:07:41 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/13 18:11:44 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -386,6 +386,10 @@ int builtin(char *name, char **argv, char **envp) {
                 // printf("env\n");
                 founded = 5;
         }
+                if(strequ(name, "pwd")) {
+                // printf("env\n");
+                founded = 6;
+        }
         return founded;
 }
 
@@ -480,6 +484,11 @@ int ft_excev_butlin(struct s_exec **lst, t_node **list)
                  //Penser a free ici;
                  lst[0]->envp=get_env_cdt((*list)->env);
                 
+        }
+        if (built == 6) 
+        {
+                printf("Je susi bulting Pwd");
+                bulting_pwd();
         }
         
 
