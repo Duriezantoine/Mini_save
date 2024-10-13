@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/01 11:35:23 by aduriez           #+#    #+#             */
-/*   Updated: 2024/10/13 16:06:38 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/13 16:38:37 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -378,6 +378,10 @@ int builtin(char *name, char **argv, char **envp) {
                 // printf("env\n");
                 founded = 3;
         }
+                if(strequ(name, "cd")) {
+                // printf("env\n");
+                founded = 4;
+        }
         return founded;
 }
 
@@ -422,6 +426,7 @@ int exec(char *name, char **argv, char ***envp, struct s_exec **lst) {
                         i++;
                }      
         }
+
 //        print_env((*envp));
         return(0);
 }
@@ -440,18 +445,25 @@ int ft_excev_butlin(struct s_exec **lst, t_node **list)
         i = 0;
         int built;
        built = builtin(lst[0]->exec,lst[0]->argv, lst[0]->envp) ;
-        // if (built == 2) 
-        // {
-        //         // printf("Je susi bulting echo");
-        //         bulting_echo(argv,1);
-        //         return(0);
-        // }
+        if (built == 2) 
+        {
+                printf("\nJe susi bulting echo\n");
+                bulting_echo(lst[0]->argv,1);
+                return(0);
+        }
          if (built == 3) 
         {
                 printf("Je susi bulting Export");
                bulting_export(lst[0]->argv, &lst[0]->envp);
  
+        }         
+        if (built == 4) 
+        {
+                printf("Je susi bulting Cd");
+               bulting_cd((*list)->cmd,(*list),  &(*list)->env);
+ 
         }
+
         (*list)->env = ft_insert_env(lst[0]->envp);
         // print_env_list((*list)->env);
         return(0);
