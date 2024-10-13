@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/01 11:35:23 by aduriez           #+#    #+#             */
-/*   Updated: 2024/10/12 17:45:26 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/13 16:06:38 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -382,9 +382,9 @@ int builtin(char *name, char **argv, char **envp) {
 }
 
 int exec(char *name, char **argv, char ***envp, struct s_exec **lst) {
-       int built;
         int i;
         i = 0;
+        int built;
        built = builtin(name, argv, (*envp) );
         if(!builtin(name, argv, (*envp) ))
         {    
@@ -415,11 +415,14 @@ int exec(char *name, char **argv, char ***envp, struct s_exec **lst) {
                bulting_export(argv, envp);
                while((*lst[i]->envp))
                {
+                        print_env(*envp);
+                        // printf("\n\n\n\n\nJe passe ici\n\n\n\n\n");
+                        // print_env((*lst)[i].envp);
                         (*lst)[i].envp= (*envp);
                         i++;
                }      
         }
-        print_env((*envp));
+//        print_env((*envp));
         return(0);
 }
 
@@ -431,6 +434,28 @@ int exec(char *name, char **argv, char ***envp, struct s_exec **lst) {
 //         exec(self.exec, self.argv, self.envp, &exec);
 //         free_exec(self);
 // }
+
+int ft_excev_butlin(struct s_exec **lst, t_node **list)
+{        int i;
+        i = 0;
+        int built;
+       built = builtin(lst[0]->exec,lst[0]->argv, lst[0]->envp) ;
+        // if (built == 2) 
+        // {
+        //         // printf("Je susi bulting echo");
+        //         bulting_echo(argv,1);
+        //         return(0);
+        // }
+         if (built == 3) 
+        {
+                printf("Je susi bulting Export");
+               bulting_export(lst[0]->argv, &lst[0]->envp);
+ 
+        }
+        (*list)->env = ft_insert_env(lst[0]->envp);
+        // print_env_list((*list)->env);
+        return(0);
+}
 
 int ft_exceve(t_node *list, t_data *data, t_env **env)
 {
@@ -445,6 +470,11 @@ int ft_exceve(t_node *list, t_data *data, t_env **env)
     (void)data; // Pour éviter l'avertissement de paramètre non utilisé
     (void)env;  // Pour éviter l'avertissement de paramètre non utilisé
 
+        //IL faut creer une condition si  il n'y que une seul commande et un bulting
+        if(len == 1 && ft_exceve_bulting(list->cmd->cmd_and_args[0])==0)
+        {
+                return(ft_excev_butlin(&lst, &list));
+        }
     while (i < len) {
         if (i < len - 1) {
             if (pipe(p) < 0) {
@@ -475,7 +505,7 @@ int ft_exceve(t_node *list, t_data *data, t_env **env)
             exit(1);  // En cas d'échec de exec
         }
 
-        print_env(lst[0].envp);
+        // print_env(lst[0].envp);
         // Code du processus parent
         if (last_in > 0) close(last_in);
         if (i < len - 1) {
@@ -490,8 +520,12 @@ int ft_exceve(t_node *list, t_data *data, t_env **env)
         ret = ft_wait_all(lst, len);
      }
 
-     list->env = ft_insert_env(lst[0].envp);
-    free_all_exec(lst, len);
+        // print_env(lst[0].envp);
+        list->env = ft_insert_env(lst[0].envp);
+         free_all_exec(lst, len);
+        printf("Value= |%s|", list->env->key);
+    
+
 //     exit(ret);
     return ret;
 }

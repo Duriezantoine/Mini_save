@@ -6,11 +6,24 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/06 17:56:21 by aduriez           #+#    #+#             */
-/*   Updated: 2024/10/12 17:29:47 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/13 16:01:14 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+void print_char_array(char **array) {
+    if (array == NULL) {
+        printf("Le tableau est NULL\n");
+        return;
+    }
+
+    int i = 0;
+    while (array[i] != NULL) {
+        printf("%s\n", array[i]);
+        i++;
+    }
+}
 
 void    bulting_export(char **argv, char ***env)
 {
@@ -24,15 +37,21 @@ void    bulting_export(char **argv, char ***env)
             printf("NOT VALID");
         else
             {
-                printf("Command est valide");
-                if(ft_search_envp(*env, tmp[x])==0)
+                // printf("Command est valide");
+                if(ft_search_envp(*env, tmp[x])==2)
                 {
-                    printf("\nVariables not exist\n");//Je dois donc la mettre a la creer et l'inserer
-                    ft_delim_envp(env, tmp[x]);
-                    // print_env(env);
+
+                    ft_change_var(env, tmp[x], 0);
+                }
+                else if(ft_search_envp(*env, tmp[x])==0)
+                {
+
+                    ft_delim_envp(env, tmp[x]);//it's ok
                 }
                 else
-                     printf("\nExist\n");//Je dois donc la mettre a la creer et l'inserer
+                {
+                    ft_change_var(env, tmp[x], 1);//it's ok               
+                }
 
 
             }
@@ -56,6 +75,77 @@ int     ft_verif_export_equal(char *str)
 
 }
 
+void ft_search_and_change_envp(char *key, char *str, char ***envp)
+{
+    int x = 0;
+    char *key_envp;
+
+    
+    while((*envp)[x])
+    {
+        key_envp = ft_copy_start((*envp)[x], '=');
+        // printf("KEY_ENVP|%s|, key|%s|", key_envp, key);
+        if (strncmp(key_envp, key, ft_strlen(key)) == 0) {
+            
+            free((*envp)[x]);
+            (*envp)[x] = ft_strjoin(key, "=");
+            (*envp)[x] = ft_strjoin((*envp)[x], str);
+            free(key_envp);
+            break;
+        }
+        free(key_envp);
+        x++;
+    }
+
+//    print_char_array(*envp);
+}
+void ft_search_and_concaten_envp(char *key, char *str, char ***envp)
+{
+    int x = 0;
+    char *key_envp;
+    char *value_envp;
+    char *new_value;
+    
+    while((*envp)[x])
+    {
+        key_envp = ft_copy_start((*envp)[x], '=');
+        if (strncmp(key_envp, key, ft_strlen(key)) == 0) {
+            
+            value_envp = ft_copy_end((*envp)[x], '=');
+            new_value = ft_strjoin(value_envp, str);
+            free((*envp)[x]);
+            (*envp)[x] = ft_strjoin(key_envp, "=");
+            (*envp)[x] = ft_strjoin((*envp)[x], new_value);
+            free(key_envp);
+            free(value_envp);
+            free(new_value);
+            break;
+        }
+        free(key_envp);
+        x++;
+    }
+    // print_char_array(*envp);
+}
+
+ void ft_change_var(char ***env, char *str, int x)
+ {
+    char *key;
+    char *value;
+    //IL faut faire la difference entre la clef et la valeur
+    value = ft_copy_end(str, '=');//A inserer dans ma libft
+    if(x==1)
+    {
+         key = ft_copy_start(str, '=');//A inserer dans ma libft
+        ft_search_and_change_envp(key, value, env);
+    }
+    if(x==0)
+    {
+        key = ft_copy_start(str, '+');//A inserer dans ma libft
+        ft_search_and_concaten_envp(key, value, env);
+    }
+ }
+
+
 void    ft_delim_envp( char  ***env, char *str)
 {
     (void) env;
@@ -66,7 +156,7 @@ void    ft_delim_envp( char  ***env, char *str)
     key = ft_copy_start(str, '=');//A inserer dans ma libft
     value = ft_copy_end(str, '=');//A inserer dans ma libft
 
-    printf("Value = |%s| Key=|%s|", key, value);    
+    // printf("Value = |%s| Key=|%s|", key, value);    
    // Creation d'une protection
     if (key == NULL || value == NULL)
     {

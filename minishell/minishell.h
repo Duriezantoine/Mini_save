@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/09 17:05:05 by dpoltura          #+#    #+#             */
-/*   Updated: 2024/10/12 17:28:53 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/13 15:20:32 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -232,7 +232,7 @@ void	ft_open_infile(t_node **list, char *infile);
 
 //Ce qui permet de mettre en place l'execution 
 int    ft_exceve(t_node *list, t_data *data, t_env **env);//Hesitation a mettre un double pointeur mais normarlement c'est l'exec rien ne doit etre modifier quand on va a l'interieur 
-void ft_exceve_bulting(t_cmd *cmd, t_node *list, t_env ***env);
+int ft_exceve_bulting(char *str);
 
 //Cee qui permet de free
 void free_node(t_node *list, t_data *data);
@@ -301,6 +301,10 @@ void print_env(char **envp);
 
 t_env *ft_insert_env(char **envp);
 void print_env_list(t_env *env);
+ void ft_change_var(char ***env, char *str, int x);
+
+// int ft_excev_butlin(struct s_exec **lst, t_node **list);
+
 
 
 

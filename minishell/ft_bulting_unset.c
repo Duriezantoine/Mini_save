@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/06 18:43:21 by aduriez           #+#    #+#             */
-/*   Updated: 2024/10/12 16:10:43 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/13 16:06:29 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,16 +67,26 @@ int   ft_search_envp(char  **env, char *search)
     (void)search;
     char *key;
     int x;
-
+    int count;
+   char *key_envp;
     x = 0;
     key = ft_copy_start(search, '=');//A inserer dans ma libft
-    printf("Je suis search|%s|", key);
+    count = ft_strlen(key);
     while(env[x])
     {
-        if (strncmp(env[x], search, ft_strlen(search)) == 0)
+        key_envp = ft_copy_start(env[x], '=');
+        if(key[count-1] == '+')
         {
-            return(1);
+            // printf("Je retourne 2");    
+            return(2);
         }
+        // printf("\nKEY_ENVP|%s|SEARCH|%s|\n", key_envp, key);
+        if (strncmp(key_envp, key, ft_strlen(search)) == 0)
+        {
+            // printf("\nfound\n");
+            return(3);
+        }
+        free(key_envp); 
         x++;
     }
     return(0);
