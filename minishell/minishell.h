@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/09 17:05:05 by dpoltura          #+#    #+#             */
-/*   Updated: 2024/10/13 15:20:32 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/13 17:42:48 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -272,9 +272,9 @@ int		 ft_verif_export_space(char *str);
 void    ft_delim_envp( char  ***env, char *str);
 
 /////////////////////////////////Pour le bulting unset//////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void    bulting_unset(t_cmd *cmd, t_node *list);
+void    bulting_unset( char ***env, t_cmd *cmd, t_node *list);	
 int   ft_search_envp(char  **env, char *search);
-void   ft_delete_unset(t_env *env, char *search);
+void ft_delete_unset(t_env **env, char *search);
 /////////////////////////////////Pour le bulting env//////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void bulting_env(t_cmd *cmd, t_node *list);
 void sort_envp(t_env **env);

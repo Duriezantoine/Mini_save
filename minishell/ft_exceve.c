@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/01 11:35:23 by aduriez           #+#    #+#             */
-/*   Updated: 2024/10/13 16:38:37 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/13 18:07:41 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -382,6 +382,10 @@ int builtin(char *name, char **argv, char **envp) {
                 // printf("env\n");
                 founded = 4;
         }
+                if(strequ(name, "unset")) {
+                // printf("env\n");
+                founded = 5;
+        }
         return founded;
 }
 
@@ -407,6 +411,10 @@ int exec(char *name, char **argv, char ***envp, struct s_exec **lst) {
                 execve(name, argv, (*envp));
                 return(0);
         }
+        else if(built==1)
+        {
+
+        }
        else if (built == 2) 
         {
                 // printf("Je susi bulting echo");
@@ -419,14 +427,10 @@ int exec(char *name, char **argv, char ***envp, struct s_exec **lst) {
                bulting_export(argv, envp);
                while((*lst[i]->envp))
                {
-                        print_env(*envp);
-                        // printf("\n\n\n\n\nJe passe ici\n\n\n\n\n");
-                        // print_env((*lst)[i].envp);
                         (*lst)[i].envp= (*envp);
                         i++;
                }      
         }
-
 //        print_env((*envp));
         return(0);
 }
@@ -445,6 +449,12 @@ int ft_excev_butlin(struct s_exec **lst, t_node **list)
         i = 0;
         int built;
        built = builtin(lst[0]->exec,lst[0]->argv, lst[0]->envp) ;
+                if (built == 1) 
+        {
+                printf("Je susi bulting Env");
+               bulting_env((*list)->cmd,(*list));
+ 
+        }   
         if (built == 2) 
         {
                 printf("\nJe susi bulting echo\n");
@@ -463,6 +473,15 @@ int ft_excev_butlin(struct s_exec **lst, t_node **list)
                bulting_cd((*list)->cmd,(*list),  &(*list)->env);
  
         }
+        if (built == 5) 
+        {
+                printf("Je susi bulting Unset");
+               bulting_unset( &lst[0]->envp,(*list)->cmd,(*list));
+                 //Penser a free ici;
+                 lst[0]->envp=get_env_cdt((*list)->env);
+                
+        }
+        
 
         (*list)->env = ft_insert_env(lst[0]->envp);
         // print_env_list((*list)->env);
