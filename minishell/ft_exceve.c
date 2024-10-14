@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/01 11:35:23 by aduriez           #+#    #+#             */
-/*   Updated: 2024/10/14 09:16:23 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/14 11:35:06 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,7 +71,7 @@ char *get_path(char *str)
         free(full_path);
         i++;
     }
-    printf("Command not valid");
+    printf("\nCommand not valid\n");
     return(str);
     // free_split(split_path);
 }
@@ -218,6 +218,7 @@ char *get_program_name(char *name, int builtin)
                // full_path = NULL; // Correction: Réinitialisation de full_path
                 i++;
         }
+        printf("\nCOmmande not Valid\n");
         free_split(split_path);
         return NULL;
 }
@@ -241,6 +242,55 @@ int ft_replace_var(char **str, t_env *env)
         return(0);
 
 }
+int ft_check_cmd_valid(char *str, t_env *env)
+{
+    char *path;
+    char **split_path;
+    char *full_path;
+    int i;
+
+    path = NULL;
+    while (env)
+    {
+        if (ft_strcmp(env->key, "PATH") == 0)
+        {
+            path = env->value;
+            break;
+        }
+        env = env->next;
+    }
+
+    if (!path)
+    {
+        fprintf(stderr, "Erreur: La variable d'environnement PATH n'est pas définie.\n");
+        return 0;
+    }
+
+    split_path = ft_split(path, ':');
+    if (!split_path)
+    {
+        fprintf(stderr, "Erreur: Impossible de diviser le chemin.\n");
+        return 0;
+    }
+
+    i = 0;
+    while (split_path[i])
+    {
+        full_path = ft_strjoin(split_path[i], "/");
+        full_path = ft_strjoin(full_path, str);
+        if (access(full_path, F_OK | X_OK) != -1)
+        {
+            free_split(split_path);
+            free(full_path);
+            return 1; // La commande est valide
+        }
+        free(full_path);
+        i++;
+    }
+
+    free_split(split_path);
+    return 0; // La commande n'est pas valide
+}
 
 struct s_exec *lst_to_execs(t_node *list, int *len) {
         *len = lst_len(list);
@@ -263,6 +313,8 @@ struct s_exec *lst_to_execs(t_node *list, int *len) {
                 ret[i].in = list->cmd->input;
                 ret[i].out = list->cmd->output;
                 ret[i].pid = -1;
+                // if(ft_check_cmd_valid(ret[i].exec, tmp)==0)
+                //         printf("Command \'%s\' not found\n", ret[i].exec);
                 i++;
                 list = list->next;
         }
@@ -393,26 +445,26 @@ int builtin(char *name, char **argv, char **envp) {
         return founded;
 }
 
-int exec(char *name, char **argv, char ***envp, struct s_exec **lst) {
+int exec(char *name, char **argv, char ***envp, struct s_exec **lst, t_env *env) {
         int i;
+        (void)env;
         i = 0;
         int built;
        built = builtin(name, argv, (*envp) );
         if(!builtin(name, argv, (*envp) ))
-        {    
-                // printf("nIci\n");
-                // Imprimer name
-                //printf("name: %s\n", name);
+        {                   // Imprimer name
                 name = get_path(name);
                 // Imprimer argv
                 //printf("argv: ");
                 //print_args(argv);
+              //  printf("Command \'%s\' not found\n", name);
 
                 // Imprimer envp
                 //printf("envp:\n");
                 //print_env(envp);
                 
                 execve(name, argv, (*envp));
+                fprintf(stderr, "Command '%s' not found\n", name);
                 return(0);
         }
         else if(built==1)
@@ -427,7 +479,6 @@ int exec(char *name, char **argv, char ***envp, struct s_exec **lst) {
         }
          else if (built == 3) 
         {
-                printf("Je susi bulting Export");
                bulting_export(argv, envp);
                while((*lst[i]->envp))
                {
@@ -503,19 +554,24 @@ int ft_exceve(t_node *list, t_data *data, t_env **env)
     struct s_exec *lst = lst_to_execs(list, &len);
     int last_in = 0;
     int p[2];
+    int error_pipe[2];
     int i = 0;
-    int ret;
-    ret = -1;
+    int ret = -1;
+    (void)data;
+    (void)env;
 
-    (void)data; // Pour éviter l'avertissement de paramètre non utilisé
-    (void)env;  // Pour éviter l'avertissement de paramètre non utilisé
+    if (pipe(error_pipe) < 0) {
+        fprintf(stderr, "Erreur: Échec de la création du pipe d'erreur.\n");
+        return -1;
+    }
 
-        //IL faut creer une condition si  il n'y que une seul commande et un bulting
-        if(len == 1 && ft_exceve_bulting(list->cmd->cmd_and_args[0])==0)
-        {
-                return(ft_excev_butlin(&lst, &list));
-        }
-        printf("LEN=|%d|", len );
+    if (len == 1 && ft_exceve_bulting(list->cmd->cmd_and_args[0]) == 0)
+    {
+        close(error_pipe[0]);
+        close(error_pipe[1]);
+        return ft_excev_butlin(&lst, &list);
+    }
+
     while (i < len) {
         if (i < len - 1) {
             if (pipe(p) < 0) {
@@ -523,7 +579,6 @@ int ft_exceve(t_node *list, t_data *data, t_env **env)
                 break;
             }
         }
-
         if (lst[i].in < 0) lst[i].in = last_in;
         if (lst[i].out < 0) lst[i].out = (i < len - 1) ? p[1] : 1;
 
@@ -533,6 +588,7 @@ int ft_exceve(t_node *list, t_data *data, t_env **env)
             break;
         } else if (lst[i].pid == 0) {
             // Code du processus enfant
+            close(error_pipe[0]);
             if (i < len - 1) close(p[0]);
             if (lst[i].in != 0) {
                 dup2(lst[i].in, 0);
@@ -542,29 +598,34 @@ int ft_exceve(t_node *list, t_data *data, t_env **env)
                 dup2(lst[i].out, 1);
                 close(lst[i].out);
             }
-            ret = exec(lst[i].exec, lst[i].argv, &lst[i].envp, &lst);
-            exit(1);  // En cas d'échec de exec
+            dup2(error_pipe[1], 2);  // Rediriger stderr vers le pipe d'erreur
+            close(error_pipe[1]);
+            
+            exit(exec(lst[i].exec, lst[i].argv, &lst[i].envp, &lst, list->env));
         }
 
-        // print_env(lst[0].envp);
         // Code du processus parent
         if (last_in > 0) close(last_in);
         if (i < len - 1) {
             close(p[1]);
             last_in = p[0];
         }
-
         i++;
-         }
-        if  (ret!=0)
-     {
-        ret = ft_wait_all(lst, len);
-     }
+    }
 
-        // print_env(lst[0].envp);
-        list->env = ft_insert_env(lst[0].envp);
-         free_all_exec(lst, len);
-        printf("Value= |%s|", list->env->key);
-//     exit(ret);
+    close(error_pipe[1]);  // Fermer l'extrémité d'écriture du pipe d'erreur
+
+    ret = ft_wait_all(lst, len);
+
+    // Lire et afficher les erreurs après l'exécution de toutes les commandes
+    char error_buffer[1024];
+    ssize_t error_read;
+    while ((error_read = read(error_pipe[0], error_buffer, sizeof(error_buffer))) > 0) {
+        write(2, error_buffer, error_read);
+    }
+    close(error_pipe[0]);
+
+    list->env = ft_insert_env(lst[0].envp);
+    free_all_exec(lst, len);
     return ret;
 }
