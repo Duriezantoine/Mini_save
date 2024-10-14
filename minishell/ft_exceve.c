@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/01 11:35:23 by aduriez           #+#    #+#             */
-/*   Updated: 2024/10/14 11:35:06 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/14 17:42:04 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ void print_args(char **argv) {
         return;
     }
     while (*argv != NULL) {
-        printf("%s ", *argv);
+        printf("|Iciconnar|%s\\n ", *argv);
         argv++;
     }
     printf("\n");
@@ -41,7 +41,7 @@ char *get_path(char *str)
     char **split_path;
     char *full_path;
     int i;
-  printf("Je suis a la rechercher du chemin");
+//   printf("Je suis a la rechercher du chemin");
     path = getenv("PATH");
     if (!path) {
         fprintf(stderr, "Erreur: La variable d'environnement PATH n'est pas définie.\n");
@@ -71,7 +71,7 @@ char *get_path(char *str)
         free(full_path);
         i++;
     }
-    printf("\nCommand not valid\n");
+//     printf("\nCommand not valid\n");
     return(str);
     // free_split(split_path);
 }
@@ -305,10 +305,10 @@ struct s_exec *lst_to_execs(t_node *list, int *len) {
                 ret[i].argv = clone_cdt(list->cmd->cmd_and_args);
                 ret[i].envp = clone_cdt(env);
                 //Verification pour la commande
-                if (ret[i].exec != NULL)
-                        if (ret[i].exec[0]== '$')
-                                if(ft_replace_var(&ret[i].exec, tmp)==1)
-                                        printf("La variable recherche n'existe pas ");
+                // if (ret[i].exec != NULL)
+                //         if (ret[i].exec[0]== '$')
+                //                 if(ft_replace_var(&ret[i].exec, tmp)==1)
+                //                         printf("La variable recherche n'existe pas ");
                 //Verification pour les arguments
                 ret[i].in = list->cmd->input;
                 ret[i].out = list->cmd->output;
@@ -489,16 +489,6 @@ int exec(char *name, char **argv, char ***envp, struct s_exec **lst, t_env *env)
 //        print_env((*envp));
         return(0);
 }
-
-// void ft_exec(struct s_exec *execs, int idx, int len) {
-//         struct s_exec self = dup_exec(execs[idx]);
-//         dup2(self.in, 0);
-//         dup2(self.out, 1);
-//         free_all_exec(execs, len);
-//         exec(self.exec, self.argv, self.envp, &exec);
-//         free_exec(self);
-// }
-
 int ft_excev_butlin(struct s_exec **lst, t_node **list)
 {        int i;
         i = 0;
@@ -519,6 +509,7 @@ int ft_excev_butlin(struct s_exec **lst, t_node **list)
          if (built == 3) 
         {
                 printf("Je susi bulting Export");
+                 print_args(lst[0]->argv);
                bulting_export(lst[0]->argv, &lst[0]->envp);
  
         }         

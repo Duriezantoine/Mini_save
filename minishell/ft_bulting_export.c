@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/06 17:56:21 by aduriez           #+#    #+#             */
-/*   Updated: 2024/10/13 16:01:14 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/14 17:41:33 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,9 @@ void    bulting_export(char **argv, char ***env)
     int x = 1;
     while(tmp[x])
     {
+        // if(tmp[x][ft_strlen(tmp)-1]=='=')
+
+        printf("\nTMP[x]=|%s|\n",tmp[x] );
         if(ft_verif_export(tmp[x])==0)
             printf("NOT VALID");
         else
@@ -272,6 +275,7 @@ int ft_verif_export_space(char *str)
 
 int     ft_verif_export(char *str)
 {
+    printf("\nSTR|%s|\n", str);
     if (ft_verif_export_equal(str)==0)
     {
         return(0);

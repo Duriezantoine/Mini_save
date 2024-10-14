@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/09 17:05:05 by dpoltura          #+#    #+#             */
-/*   Updated: 2024/10/13 17:42:48 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/14 16:40:23 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -180,7 +180,7 @@ int ft_isalnum(int c);
 void ft_init_tab_echo_malloc(t_echo *data_echo, char *input, int i);
 int ft_nbr_quot(char *input, int i);
 char **ft_parsing_init(t_data *data, char *input);
-int ft_parsing(t_node *list, t_data **data, char *input);
+int ft_parsing(t_node *list, t_data **data, char *input, t_env *env);
 char **split_string(char *str, int *len);
 int ft_init_token_space(t_echo *data_echo, char *input, int i);
 void ft_init_echo_malloc(t_echo *data_echo);
@@ -193,8 +193,8 @@ void ft_search_built(t_node **list, char **save);
 int ft_split_with_space(t_echo *data_echo, char *input);
 char *ft_strcpy(char *dest, char *src);
 char *ft_strcat(char *dest, char src);
-void ft_insert_new_data_with_data(t_save **save, t_echo *data_echo);
-void ft_insert_data_data_echo_s(t_save **save, t_echo *data_echo, int iterateur_s);
+void ft_insert_new_data_with_data(t_save **save, t_echo *data_echo, t_env *env);
+void ft_insert_data_data_echo_s(t_save **save, t_echo *data_echo, int iterateur_s, t_env *env);
 void ft_init_data(t_data ***data, t_node *list);
 void print_list(t_node *list);
 int ft_strcmp(char *s1, char *s2);
@@ -304,6 +304,7 @@ void print_env_list(t_env *env);
  void ft_change_var(char ***env, char *str, int x);
 
 // int ft_excev_butlin(struct s_exec **lst, t_node **list);
+char 		*ft_change_var_environnement(char *search,t_env  **env);
 
 
 

@@ -6,12 +6,23 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/09 17:08:04 by dpoltura          #+#    #+#             */
-/*   Updated: 2024/10/13 17:25:02 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/14 17:29:23 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+void print_char_array_d(char **array)
+{
+    if (!array)
+        return;
 
+    int i = 0;
+    while (array[i])
+    {
+        printf("%s\n", array[i]);
+        i++;
+    }
+}
 void print_cmd(t_node *list) {
     if (list == NULL || list->cmd == NULL) {
         printf("List or cmd is NULL\n");
@@ -100,6 +111,198 @@ void print_env_list(t_env *env) {
     }
 }
 
+void split_string_d	(char *str, char **result)
+{
+   int i, j, k, in_quotes, in_single_quotes;
+    char *temp;
+    in_quotes = 0;
+    in_single_quotes = 0;
+    j = 0;
+    k = 0;
+    temp = (char *)malloc(sizeof(char) * (strlen(str) + 1));
+    if (!temp)
+        return;
+
+    for (i = 0; str[i]; i++)
+    {
+        if (str[i] == '"')
+            in_quotes = !in_quotes;
+        if (str[i] == '\'')
+            in_single_quotes = !in_single_quotes;
+        if (( str[i] == ' ') && !in_quotes && !in_single_quotes)
+        {
+            temp[j] = '\0';
+            result[k++] = strdup(temp);
+            j = 0;
+        }
+        else
+        {
+            temp[j++] = str[i];
+        }
+    }
+    temp[j] = '\0';
+    result[k++] = strdup(temp);
+    free(temp);
+}
+
+int count_dollars( char *str)
+{
+    int count = 0;
+    while (*str)
+    {
+        if (*str == '$')
+        {
+            count++;
+        }
+        str++;
+    }
+    return count;
+}
+
+int count_dollar_followed_by_characters(char *str)
+{
+    int count = 0;
+    while (*str)
+    {
+        if (*(str + 1) && isalnum(*(str + 1)))
+        {
+            count++;
+            while (*(str + 1) && isalnum(*(str + 1)))
+            {
+                str++;
+            }
+        }
+        str++;
+    }
+    return count;
+}
+
+char **allocate_result(int len)
+{
+    char **result = (char **)malloc(sizeof(char *) * len);
+    if (!result)
+        return NULL;
+    return result;
+}
+
+int count_segments( char *str)
+{
+    int i, len, in_quotes, in_single_quotes;
+    len = 0;
+    in_quotes = 0;
+    in_single_quotes = 0;
+    for (i = 0; str[i]; i++)
+    {
+        if (str[i] == '"')
+            in_quotes = !in_quotes;
+        if (str[i] == '\'')
+            in_single_quotes = !in_single_quotes;
+        if (( str[i] == ' ') && !in_quotes && !in_single_quotes)
+            len++;
+    }
+    return len + 1;
+}
+
+char **ft_split_d( char *str)
+{
+    int len = count_segments(str);
+    char **result = allocate_result(len);
+    if (result)
+        split_string_d(str, result);
+    return result;
+}
+static int	is_quote(char c, int *in_single, int *in_double)
+{
+	if (c == '\'')
+	{
+		*in_single = !(*in_single);
+		return (1);
+	}
+	else if (c == '\"')
+	{
+		*in_double = !(*in_double);
+		return (1);
+	}
+	return (0);
+}
+
+int	count_dollars_outside_quotes(char *str)
+{
+	int	count;
+	int	i;
+	int	in_single;
+	int	in_double;
+
+	count = 0;
+	i = 0;
+	in_single = 0;
+	in_double = 0;
+	while (str[i])
+	{
+		if (!is_quote(str[i], &in_single, &in_double))
+		{
+			if (str[i] == '$' && !in_single && !in_double)
+				count++;
+		}
+		i++;
+	}
+	return (count);
+}
+int ft_space_or_null(char *str)
+{
+	int x;
+	x=0;
+	while(str[x])
+	{
+		if(str[x] != ' ')
+			return(1);
+		x++;
+	}
+	return(0);
+}
+
+void	ft_change_input(char **str, t_env *env)
+{
+	char *tmp_tmp;
+	char **tmp;
+	char *save;
+	char *save_tmp;
+	int x;
+	x = 0;
+	(*str) = ft_strjoin((*str), " ");
+	while (count_dollars_outside_quotes((*str))<=0)
+		break;	
+	save = ft_copy_start((*str), '$');
+	// save = ft_strjoin(str, '$');
+	save_tmp = ft_strdup(" ");
+	tmp = ft_split_d((*str));
+	while(tmp[x])
+	{
+		if (ft_space_or_null(tmp[x])==0)
+			break;
+		if (tmp[x][0]== '$')
+		{
+			tmp_tmp = ft_change_var_environnement(tmp[x],&env);
+			tmp[x] = ft_strdup(tmp_tmp);
+
+		}
+		save_tmp = ft_strjoin(save_tmp, tmp[x]);
+		save_tmp = ft_strjoin(save_tmp, " ");
+		// if(tmp_tmp[0]!='\0')
+		// 	free(tmp_tmp);
+		// free(tmp[x]);
+		x++;
+		if (tmp[x]== NULL)
+			break;
+	}
+	free((*str));
+	printf("New input = %s",save_tmp);
+	(*str) = ft_strdup(save_tmp);
+	//print_char_array_d(tmp);
+	//free(save_tmp)
+
+}
+
 int shell_loop(t_node *list, t_data **data, t_env **env)
 {
 	char *input;
@@ -108,12 +311,16 @@ int shell_loop(t_node *list, t_data **data, t_env **env)
 	int exitcode;
 	while (signal_recu != SIGKILL)
 	{    
+
 		ft_init_data(&data, list);
 		input = readline("minishell$ ");
+		ft_change_input(&input, *env);
+		printf("INPUT|%s|", input);
+		//Faire une conditions ici pour le dollar 
 		if ((!input || ft_strlen(input)) && ft_white_space(input) == 0)
 			ft_out_exit(1);
 		// Mise en place d'une structure pour les signaux *2
-		if (ft_parsing(list, data, input) == 1)
+		if (ft_parsing(list, data, input, *env) == 1)
 		{
             free(input);
 			break;

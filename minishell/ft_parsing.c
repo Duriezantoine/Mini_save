@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/11 10:51:14 by dpoltura          #+#    #+#             */
-/*   Updated: 2024/10/08 15:07:43 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/14 13:58:00 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,7 @@ void print_list_save(t_save* head) {
     }
 }
 
-int ft_parsing(t_node *list, t_data **data, char *input)
+int ft_parsing(t_node *list, t_data **data, char *input, t_env *env)
 {
     int i;
 
@@ -74,7 +74,7 @@ int ft_parsing(t_node *list, t_data **data, char *input)
         if (ft_split_with_space(&data_echo, tokens[i]) == 1)
             return (1); // Voir comment acceder a ma data
         save = NULL;
-        ft_insert_new_data_with_data(&save, &data_echo);
+        ft_insert_new_data_with_data(&save, &data_echo, env);
         t_save *tmp = save;
         while (tmp)
         { // Boucle permettant d'introduire dans la list->arg

@@ -6,11 +6,32 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/11 10:51:14 by dpoltura          #+#    #+#             */
-/*   Updated: 2024/10/13 14:23:02 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/14 17:18:35 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+char    *ft_change_var_environnement(char *search,t_env  **env)
+{
+	t_env *tmp;
+	tmp = *env;
+    char *save;
+    char *tmp_save;
+    save = ft_copy_end(search, '$');
+
+	while(tmp)
+	{
+        if(strequ(save, tmp->key)) {
+				tmp_save = ft_strdup(tmp->value);
+                //  free(save);
+                return(tmp_save);
+        }		
+		tmp = tmp->next;
+	}
+    free(save);
+    return(search);
+}
 
 char *ft_strcat(char *dest, char src)
 {
@@ -84,6 +105,8 @@ void ft_insert_data_data_echo_w(t_save **save, t_echo *data_echo, int iterateur_
     }
 
     strcpy(new_node->str, data_echo->str_w_quot[iterateur_w].str);
+    // printf("Voila ce que je viens d'inserer |%s|\n", new_node->str);
+
     new_node->bool = data_echo->str_w_quot[iterateur_w].bool; // Initialisation de l'attribut bool (vous pouvez le définir selon vos besoins)
     new_node->next = NULL;
 
@@ -103,8 +126,9 @@ void ft_insert_data_data_echo_w(t_save **save, t_echo *data_echo, int iterateur_
     }
 }
 
-void ft_insert_data_data_echo_s(t_save **save, t_echo *data_echo, int iterateur_s)
+void ft_insert_data_data_echo_s(t_save **save, t_echo *data_echo, int iterateur_s, t_env *env)
 {
+    (void)env;
     t_save *new_node = ft_calloc(sizeof(t_save), 1);//Calloc plus propre//Des noe
     if (!new_node)
     {
@@ -114,6 +138,7 @@ void ft_insert_data_data_echo_s(t_save **save, t_echo *data_echo, int iterateur_
 
     
     new_node->str= ft_strdup(data_echo->str_s_quot[iterateur_s].str );
+    // printf("1Voila ce que je viens d'inserer |%s|\n", new_node->str);
     data_echo->str_s_quot[iterateur_s].order =-2;
     new_node->bool = 0; // Initialisation de l'attribut bool (vous pouvez le définir selon vos besoins)
     new_node->next = NULL;
@@ -138,7 +163,7 @@ void ft_insert_data_data_echo_s(t_save **save, t_echo *data_echo, int iterateur_
     // free(data_echo->str_s_quot[iterateur_s].str); // Assurez-vous que cela est correct dans votre contexte
 }
 
-void ft_insert_new_data_with_data(t_save **save, t_echo *data_echo)
+void ft_insert_new_data_with_data(t_save **save, t_echo *data_echo, t_env *env)
 {
     (void)data_echo;
     int i;
@@ -152,7 +177,7 @@ void ft_insert_new_data_with_data(t_save **save, t_echo *data_echo)
         while (iterateur_s < data_echo->s_quot)
         {
             if (data_echo->str_s_quot[iterateur_s].order == i)
-                ft_insert_data_data_echo_s(save, data_echo, iterateur_s);
+                ft_insert_data_data_echo_s(save, data_echo, iterateur_s, env);
             iterateur_s++;
         }
         iterateur_w = 0;
@@ -453,7 +478,7 @@ int ft_nbr_quot(char *input, int i)
 
 int ft_isalnum(int c)
 {
-    if ((c >= 48 && c <= 57) || (c >= 97 && c <= 122) || (c >= 65 && c <= 90) || (c == 45) || (c == 61) || (c==46) || (c == 126) || (c == 47) || (c == 43))
+    if ((c >= 48 && c <= 57) || (c >= 97 && c <= 122) || (c >= 65 && c <= 90) || (c == 45) || (c == 61) || (c==46) || (c == 126) || (c == 47) || (c == 43) || (c==36))
     {
         // if (c == 45)
         return (1);
