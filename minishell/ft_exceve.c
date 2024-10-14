@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/01 11:35:23 by aduriez           #+#    #+#             */
-/*   Updated: 2024/10/13 18:30:30 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/14 09:16:23 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ char *get_path(char *str)
     char **split_path;
     char *full_path;
     int i;
-
+  printf("Je suis a la rechercher du chemin");
     path = getenv("PATH");
     if (!path) {
         fprintf(stderr, "Erreur: La variable d'environnement PATH n'est pas définie.\n");
@@ -71,6 +71,7 @@ char *get_path(char *str)
         free(full_path);
         i++;
     }
+    printf("Command not valid");
     return(str);
     // free_split(split_path);
 }
@@ -254,15 +255,13 @@ struct s_exec *lst_to_execs(t_node *list, int *len) {
                 ret[i].argv = clone_cdt(list->cmd->cmd_and_args);
                 ret[i].envp = clone_cdt(env);
                 //Verification pour la commande
-                if (ret[i].exec[0]== '$')
-                        if(ft_replace_var(&ret[i].exec, tmp)==1)
-                                printf("La variable recherche n'existe pas ");
+                if (ret[i].exec != NULL)
+                        if (ret[i].exec[0]== '$')
+                                if(ft_replace_var(&ret[i].exec, tmp)==1)
+                                        printf("La variable recherche n'existe pas ");
                 //Verification pour les arguments
-
-
                 ret[i].in = list->cmd->input;
                 ret[i].out = list->cmd->output;
-                printf("\ninfile|%d|output=|%d|\n", ret[i].in, ret[i].out);
                 ret[i].pid = -1;
                 i++;
                 list = list->next;
@@ -516,6 +515,7 @@ int ft_exceve(t_node *list, t_data *data, t_env **env)
         {
                 return(ft_excev_butlin(&lst, &list));
         }
+        printf("LEN=|%d|", len );
     while (i < len) {
         if (i < len - 1) {
             if (pipe(p) < 0) {
@@ -565,8 +565,6 @@ int ft_exceve(t_node *list, t_data *data, t_env **env)
         list->env = ft_insert_env(lst[0].envp);
          free_all_exec(lst, len);
         printf("Value= |%s|", list->env->key);
-    
-
 //     exit(ret);
     return ret;
 }
