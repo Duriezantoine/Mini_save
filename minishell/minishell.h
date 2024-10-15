@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/09 17:05:05 by dpoltura          #+#    #+#             */
-/*   Updated: 2024/10/15 10:04:47 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/15 16:59:19 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -279,9 +279,12 @@ void ft_delete_unset(t_env **env, char *search);
 void bulting_env( t_node *list);
 void sort_envp(t_env **env);
 t_env *copy_env(t_env *env) ;
+/////////////////////////////////Pour le bulting exit//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+int bulting_exit(char **args, t_node *list, t_env **env);
 /////////////////////////////////Pour le free//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void ft_free_end(t_node *list, t_env **env);
+void ft_free_end(t_node *list, t_env **env, t_data **data);
 void 	ft_free_return_loop(t_node *list, t_data *data);
+void	ft_free_env(t_env **env);
 
 void ft_insert_nodes(t_node *list, t_arg *new_node);
 int ft_handle_redirection(char *input, int *i, int *ss_quot);
@@ -307,7 +310,11 @@ void print_env_list(t_env *env);
 // int ft_excev_butlin(struct s_exec **lst, t_node **list);
 char 		*ft_change_var_environnement(char *search,t_env  **env);
 
+// Prototype de la fonction signal_handler
+void signal_handler(int sig);
 
+// Prototype de la fonction check_signal_status
+int check_signal_status(void);
 
 
 

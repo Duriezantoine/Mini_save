@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/06 17:51:35 by aduriez           #+#    #+#             */
-/*   Updated: 2024/10/12 14:06:19 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/15 14:51:40 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,8 @@ int    bulting_echo(char **cmd, int i)
     int n;
 
     n = 0;
+    if(cmd[i]== NULL)
+        return(0);
      if (ft_search_n(cmd, i)== 0)
      {
         // printf("ici");
@@ -31,7 +33,7 @@ int    bulting_echo(char **cmd, int i)
             {
                 if(i != 0)
                 {
-                    printf("%s", cmd[i]);
+                    printf("%s ", cmd[i]);
                 }
                 i++;
             }
@@ -50,7 +52,7 @@ int ft_search_n(char **cmd, int i)
         if (cmd[i][x]== '-' && cmd[i][x+1] == 'n')
         {
             x = x+2;
-            if (cmd[i][x+3]== '\0')
+            if (cmd[i][x]== '\0')
             {
             return (0);
             }

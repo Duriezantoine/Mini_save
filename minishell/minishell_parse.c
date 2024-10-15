@@ -6,9 +6,12 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/09 17:08:04 by dpoltura          #+#    #+#             */
-/*   Updated: 2024/10/15 09:57:50 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/15 14:18:02 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+// extern volatile sig_atomic_t signal_recu;
+
 
 #include "minishell.h"
 void print_char_array_d(char **array)
@@ -261,21 +264,22 @@ int ft_space_or_null(char *str)
 	return(0);
 }
 
-void	ft_change_input(char **str, t_env *env)
+char	*ft_change_input(char **str, t_env *env)
 {
 	char *tmp_tmp;
 	char **tmp;
-	char *save;
 	char *save_tmp;
 	int x;
+	char *save;
 	x = 0;
-	(*str) = ft_strjoin((*str), " ");
+	save_tmp =NULL;
+	save = ft_strjoin((*str), " ");
 	while (count_dollars_outside_quotes((*str))<=0)
 		break;	
-	save = ft_copy_start((*str), '$');
 	// save = ft_strjoin(str, '$');
 	save_tmp = ft_strdup(" ");
-	tmp = ft_split_d((*str));
+	tmp = ft_split_d((save));
+	free(save);
 	while(tmp[x])
 	{
 		if (ft_space_or_null(tmp[x])==0)
@@ -283,60 +287,113 @@ void	ft_change_input(char **str, t_env *env)
 		if (tmp[x][0]== '$')
 		{
 			tmp_tmp = ft_change_var_environnement(tmp[x],&env);
-			tmp[x] = ft_strdup(tmp_tmp);
+			tmp[x] = tmp_tmp;
 
 		}
-		save_tmp = ft_strjoin(save_tmp, tmp[x]);
-		save_tmp = ft_strjoin(save_tmp, " ");
+		save = ft_strjoin(save_tmp, tmp[x]);
+		free(save_tmp);
+		save_tmp = ft_strjoin(save, " ");
+		free(save);
 		// if(tmp_tmp[0]!='\0')
-		// 	free(tmp_tmp);
-		// free(tmp[x]);
+		free(tmp[x]);
 		x++;
 		if (tmp[x]== NULL)
 			break;
 	}
+
 	free((*str));
-	// printf("New input = %s",	 	save_tmp);
-	(*str) = ft_strdup(save_tmp);
+	// free(tmp_tmp);
+	free(tmp[x]);
+	free(tmp);
+	// free(save);
+	return(save_tmp);
 	//print_char_array_d(tmp);
-	//free(save_tmp)
 
 }
 
+
+int check_signal_status(void)
+{
+    if (signal_recu == SIGINT)
+    {
+        // Gestion du Ctrl+C
+        printf("\n");
+        rl_on_new_line();
+        rl_redisplay();
+        signal_recu = 0;
+        return 1;
+    }
+    else if (signal_recu == SIGQUIT)
+    {
+        // Gestion du Ctrl+\
+        // Ne rien faire, juste réinitialiser le signal
+        signal_recu = 0;
+        return 1;
+    }
+    else if (signal_recu == SIGKILL)
+    {
+        // Sortir de la boucle si SIGKILL est reçu
+        return 0;
+    }
+    return 1;
+}
+
+void signal_handler(int sig)
+{
+    signal_recu = sig;
+}
 int shell_loop(t_node *list, t_data **data, t_env **env)
 {
-	char *input;
-	(void)data;
-	(void)env;
-	int exitcode;
-	while (signal_recu != SIGKILL)
-	{    
+    char *input;
+    int exitcode = 0;
 
-		ft_init_data(&data, list);
-		input = readline("minishell$ ");
-		ft_change_input(&input, *env);
-		// printf("INPUT|%s|", input);
-		//Faire une conditions ici pour le dollar 
-		if ((!input || ft_strlen(input)) && ft_white_space(input) == 0)
-			ft_out_exit(1);
-		// Mise en place d'une structure pour les signaux *2
-		if (ft_parsing(list, data, input, *env) == 1)
-		{
+    // Configuration du gestionnaire de signaux
+    signal(SIGINT, signal_handler);
+    signal(SIGQUIT, signal_handler);
+
+    while (1)
+    {    
+
+        ft_init_data(&data, list);
+        input = readline("minishell$ ");
+        
+        if (input == NULL)  // Gestion de Ctrl+D (EOF)
+        {
+            printf("\nexit\n");
+            break;
+        }
+
+        add_history(input);  // Ajout de la commande à l'historique
+        input = ft_change_input(&input, *env);
+
+        if (ft_strlen(input) == 0 || ft_white_space(input) == 0)
+        {
+			printf("\nICIC\n");
             free(input);
+            continue;
+        }
+
+
+        if (ft_parsing(list, data, input, *env) == 1)
+        {
+            free(input);
+            break;
+        }
+
+        free(input);
+        lexer(list);
+        lexer_cmd(list, *data);
+        exitcode = ft_exceve(list, *data, &list->env);
+        ft_free_return_loop(list, *data);
+
+        // if (exitcode == 252)
+        //     break;
+		if (!check_signal_status())
 			break;
-		} // Mise en place d'une structure
-		free(input);
-		lexer(list);//celui la est bon 
-		lexer_cmd(list, *data);//Here__cod present ici dans le parsing
+    }
 
-		exitcode = ft_exceve(list, *data, &list->env);
-		ft_free_return_loop(list, *data);
-		// print_env_list(list->env);
-
-	}
-	ft_free_end(list, env);
-	exit(exitcode);
-	return (0);
+    ft_free_end(list, env, data);
+    return exitcode;
 }
 void 	ft_free_return_loop(t_node *list, t_data *data)
 {
@@ -350,20 +407,29 @@ void 	ft_free_return_loop(t_node *list, t_data *data)
 
 }
 
-void ft_free_end(t_node *list, t_env **env)
+void    ft_free_env(t_env **env)
+{
+    t_env *envt;
+    while(*env)
+    {
+            envt = (*env)->next;
+            free((*env)->key);
+            free((*env)->value);
+            // printf("freeing ptr %p\n", *env);
+            free(*env);
+            *env = envt;
+    }
+}
+
+void ft_free_end(t_node *list, t_env **env, t_data **data)
 {
         if(list->save[0] >= 0) close(list->save[0]);
         if(list->save[1] >= 0) close(list->save[1]);
-        t_env *envt;
-        while(*env) {
-                envt = (*env)->next;
-                free((*env)->key);
-                free((*env)->value);
-				// printf("freeing ptr %p\n", *env);
-                free(*env);
-                *env = envt;
-        }
+        ft_free_env(env);
         free(list);
+        if (data)
+		    free(*data);
+        clear_history();
 }
 
 void add_env_to_list(t_env **head, t_env **current, t_env *new_env)

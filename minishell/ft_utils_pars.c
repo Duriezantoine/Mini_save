@@ -6,13 +6,13 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/11 10:51:14 by dpoltura          #+#    #+#             */
-/*   Updated: 2024/10/14 17:18:35 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/15 16:01:59 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-char    *ft_change_var_environnement(char *search,t_env  **env)
+char    *ft_change_var_environnement(char *search, t_env **env)
 {
 	t_env *tmp;
 	tmp = *env;
@@ -24,7 +24,8 @@ char    *ft_change_var_environnement(char *search,t_env  **env)
 	{
         if(strequ(save, tmp->key)) {
 				tmp_save = ft_strdup(tmp->value);
-                //  free(save);
+                 free(save);
+                 free(search);
                 return(tmp_save);
         }		
 		tmp = tmp->next;
@@ -478,7 +479,7 @@ int ft_nbr_quot(char *input, int i)
 
 int ft_isalnum(int c)
 {
-    if ((c >= 48 && c <= 57) || (c >= 97 && c <= 122) || (c >= 65 && c <= 90) || (c == 45) || (c == 61) || (c==46) || (c == 126) || (c == 47) || (c == 43) || (c==36))
+    if ((c >= 48 && c <= 57) || (c >= 97 && c <= 122) || (c >= 65 && c <= 90) || (c == 45) || (c == 61) || (c==46) || (c == 126) || (c == 47) || (c == 43) || (c==36) || (c ==95))
     {
         // if (c == 45)
         return (1);

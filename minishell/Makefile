@@ -6,7 +6,7 @@
 #    By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/04/09 17:09:10 by dpoltura          #+#    #+#              #
-#    Updated: 2024/10/15 08:48:19 by aduriez          ###   ########.fr        #
+#    Updated: 2024/10/15 16:59:43 by aduriez          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -30,6 +30,7 @@ SRCS =	minishell_parse.c \
 		ft_bulting_pwd.c \
 		ft_bulting_cd.c \
 		ft_bulting_echo.c \
+		ft_bulting_exit.c \
 		ft_bulting_export.c \
 		ft_bulting_unset.c \
 		ft_bulting_env.c \

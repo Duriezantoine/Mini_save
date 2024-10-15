@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/06 17:56:21 by aduriez           #+#    #+#             */
-/*   Updated: 2024/10/15 08:11:54 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/15 16:13:28 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,7 +82,7 @@ void ft_search_and_change_envp(char *key, char *str, char ***envp)
 {
     int x = 0;
     char *key_envp;
-
+    char *tmp;
     
     while((*envp)[x])
     {
@@ -91,8 +91,9 @@ void ft_search_and_change_envp(char *key, char *str, char ***envp)
         if (strncmp(key_envp, key, ft_strlen(key)) == 0) {
             
             free((*envp)[x]);
-            (*envp)[x] = ft_strjoin(key, "=");
+            tmp= ft_strjoin(key, "=");
             (*envp)[x] = ft_strjoin((*envp)[x], str);
+            free(tmp);
             free(key_envp);
             break;
         }
@@ -108,7 +109,7 @@ void ft_search_and_concaten_envp(char *key, char *str, char ***envp)
     char *key_envp;
     char *value_envp;
     char *new_value;
-    
+    char *tmp;
     while((*envp)[x])
     {
         key_envp = ft_copy_start((*envp)[x], '=');
@@ -117,8 +118,9 @@ void ft_search_and_concaten_envp(char *key, char *str, char ***envp)
             value_envp = ft_copy_end((*envp)[x], '=');
             new_value = ft_strjoin(value_envp, str);
             free((*envp)[x]);
-            (*envp)[x] = ft_strjoin(key_envp, "=");
-            (*envp)[x] = ft_strjoin((*envp)[x], new_value);
+            tmp = ft_strjoin(key_envp, "=");
+            (*envp)[x] = ft_strjoin(tmp, new_value);
+            free(tmp);
             free(key_envp);
             free(value_envp);
             free(new_value);
@@ -161,12 +163,15 @@ void ft_search_and_concaten_envp(char *key, char *str, char ***envp)
     {
          key = ft_copy_start(str, '=');//A inserer dans ma libft
         ft_search_and_change_envp(key, value, env);
+    
     }
     if(x==0)
     {
         key = ft_copy_start(str, '+');//A inserer dans ma libft
         ft_search_and_concaten_envp(key, value, env);
     }
+    free(value);
+    free(key);
  }
 
 
@@ -221,10 +226,12 @@ void ft_insert_envp(char  ***env, char *key, char *value)
     (void)env;
     (void)value;
     char *str;
-    str =ft_strjoin(key, "=");
-    str = ft_strjoin(str, value);
-
+    char *tmp;
+    tmp =ft_strjoin(key, "=");
+    str = ft_strjoin(tmp, value);
+    free(tmp);
     *env = ft_add_string_to_array(*env, str);
+    free(str);
 }
 
 char    *ft_copy_end(char *str, char c)
