@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/09 17:08:04 by dpoltura          #+#    #+#             */
-/*   Updated: 2024/10/14 17:29:23 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/15 09:57:50 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -296,7 +296,7 @@ void	ft_change_input(char **str, t_env *env)
 			break;
 	}
 	free((*str));
-	printf("New input = %s",save_tmp);
+	// printf("New input = %s",	 	save_tmp);
 	(*str) = ft_strdup(save_tmp);
 	//print_char_array_d(tmp);
 	//free(save_tmp)
@@ -315,7 +315,7 @@ int shell_loop(t_node *list, t_data **data, t_env **env)
 		ft_init_data(&data, list);
 		input = readline("minishell$ ");
 		ft_change_input(&input, *env);
-		printf("INPUT|%s|", input);
+		// printf("INPUT|%s|", input);
 		//Faire une conditions ici pour le dollar 
 		if ((!input || ft_strlen(input)) && ft_white_space(input) == 0)
 			ft_out_exit(1);

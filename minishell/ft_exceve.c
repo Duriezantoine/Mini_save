@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/01 11:35:23 by aduriez           #+#    #+#             */
-/*   Updated: 2024/10/14 17:42:04 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/15 10:03:44 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -445,178 +445,152 @@ int builtin(char *name, char **argv, char **envp) {
         return founded;
 }
 
-int exec(char *name, char **argv, char ***envp, struct s_exec **lst, t_env *env) {
+int exec(char *name, char **argv, char ***envp) {
         int i;
-        (void)env;
         i = 0;
         int built;
        built = builtin(name, argv, (*envp) );
+//        printf("\nJe suis built|%d|\n", built);
         if(!builtin(name, argv, (*envp) ))
         {                   // Imprimer name
+                        // printf("\nPasse a cote du bulting\n");
                 name = get_path(name);
-                // Imprimer argv
-                //printf("argv: ");
-                //print_args(argv);
-              //  printf("Command \'%s\' not found\n", name);
-
-                // Imprimer envp
-                //printf("envp:\n");
-                //print_env(envp);
-                
                 execve(name, argv, (*envp));
                 fprintf(stderr, "Command '%s' not found\n", name);
                 return(0);
         }
-        else if(built==1)
-        {
-
-        }
-       else if (built == 2) 
-        {
-                // printf("Je susi bulting echo");
-                bulting_echo(argv,1);
-                return(0);
-        }
-         else if (built == 3) 
-        {
-               bulting_export(argv, envp);
-               while((*lst[i]->envp))
-               {
-                        (*lst)[i].envp= (*envp);
-                        i++;
-               }      
-        }
-//        print_env((*envp));
+        // print_env((*envp));
         return(0);
 }
-int ft_excev_butlin(struct s_exec **lst, t_node **list)
-{        int i;
-        i = 0;
+int ft_excev_butlin(struct s_exec **lst, t_node **list, int i)
+{        
         int built;
-       built = builtin(lst[0]->exec,lst[0]->argv, lst[0]->envp) ;
+       built = builtin(lst[i]->exec,lst[i]->argv, lst[i]->envp) ;
+       printf("Je suis built|%d|", built);
                 if (built == 1) 
         {
-                printf("Je susi bulting Env");
-               bulting_env((*list)->cmd,(*list));
+                // printf("Je susi bulting Env");
+               bulting_env((*list));
  
         }   
         if (built == 2) 
         {
-                printf("\nJe susi bulting echo\n");
-                bulting_echo(lst[0]->argv,1);
+                // printf("\nJe susi bulting echo\n");
+                bulting_echo(lst[i]->argv,1);
                 return(0);
         }
-         if (built == 3) 
+         if (built == 3 && i==0) 
         {
-                printf("Je susi bulting Export");
-                 print_args(lst[0]->argv);
-               bulting_export(lst[0]->argv, &lst[0]->envp);
+                // printf("Je susi bulting Export");
+                 print_args(lst[i]->argv);
+               bulting_export(lst[i]->argv, &lst[i]->envp);
  
         }         
         if (built == 4) 
         {
-                printf("Je susi bulting Cd");
-               bulting_cd((*list)->cmd,(*list),  &(*list)->env);
+                // printf("Je susi bulting Cd");
+               bulting_cd((*list)->cmd->cmd_and_args,(*list),  &(*list)->env);
  
         }
-        if (built == 5) 
+        if (built == 5 && i ==0) 
         {
-                printf("Je susi bulting Unset");
-               bulting_unset( &lst[0]->envp,(*list)->cmd,(*list));
+                // printf("Je susi bulting Unset");
+               bulting_unset( &lst[i]->envp,(*list)->cmd,(*list));
                  //Penser a free ici;
-                 lst[0]->envp=get_env_cdt((*list)->env);
+                 lst[i]->envp=get_env_cdt((*list)->env);
                 
         }
         if (built == 6) 
         {
-                printf("Je susi bulting Pwd");
+                // printf("Je susi bulting Pwd");
                 bulting_pwd();
         }
         
 
-        (*list)->env = ft_insert_env(lst[0]->envp);
+        (*list)->env = ft_insert_env(lst[i]->envp);
         // print_env_list((*list)->env);
         return(0);
 }
-
 int ft_exceve(t_node *list, t_data *data, t_env **env)
 {
     int len;
     struct s_exec *lst = lst_to_execs(list, &len);
-    int last_in = 0;
-    int p[2];
-    int error_pipe[2];
-    int i = 0;
-    int ret = -1;
+    int last_in = 0, p[2], ret = -1;
     (void)data;
     (void)env;
 
-    if (pipe(error_pipe) < 0) {
-        fprintf(stderr, "Erreur: Échec de la création du pipe d'erreur.\n");
-        return -1;
-    }
-
-    if (len == 1 && ft_exceve_bulting(list->cmd->cmd_and_args[0]) == 0)
+    for (int i = 0; i < len; i++)
     {
-        close(error_pipe[0]);
-        close(error_pipe[1]);
-        return ft_excev_butlin(&lst, &list);
-    }
+        if (i < len - 1 && pipe(p) < 0)
+        {
+            fprintf(stderr, "Erreur: Échec de la création du pipe.\n");
+            break;
+        }
 
-    while (i < len) {
-        if (i < len - 1) {
-            if (pipe(p) < 0) {
-                fprintf(stderr, "Erreur: Échec de la création du pipe.\n");
+        lst[i].in = (lst[i].in < 0) ? last_in : lst[i].in;
+        lst[i].out = (lst[i].out < 0) ? ((i < len - 1) ? p[1] : 1) : lst[i].out;
+
+        if (ft_exceve_bulting(lst[i].argv[0], i) == 0)
+        {
+            // Traitement des builtins
+            int stdin_copy = dup(0);
+            int stdout_copy = dup(1);
+
+            if (lst[i].in != 0)
+                dup2(lst[i].in, 0);
+            if (lst[i].out != 1)
+                dup2(lst[i].out, 1);
+
+            ret = ft_excev_butlin(&lst, &list, i);
+
+            dup2(stdin_copy, 0);
+            dup2(stdout_copy, 1);
+            close(stdin_copy);
+            close(stdout_copy);
+        }
+        else
+        {
+            // Traitement des commandes non-builtin
+            lst[i].pid = fork();
+            if (lst[i].pid < 0)
+            {
+                fprintf(stderr, "Erreur: Échec du fork.\n");
                 break;
             }
-        }
-        if (lst[i].in < 0) lst[i].in = last_in;
-        if (lst[i].out < 0) lst[i].out = (i < len - 1) ? p[1] : 1;
-
-        lst[i].pid = fork();
-        if (lst[i].pid < 0) {
-            fprintf(stderr, "Erreur: Échec du fork.\n");
-            break;
-        } else if (lst[i].pid == 0) {
-            // Code du processus enfant
-            close(error_pipe[0]);
-            if (i < len - 1) close(p[0]);
-            if (lst[i].in != 0) {
-                dup2(lst[i].in, 0);
-                close(lst[i].in);
+            else if (lst[i].pid == 0)
+            {
+                if (i < len - 1)
+                    close(p[0]);
+                
+                if (lst[i].in != 0)
+                {
+                    dup2(lst[i].in, 0);
+                    close(lst[i].in);
+                }
+                if (lst[i].out != 1)
+                {
+                    dup2(lst[i].out, 1);
+                    close(lst[i].out);
+                }
+                exit(exec(lst[i].exec, lst[i].argv, &lst[i].envp));
             }
-            if (lst[i].out != 1) {
-                dup2(lst[i].out, 1);
-                close(lst[i].out);
-            }
-            dup2(error_pipe[1], 2);  // Rediriger stderr vers le pipe d'erreur
-            close(error_pipe[1]);
-            
-            exit(exec(lst[i].exec, lst[i].argv, &lst[i].envp, &lst, list->env));
         }
 
-        // Code du processus parent
-        if (last_in > 0) close(last_in);
-        if (i < len - 1) {
+        // Nettoyage des descripteurs de fichiers
+        if (last_in > 0)
+            close(last_in);
+        if (i < len - 1)
+        {
             close(p[1]);
             last_in = p[0];
         }
-        i++;
     }
 
-    close(error_pipe[1]);  // Fermer l'extrémité d'écriture du pipe d'erreur
-
+    // Attendre la fin de tous les processus non-builtin
     ret = ft_wait_all(lst, len);
-
-    // Lire et afficher les erreurs après l'exécution de toutes les commandes
-    char error_buffer[1024];
-    ssize_t error_read;
-    while ((error_read = read(error_pipe[0], error_buffer, sizeof(error_buffer))) > 0) {
-        write(2, error_buffer, error_read);
-    }
-    close(error_pipe[0]);
 
     list->env = ft_insert_env(lst[0].envp);
     free_all_exec(lst, len);
+
     return ret;
 }

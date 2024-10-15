@@ -6,15 +6,14 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/06 18:48:02 by aduriez           #+#    #+#             */
-/*   Updated: 2024/10/08 15:08:53 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/15 08:34:18 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void bulting_env(t_cmd *cmd, t_node *list)
+void bulting_env( t_node *list)
 {
-    (void)cmd;
     // Créer une copie temporaire de la liste t_env
     t_env *tmp = copy_env(list->env);
 

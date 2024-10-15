@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/06 17:56:21 by aduriez           #+#    #+#             */
-/*   Updated: 2024/10/14 17:41:33 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/15 08:11:54 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -129,6 +129,27 @@ void ft_search_and_concaten_envp(char *key, char *str, char ***envp)
     }
     // print_char_array(*envp);
 }
+
+ void ft_change_var_g(char ***env, char *str, int x, char *change)
+ {
+    char *key;
+    char *value;
+    (void)change;
+    //IL faut faire la difference entre la clef et la valeur
+    value = ft_copy_end(str, '=');//A inserer dans ma libft
+    // printf("\nValue|%s|\n");
+    if(x==1)
+    {
+         key = ft_copy_start(str, '=');//A inserer dans ma libft
+        ft_search_and_change_envp(key, value, env);
+    }
+    if(x==0)
+    {
+        key = ft_copy_start(str, '+');//A inserer dans ma libft
+        ft_search_and_concaten_envp(key, value, env);
+    }
+ }
+
 
  void ft_change_var(char ***env, char *str, int x)
  {
@@ -276,7 +297,7 @@ int ft_verif_export_space(char *str)
 int     ft_verif_export(char *str)
 {
     printf("\nSTR|%s|\n", str);
-    if (ft_verif_export_equal(str)==0)
+    if (ft_verif_export_equal(str)==0)//Conditions si iln'y avait pas de guillemets
     {
         return(0);
     }
@@ -286,6 +307,8 @@ int     ft_verif_export(char *str)
         printf("\nft_verif_export_equal\n");
         return(0);
     }
+    if(str[ft_strlen(str)-1]=='=')
+        return(2);
     return(1);
 }
 

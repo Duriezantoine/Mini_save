@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/09 17:05:05 by dpoltura          #+#    #+#             */
-/*   Updated: 2024/10/14 16:40:23 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/15 10:04:47 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -232,7 +232,7 @@ void	ft_open_infile(t_node **list, char *infile);
 
 //Ce qui permet de mettre en place l'execution 
 int    ft_exceve(t_node *list, t_data *data, t_env **env);//Hesitation a mettre un double pointeur mais normarlement c'est l'exec rien ne doit etre modifier quand on va a l'interieur 
-int ft_exceve_bulting(char *str);
+int ft_exceve_bulting(char *str, int i);
 
 //Cee qui permet de free
 void free_node(t_node *list, t_data *data);
@@ -243,14 +243,14 @@ void ft_free_cmd(t_cmd *cmd);
 ///////////////////////////////////////Pour les bultings///////////////////////////////////////////////
 ////////////////////////////////Pour le bulting cd/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void    bulting_cd (t_cmd *cmd,t_node *list ,t_env **env);
-void    ft_simple_cd(char *s, t_env **env);
+	void    ft_simple_cd(char *s, t_env **env);
 void    ft_change_env(char *save, t_env ***env);
 char    *new_path_cd(char *s, t_env **env);
-void    ft_exceve_cd(t_cmd *cmd, t_env **env);
 char 	*ft_execute_cd_home(t_env **env, int i);
 int     ft_no_cd_(char *s);
 char 	*save_pwd(t_env **env);
+void    ft_exceve_cd(char **cmd_and_args, t_env **env);
+
 
 ////////////////////////////////Pour le bulting echo/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 int    bulting_echo(char **cmd, int i);
@@ -276,7 +276,7 @@ void    bulting_unset( char ***env, t_cmd *cmd, t_node *list);
 int   ft_search_envp(char  **env, char *search);
 void ft_delete_unset(t_env **env, char *search);
 /////////////////////////////////Pour le bulting env//////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void bulting_env(t_cmd *cmd, t_node *list);
+void bulting_env( t_node *list);
 void sort_envp(t_env **env);
 t_env *copy_env(t_env *env) ;
 /////////////////////////////////Pour le free//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -298,6 +298,7 @@ void ft_free_new_array(char **new_arr, int size);
 void ft_free_array(char **arr);
 int ft_add_new_string(char **new_arr, char *str, int size);
 void print_env(char **envp);
+void    bulting_cd (char **cmd_and_args,t_node *list ,t_env **env);
 
 t_env *ft_insert_env(char **envp);
 void print_env_list(t_env *env);

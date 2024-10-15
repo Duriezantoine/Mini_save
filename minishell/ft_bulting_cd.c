@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/06 17:44:24 by aduriez           #+#    #+#             */
-/*   Updated: 2024/10/08 15:06:05 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/15 08:41:30 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,31 +28,31 @@ char *save_pwd(t_env **env)
     return(dest);
 }
 
-void    ft_exceve_cd(t_cmd *cmd, t_env **env)
+void    ft_exceve_cd(char **cmd_and_args, t_env **env)
 {
     char *dest;
     char *save;
-    if (ft_no_cd_(cmd->cmd_and_args[1])==0)
-        ft_simple_cd(cmd->cmd_and_args[1], env);
+    if (ft_no_cd_(cmd_and_args[1])==0)
+        ft_simple_cd(cmd_and_args[1], env);
     else
     {
         save = save_pwd(env);//C'est ce qui permet de sauvegarder dans tous les cas ou on utlise cd
-        dest = new_path_cd(cmd->cmd_and_args[1], env);
+        dest = new_path_cd(cmd_and_args[1], env);
         chdir(dest);
         ft_change_env(save, &env);
         free(dest);
     }
 }
-void    bulting_cd (t_cmd *cmd,t_node *list ,t_env **env)
+void    bulting_cd (char **cmd_and_args,t_node *list ,t_env **env)
 {
     (void)list;
     printf("\nCD\n");//A chaque utilisation de cd il faut remettre en place 
 
-    if(cmd->cmd_and_args[1] !=NULL)
+    if(cmd_and_args[1] !=NULL)
     {
-        if ((cmd->cmd_and_args[1]) != NULL)
+        if ((cmd_and_args[1]) != NULL)
         {
-            ft_exceve_cd(cmd, env);
+            ft_exceve_cd(cmd_and_args, env);
         }
     }
     else
