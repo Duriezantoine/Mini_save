@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/11 10:51:14 by dpoltura          #+#    #+#             */
-/*   Updated: 2024/10/15 16:01:59 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/16 12:21:30 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -198,23 +198,59 @@ void ft_insert_data_s_whith_tab(t_echo *data_echo, char *input, int *i, int *cle
     iterateur_tab_s_quot = 0;
     while (ft_isalnum(input[*i]) && input[*i] != '\0')
     {
-        if(input[*i]== '<' || input[*i] == '>')
-        {
-            (*i)--;
-            break;
+        // if(input[*i]== '<' || input[*i] == '>')
+        // {
+        //     (*i)--;
+        //     break;
 
-        }
+        // }
+          if(input[*i]=='\'')
+            {
+                data_echo->str_s_quot[(*clef_tab_s_quot)].str[iterateur_tab_s_quot] = input[*i];
+                (*i)++;
+                iterateur_tab_s_quot++;
+                while(input[*i] != '\'' && input[*i] != '\0')
+                {
+                    data_echo->str_s_quot[(*clef_tab_s_quot)].str[iterateur_tab_s_quot] = input[*i];
+                    (*i)++;
+                    iterateur_tab_s_quot++;
+                }
+                data_echo->str_s_quot[(*clef_tab_s_quot)].str[iterateur_tab_s_quot] = input[*i];
+                iterateur_tab_s_quot++;
+                (*i)++;
+            }
+            if(input[*i]=='"')
+            {
+                data_echo->str_s_quot[(*clef_tab_s_quot)].str[iterateur_tab_s_quot] = input[*i];
+                (*i)++; 
+                iterateur_tab_s_quot++;
+                while(input[*i] == '"' && input[*i] != '\0' )
+                {
+                    data_echo->str_s_quot[(*clef_tab_s_quot)].str[iterateur_tab_s_quot] = input[*i];
+                    (*i)++;
+                    iterateur_tab_s_quot++;
+
+                }
+                data_echo->str_s_quot[(*clef_tab_s_quot)].str[iterateur_tab_s_quot] = input[*i];
+                iterateur_tab_s_quot++;
+                (*i)++;
+            }
+
+
+
+
+
         data_echo->str_s_quot[(*clef_tab_s_quot)].str[iterateur_tab_s_quot] = input[*i];
         (*i)++;
         iterateur_tab_s_quot++;
     }
     data_echo->str_s_quot[(*clef_tab_s_quot)].str[iterateur_tab_s_quot] = '\0';
-    // printf("\n1Sorti de la boucle|%c|save=|%s|clefTab=|%d|nextinput=|%c|\n", input[*i],  data_echo->str_s_quot[(*clef_tab_s_quot)].str,(*clef_tab_s_quot), input[*i+1]);
+    printf("\n1Sorti de la boucle|%c|save=|%s|clefTab=|%d|nextinput=|%c|\n", input[*i],  data_echo->str_s_quot[(*clef_tab_s_quot)].str,(*clef_tab_s_quot), input[*i+1]);
 
     data_echo->str_s_quot[(*clef_tab_s_quot)].bool = 0;
 
-    // printf("\nSave_with_tab_s|Nbr_occurence=%d|clef=%d|Save=%s|Sorti=%c", iterateur_tab_s_quot, (*clef_tab_s_quot), data_echo->str_s_quot[(*clef_tab_s_quot)].str, input[*i]);
-    // printf("\n2Sorti de la boucle|%c|\n", input[*i]);
+    printf("\nSave_with_tab_s|Nbr_occurence=%d|clef=%d|Save=%s|Sorti=%c", iterateur_tab_s_quot, (*clef_tab_s_quot), data_echo->str_s_quot[(*clef_tab_s_quot)].str, input[*i]);
+    printf("\n2Sorti de la boucle|%c|\n", input[*i]);
 
 }
 
@@ -308,13 +344,38 @@ void ft_insert_data_s_quot(t_echo *data_echo, char *input, int *i, int *place_ta
     while (ft_isalnum(input[*i]) == 1)
     {
 
-        occurence++;
-        (*i)++;
-    }
+            if(input[*i]=='\'')
+            {
+                (*i)++;
+                occurence++;
+                while(input[*i] != '\'' && input[*i] != '\0')
+                {
+                    (*i)++;
+                    occurence++;
+                }
+                 occurence++;
+                (*i)++;
+            }
+            if(input[*i]=='"')
+            {
+                (*i)++; 
+                occurence++;
+                while(input[*i] == '"' && input[*i] != '\0' )
+                {
+                    (*i)++;
+                    occurence++;
+                }
+                occurence++;
+                (*i)++;
+            }
+            occurence++;
+            (*i)++;
+
+     }
     // Peux d'autre conditions a verifier ici
     data_echo->str_s_quot[(*place_tab_s_quot)].order = data_echo->order_occurence;
     data_echo->order_occurence++;
-    // printf("\nTABS|PLace|%d|Nbr occurence|%d|Place_tab|%d|", data_echo->str_s_quot[(*place_tab_s_quot)].order, occurence, (*place_tab_s_quot));
+    printf("\nTABS|PLace|%d|Nbr occurence|%d|Place_tab|%d|", data_echo->str_s_quot[(*place_tab_s_quot)].order, occurence, (*place_tab_s_quot));
     data_echo->str_s_quot[(*place_tab_s_quot)].str = malloc(sizeof(char *) * occurence + 1);
     //IL faut faire une protection de mall9oc dans ce cas la
     (*place_tab_s_quot)++;
@@ -335,7 +396,7 @@ void ft_insert_data_w_quot(t_echo *data_echo, char *input, int *i, int *place_ta
     }
     (*i)++;
     data_echo->str_w_quot[(*place_tab_w_quot)].order = data_echo->order_occurence;
-    // printf("\n|TABW|Place|%d|Nbr occurence|%d|Place_tab|%d|\n", (*data_echo)->str_w_quot[(*place_tab_w_quot)].order, occurence, (*place_tab_w_quot));
+    printf("\n|TABW|Place|%d|Nbr occurence|%d|Place_tab|%d|\n", (*data_echo).str_w_quot[(*place_tab_w_quot)].order, occurence, (*place_tab_w_quot));
     data_echo->order_occurence++;
     data_echo->str_w_quot[(*place_tab_w_quot)].str = malloc(sizeof(char *) * occurence + 1);
     // Il faut proteger le malloc
@@ -385,13 +446,57 @@ void ft_init_tab_echo_malloc(t_echo *data_echo, char *input, int i)
             }
 
         }
-        if (((ft_isalnum(input[i]) == 1)) && input[i] != '\'' && input[i] != '"' && input[i] != '\'' && input[i] != '"')
+        if (((ft_isalnum(input[i]) == 1)) && input[i] != ' ' )
         {
             ft_insert_data_s_quot(data_echo, input, &i, &place_tab_s_quot);
         }
-        if (!(input[i] != '"' || input[i] != '\''))
-            i++;
+        i++;
+
     }
+}
+
+int ft_handle_alphanumeric(char *input, int *i, int *ss_quot, int x)
+{
+    // printf("\n2Je suis input[i]|input|%c||\n",input[*i]);
+    if(x==1)
+    {
+        (*ss_quot)++;
+    }
+    // printf("Je suis i|%c|", input[*i]);
+    if(input[*i] == '\0' && input[*i] == ' ')
+     {
+        return 1;
+     }
+    if (((ft_isalnum(input[*i]) == 1) && input[*i] != '\0') )
+    {
+            // printf("\n3Je suis input[i]|input|%c||\n",input[*i]);
+
+        while (((ft_isalnum(input[*i]) == 1))  && input[*i] != '\0')
+        {
+                //  printf("XX");
+
+            if(input[*i]=='\'')
+            {
+                (*i)++;
+                while(input[*i] != '\'' && input[*i] != '\0')
+                    (*i)++;
+                (*i)++;
+            }
+                // printf("\n4.5Je suis input[i]|input|%c||\n",input[*i]);
+
+            if(input[*i]=='"')
+            {
+                (*i)++; 
+                while(input[*i] == '"'&& input[*i] != '\0' )
+                    (*i)++;
+                (*i)++;
+            }
+            (*i)++;
+        }
+    }
+    // printf("\n5Je suis input[i]|input|%c|i=%d|\n",input[*i], *i);
+
+    return 1;
 }
 
 int ft_init_token_space(t_echo *data_echo, char *input, int i)
@@ -399,12 +504,12 @@ int ft_init_token_space(t_echo *data_echo, char *input, int i)
     // Cette fonction permet de calculer le nombre de quot
     int ss_quot = 0;
     int wt_quot = 0;
-
-    if (ft_nbr_quot(input, i) == 1)
-    {
-        printf("Ce n'est pas paire ");//Il faut faire une sortie d'erreur ici
-        return (1);
-    }
+        
+    // if (ft_nbr_quot(input, i) == 1)//IL faut le faire avant
+    // {
+    //     printf("Ce n'est pas paire ");//Il faut faire une sortie d'erreur ici
+    //     return (1);
+    // }
     while (input[i])
     {
         while (input[i] == ' ')
@@ -422,14 +527,11 @@ int ft_init_token_space(t_echo *data_echo, char *input, int i)
             i++;
         }
         ft_handle_redirection(input, &i, &ss_quot);
-        if (((ft_isalnum(input[i]) == 1)) && input[i] != '"' && input[i] != '\'')
-        {
-            while (((ft_isalnum(input[i]) == 1)) && input[i] != '\'' && input[i] != '"')//Il faut commencer ici 
-                i++;
-            ss_quot++;
-        }
-        if (!(input[i] != '"' || input[i] != '\''))
-            i++;
+        // printf("\n1Je suis input[i]|input|%c|i=%d|\n",input[i], i);
+        if (((ft_isalnum(input[i]) == 1)) && input[i] != ' ' )
+            ft_handle_alphanumeric(input, &i, &ss_quot, 1);
+
+
     }
     data_echo->s_quot = ss_quot;
     data_echo->w_quot = wt_quot;
@@ -479,7 +581,7 @@ int ft_nbr_quot(char *input, int i)
 
 int ft_isalnum(int c)
 {
-    if ((c >= 48 && c <= 57) || (c >= 97 && c <= 122) || (c >= 65 && c <= 90) || (c == 45) || (c == 61) || (c==46) || (c == 126) || (c == 47) || (c == 43) || (c==36) || (c ==95))
+    if ((c >= 48 && c <= 57) || (c >= 97 && c <= 122) || (c >= 65 && c <= 90) || (c == 45) || (c == 61) || (c==46) || (c == 126) || (c == 47) || (c == 43) || (c==36) || (c ==95) || c == '"' || (c=='\'') )
     {
         // if (c == 45)
         return (1);
