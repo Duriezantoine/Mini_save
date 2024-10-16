@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/11 10:51:14 by dpoltura          #+#    #+#             */
-/*   Updated: 2024/10/16 14:38:49 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/16 18:14:48 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -457,7 +457,7 @@ void ft_insert_data_w_quot(t_echo *data_echo, char *input, int *i, int *place_ta
     }
     (*i)++;
     data_echo->str_w_quot[(*place_tab_w_quot)].order = data_echo->order_occurence;
-    printf("\n|TABW|Place|%d|Nbr occurence|%d|Place_tab|%d|\n", (*data_echo).str_w_quot[(*place_tab_w_quot)].order, occurence, (*place_tab_w_quot));
+    // printf("\n|TABW|Place|%d|Nbr occurence|%d|Place_tab|%d|\n", (*data_echo).str_w_quot[(*place_tab_w_quot)].order, occurence, (*place_tab_w_quot));
     data_echo->order_occurence++;
     data_echo->str_w_quot[(*place_tab_w_quot)].str = malloc(sizeof(char *) * occurence + 1);
     // Il faut proteger le malloc

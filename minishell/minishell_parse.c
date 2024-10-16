@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/09 17:08:04 by dpoltura          #+#    #+#             */
-/*   Updated: 2024/10/16 17:33:32 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/16 18:14:17 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -396,7 +396,7 @@ int shell_loop(t_node *list, t_data *data, t_env **env)
 
         if (ft_strlen(input) == 0 || ft_white_space(input) == 0)
         {
-			printf("\nICIC\n");
+			//printf("\nICIC\n");
             free(input);
             continue;
         }
@@ -418,10 +418,12 @@ int shell_loop(t_node *list, t_data *data, t_env **env)
         else
             data->exit_code = 130;
         ft_free_return_loop(list);
+        // printf("Exitcode|%d|", data->exit_code );
     }
 
     ft_free_end(list, env);
     return data->exit_code;
+
 }
 void 	ft_free_return_loop(t_node *list)
 {

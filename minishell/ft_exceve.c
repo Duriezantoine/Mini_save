@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/01 11:35:23 by aduriez           #+#    #+#             */
-/*   Updated: 2024/10/16 17:40:50 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/16 18:14:19 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -376,15 +376,16 @@ int ft_wait_all(struct s_exec *execs, int len) {
     int status;
     int last_exit_status = 0;
 status = 0;
+
     for (i = 0; i < len; i++) {
 	if (waitpid(execs[i].pid, &status, 0) == -1) {
-	    perror("waitpid");
+	    // perror("waitpid");
 
 	}
 	if (WIFEXITED(status)) {
 	    last_exit_status = WEXITSTATUS(status);
 	} else if (WIFSIGNALED(status)) {
-	//     fprintf(stderr, "Command terminated by signal %d\n", WTERMSIG(status));
+	    // fprintf(stderr, "Command terminated by signal %d\n", WTERMSIG(status));
 	    last_exit_status = 128 + WTERMSIG(status);
 	}
     }
@@ -454,7 +455,7 @@ int builtin(char *name) {
 		founded = 1;
 	}
 		if(strequ(name, "echo")) {
-		printf("3env\n");
+		// printf("3env\n");
 		founded = 2;
 	}
 		if(strequ(name, "export")) {
@@ -613,7 +614,7 @@ int ft_exceve(t_node *list, t_data *data, t_env **env)
 {
     int len;
     struct s_exec *lst = lst_to_execs(list, &len);
-	printf("\n Len|%d|\n", len);
+	// printf("\n Len|%d|\n", len);
     int last_in = 0, p[2], ret = -1;
     (void)data;
     (void)env;
@@ -716,12 +717,11 @@ int ft_exceve(t_node *list, t_data *data, t_env **env)
 			last_in = p[0];
 		}
     }
-
     // Attendre la fin de tous les processus non-builtin
     ret = ft_wait_all(lst, len);
 	ft_free_env(&(list->env));
     list->env = ft_insert_env(lst[0].envp);
     free_all_exec(lst, len);
-	printf("%d\n", ret);
+	// printf("%d\n", ret);
     return ret;
 }

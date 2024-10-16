@@ -288,7 +288,7 @@ int lexer_cmd(t_node *list, t_data *data) // Cette fonction permet d'implementer
     // verification acces list->arg//Start with list->arglist->cmd =
     while (list)
     {
-        printf("ICI");
+        //printf("ICI");
         ft_init_cmd(&list->cmd);                     // it's ok
         ft_insert_double_tab(&list->cmd, list->arg); // it's ok
         ft_verif_cmd(&list->cmd, list->arg);         //it's ok//Pour le here_doc
