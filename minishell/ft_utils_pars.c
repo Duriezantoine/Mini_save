@@ -6,20 +6,81 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/11 10:51:14 by dpoltura          #+#    #+#             */
-/*   Updated: 2024/10/16 12:21:30 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/16 14:38:49 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-char    *ft_change_var_environnement(char *search, t_env **env)
+static unsigned int	get_sign(int n, int *sign, int *inc)
+{
+	if (n < 0)
+	{
+		*sign = 1;
+		(*inc)++;
+		return (-n);
+	}
+	*sign = 0;
+	return (n);
+}
+
+static unsigned int	get_len(unsigned int nd)
+{
+	unsigned int	i;
+
+	i = 0;
+	while (nd)
+	{
+		nd /= 10;
+		i++;
+	}
+	return (i);
+}
+
+char	*ft_itoa(int n)
+{
+	int				i;
+	int				sign;
+	unsigned int	nd;
+	char			*ret;
+
+	i = 0;
+	sign = 0;
+	nd = get_sign(n, &sign, &i);
+	i += get_len(nd);
+	if (n == 0)
+		return (ft_strdup("0"));
+	ret = (char *)ft_calloc(i + 1, sizeof(char));
+	if (!ret)
+		return (NULL);
+	if (sign)
+		ret[0] = '-';
+	while (nd)
+	{
+		ret[--i] = nd % 10 + '0';
+		nd /= 10;
+	}
+	return (ret);
+}
+
+char    *ft_change_var_environnement(char *search, t_env **env, t_data *data)
 {
 	t_env *tmp;
 	tmp = *env;
     char *save;
     char *tmp_save;
     save = ft_copy_end(search, '$');
-
+    char *tmp_tmp;
+    if (save[0] == '?')
+    { 
+        tmp_tmp = ft_itoa(data->exit_code);
+        tmp_save = ft_strjoin(tmp_tmp, save + 1);
+        free(tmp_tmp);
+        free(save);
+        free(search);
+        return (tmp_save);
+    }
+        
 	while(tmp)
 	{
         if(strequ(save, tmp->key)) {
@@ -245,12 +306,12 @@ void ft_insert_data_s_whith_tab(t_echo *data_echo, char *input, int *i, int *cle
         iterateur_tab_s_quot++;
     }
     data_echo->str_s_quot[(*clef_tab_s_quot)].str[iterateur_tab_s_quot] = '\0';
-    printf("\n1Sorti de la boucle|%c|save=|%s|clefTab=|%d|nextinput=|%c|\n", input[*i],  data_echo->str_s_quot[(*clef_tab_s_quot)].str,(*clef_tab_s_quot), input[*i+1]);
+    // printf("\n1Sorti de la boucle|%c|save=|%s|clefTab=|%d|nextinput=|%c|\n", input[*i],  data_echo->str_s_quot[(*clef_tab_s_quot)].str,(*clef_tab_s_quot), input[*i+1]);
 
     data_echo->str_s_quot[(*clef_tab_s_quot)].bool = 0;
 
-    printf("\nSave_with_tab_s|Nbr_occurence=%d|clef=%d|Save=%s|Sorti=%c", iterateur_tab_s_quot, (*clef_tab_s_quot), data_echo->str_s_quot[(*clef_tab_s_quot)].str, input[*i]);
-    printf("\n2Sorti de la boucle|%c|\n", input[*i]);
+    // printf("\nSave_with_tab_s|Nbr_occurence=%d|clef=%d|Save=%s|Sorti=%c", iterateur_tab_s_quot, (*clef_tab_s_quot), data_echo->str_s_quot[(*clef_tab_s_quot)].str, input[*i]);
+    // printf("\n2Sorti de la boucle|%c|\n", input[*i]);
 
 }
 
@@ -375,7 +436,7 @@ void ft_insert_data_s_quot(t_echo *data_echo, char *input, int *i, int *place_ta
     // Peux d'autre conditions a verifier ici
     data_echo->str_s_quot[(*place_tab_s_quot)].order = data_echo->order_occurence;
     data_echo->order_occurence++;
-    printf("\nTABS|PLace|%d|Nbr occurence|%d|Place_tab|%d|", data_echo->str_s_quot[(*place_tab_s_quot)].order, occurence, (*place_tab_s_quot));
+    // printf("\nTABS|PLace|%d|Nbr occurence|%d|Place_tab|%d|", data_echo->str_s_quot[(*place_tab_s_quot)].order, occurence, (*place_tab_s_quot));
     data_echo->str_s_quot[(*place_tab_s_quot)].str = malloc(sizeof(char *) * occurence + 1);
     //IL faut faire une protection de mall9oc dans ce cas la
     (*place_tab_s_quot)++;
@@ -581,7 +642,7 @@ int ft_nbr_quot(char *input, int i)
 
 int ft_isalnum(int c)
 {
-    if ((c >= 48 && c <= 57) || (c >= 97 && c <= 122) || (c >= 65 && c <= 90) || (c == 45) || (c == 61) || (c==46) || (c == 126) || (c == 47) || (c == 43) || (c==36) || (c ==95) || c == '"' || (c=='\'') )
+    if ((c =='?') || (c >= 48 && c <= 57) || (c >= 97 && c <= 122) || (c >= 65 && c <= 90) || (c == 45) || (c == 61) || (c==46) || (c == 126) || (c == 47) || (c == 43) || (c==36) || (c ==95) || c == '"' || (c=='\'') )
     {
         // if (c == 45)
         return (1);

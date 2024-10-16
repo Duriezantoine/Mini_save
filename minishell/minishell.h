@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/09 17:05:05 by dpoltura          #+#    #+#             */
-/*   Updated: 2024/10/15 16:59:19 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/16 14:49:12 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -134,6 +134,7 @@ typedef struct s_data
 	int nbr_command;
 	char count;
 	int bool;
+	int	exit_code;
 
 } t_data;
 
@@ -156,7 +157,7 @@ typedef struct s_echo
 
 
 int main(int argc, char **argv, char **envp);
-int shell_loop(t_node *list, t_data **data, t_env **env);
+int shell_loop(t_node *list, t_data *data, t_env **env);
 void organisation_shell_loop(t_node *list, t_data *data);
 void ft_insert_cmd(t_command **command, t_data **data, char *input);
 void free_tokens(char **tokens, int len);
@@ -180,7 +181,7 @@ int ft_isalnum(int c);
 void ft_init_tab_echo_malloc(t_echo *data_echo, char *input, int i);
 int ft_nbr_quot(char *input, int i);
 char **ft_parsing_init(t_data *data, char *input);
-int ft_parsing(t_node *list, t_data **data, char *input, t_env *env);
+int ft_parsing(t_node *list, t_data *data, char *input, t_env *env);
 char **split_string(char *str, int *len);
 int ft_init_token_space(t_echo *data_echo, char *input, int i);
 void ft_init_echo_malloc(t_echo *data_echo);
@@ -195,7 +196,7 @@ char *ft_strcpy(char *dest, char *src);
 char *ft_strcat(char *dest, char src);
 void ft_insert_new_data_with_data(t_save **save, t_echo *data_echo, t_env *env);
 void ft_insert_data_data_echo_s(t_save **save, t_echo *data_echo, int iterateur_s, t_env *env);
-void ft_init_data(t_data ***data, t_node *list);
+void ft_init_data(t_data *data);
 void print_list(t_node *list);
 int ft_strcmp(char *s1, char *s2);
 void type_insert_cmd(t_arg *new_node);
@@ -235,7 +236,7 @@ int    ft_exceve(t_node *list, t_data *data, t_env **env);//Hesitation a mettre 
 int ft_exceve_bulting(char *str, int i);
 
 //Cee qui permet de free
-void free_node(t_node *list, t_data *data);
+void free_node(t_node *list);
 void 	ft_free_data_echo(t_echo *data_echo);
 void ft_free_arg(t_arg *tmp);
 void ft_free_cmd(t_cmd *cmd);
@@ -280,10 +281,10 @@ void bulting_env( t_node *list);
 void sort_envp(t_env **env);
 t_env *copy_env(t_env *env) ;
 /////////////////////////////////Pour le bulting exit//////////////////////////////////////////////////////////////////////////////////////////////////////////////
-int bulting_exit(char **args, t_node *list, t_env **env);
+int bulting_exit(char **args, t_node *list, t_env **env, t_data *data);
 /////////////////////////////////Pour le free//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void ft_free_end(t_node *list, t_env **env, t_data **data);
-void 	ft_free_return_loop(t_node *list, t_data *data);
+void ft_free_end(t_node *list, t_env **env);
+void 	ft_free_return_loop(t_node *list);
 void	ft_free_env(t_env **env);
 
 void ft_insert_nodes(t_node *list, t_arg *new_node);
@@ -308,7 +309,7 @@ void print_env_list(t_env *env);
  void ft_change_var(char ***env, char *str, int x);
 
 // int ft_excev_butlin(struct s_exec **lst, t_node **list);
-char 		*ft_change_var_environnement(char *search,t_env  **env);
+char 		*ft_change_var_environnement(char *search,t_env  **env, t_data *data);
 
 // Prototype de la fonction signal_handler
 void signal_handler(int sig);

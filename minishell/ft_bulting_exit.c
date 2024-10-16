@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/15 16:05:36 by aduriez           #+#    #+#             */
-/*   Updated: 2024/10/15 18:26:57 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/16 15:16:38 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -182,11 +182,11 @@ int  ft_verif_number(char *str)
     char *tmp;
 
     tmp = ft_strtrim(str, " "); // str == "       " -> ""ft
-    printf("Je ssuis tmp|%s|", tmp);
+    // printf("Je ssuis tmp|%s|", tmp);
     if (tmp[0] == '\0')
     {   
         tmp = ft_strdup("la");
-        printf("La chaîne est vide\n");//C'est ici demande ce que l'on renvoit
+        // printf("La chaîne est vide\n");//C'est ici demande ce que l'on renvoit
         free(tmp);
         return 2;
     }
@@ -210,12 +210,12 @@ int  ft_verif_number(char *str)
     return(0);
 }
 
-int bulting_exit(char **args, t_node *list, t_env **env)
+int bulting_exit(char **args, t_node *list, t_env **env, t_data *data)
 {
     (void) env;
     (void) list;
     if(args[1]== NULL)
-        return(0); // todo get last exit code
+        return (data->exit_code);
     if(ft_verif_number(args[1]) == 0)
     {
         if (args[2] != NULL)

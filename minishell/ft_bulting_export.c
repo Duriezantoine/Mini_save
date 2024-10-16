@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/06 17:56:21 by aduriez           #+#    #+#             */
-/*   Updated: 2024/10/15 16:13:28 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/16 14:54:07 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,7 +92,7 @@ void ft_search_and_change_envp(char *key, char *str, char ***envp)
             
             free((*envp)[x]);
             tmp= ft_strjoin(key, "=");
-            (*envp)[x] = ft_strjoin((*envp)[x], str);
+            (*envp)[x] = ft_strjoin(tmp, str);
             free(tmp);
             free(key_envp);
             break;

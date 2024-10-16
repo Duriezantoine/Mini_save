@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/09 17:08:04 by dpoltura          #+#    #+#             */
-/*   Updated: 2024/10/16 11:05:18 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/16 14:45:15 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,17 +30,11 @@ void ft_init_data_list(t_node **list)
     (*list)->next = NULL;
 }
 
-void ft_init_data(t_data ***data, t_node *list)
+void ft_init_data(t_data *data)
 {
-    (**data) = ft_calloc(1, sizeof(t_data));
-    (**data)->count = '1';
-
-    if ((**data) == NULL)
-    {
-        fprintf(stderr, "Memory allocation failed for data\n");
-        exit(1);
-    }
-    (void)list;
+    data->nbr_command = 0;
+    data->count = '1';
+    data->bool = 0;
 }
 
 void ft_init_echo_malloc(t_echo *data_echo)

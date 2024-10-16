@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/09 17:08:04 by dpoltura          #+#    #+#             */
-/*   Updated: 2024/10/16 13:36:49 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/16 15:19:06 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,7 @@ void print_arg_arg(t_arg *head) {
 void organisation_shell_loop(t_node *list, t_data *data)
 {
 	// Declaration des signaux
-	shell_loop(list, &data, &list->env);
+	shell_loop(list, data, &list->env);
 	// free la command_line
 }
 // Fonction pour afficher le contenu du répertoire courant
@@ -265,7 +265,7 @@ int ft_space_or_null(char *str)
 	return(0);
 }
 
-char	*ft_change_input(char **str, t_env *env)
+char	*ft_change_input(char **str, t_env *env, t_data *data)
 {
 	char *tmp_tmp;
 	char **tmp;
@@ -287,7 +287,7 @@ char	*ft_change_input(char **str, t_env *env)
 			break;
 		if (tmp[x][0]== '$')
 		{
-			tmp_tmp = ft_change_var_environnement(tmp[x],&env);
+			tmp_tmp = ft_change_var_environnement(tmp[x],&env, data);
 			tmp[x] = tmp_tmp;
 
 		}
@@ -312,36 +312,16 @@ char	*ft_change_input(char **str, t_env *env)
 
 }
 
-
-int check_signal_status(void)
-{
-    if (signal_recu == SIGINT)
-    {
-        // Gestion du Ctrl+C
-        printf("\n");
-        rl_on_new_line();
-        rl_redisplay();
-        signal_recu = 0;
-        return 1;
-    }
-    else if (signal_recu == SIGQUIT)
-    {
-        // Gestion du Ctrl+\
-        // Ne rien faire, juste réinitialiser le signal
-        signal_recu = 0;
-        return 1;
-    }
-    else if (signal_recu == SIGKILL)
-    {
-        // Sortir de la boucle si SIGKILL est reçu
-        return 0;
-    }
-    return 1;
-}
-
 void signal_handler(int sig)
 {
-    signal_recu = sig;
+    if (sig == SIGINT)
+    {
+        signal_recu = sig;
+        ft_putstr_fd("^C\n", 2);
+        rl_on_new_line();
+        rl_replace_line("", 0);
+        rl_redisplay();
+    }
 }
 int ft_search_inputs(char *str)
 {
@@ -383,35 +363,36 @@ int ft_search_inputs(char *str)
     return 0;
 }
 
-int shell_loop(t_node *list, t_data **data, t_env **env)
+int shell_loop(t_node *list, t_data *data, t_env **env)
 {
     char *input;
-    int exitcode = 0;
 
     // Configuration du gestionnaire de signaux
-    signal(SIGINT, signal_handler);
-    signal(SIGQUIT, signal_handler);
 
     while (1)
     {    
+        signal_recu = 0;   
+        signal(SIGINT, signal_handler);
+        signal(SIGQUIT, signal_handler);
 
         input = readline("minishell$ ");
-        printf("Result=|%d|", (ft_search_inputs(input)));
-        if(ft_search_inputs(input)==0)
-        {
-            free(input);
-            shell_loop(list, data, &list->env);
-        }
-        ft_init_data(&data, list);
-
+        if (signal_recu == SIGINT)
+            data->exit_code = 130;
         if (input == NULL)  // Gestion de Ctrl+D (EOF)
         {
             printf("\nexit\n");
             break;
         }
+        if (ft_search_inputs(input) == 0)
+        {
+            free(input);
+            continue;
+        }
+        ft_init_data(data);
+
 
         add_history(input);  // Ajout de la commande à l'historique
-        input = ft_change_input(&input, *env);
+        input = ft_change_input(&input, *env, data);
 
         if (ft_strlen(input) == 0 || ft_white_space(input) == 0)
         {
@@ -429,22 +410,17 @@ int shell_loop(t_node *list, t_data **data, t_env **env)
 
         free(input);
         lexer(list);
-        lexer_cmd(list, *data);
-        exitcode = ft_exceve(list, *data, &list->env);
-        ft_free_return_loop(list, *data);
-
-        // if (exitcode == 252)
-        //     break;
-		if (!check_signal_status())
-			break;
+        lexer_cmd(list, data);
+        data->exit_code = ft_exceve(list, data, &list->env);
+        ft_free_return_loop(list);
     }
 
-    ft_free_end(list, env, data);
-    return exitcode;
+    ft_free_end(list, env);
+    return data->exit_code;
 }
-void 	ft_free_return_loop(t_node *list, t_data *data)
+void 	ft_free_return_loop(t_node *list)
 {
-		free_node(list->next, data);
+		free_node(list->next);
 		list->next = NULL;
 		ft_free_arg(list->arg);
 		ft_free_cmd(list->cmd);
@@ -468,14 +444,12 @@ void    ft_free_env(t_env **env)
     }
 }
 
-void ft_free_end(t_node *list, t_env **env, t_data **data)
+void ft_free_end(t_node *list, t_env **env)
 {
         if(list->save[0] >= 0) close(list->save[0]);
         if(list->save[1] >= 0) close(list->save[1]);
         ft_free_env(env);
         free(list);
-        if (data)
-		    free(*data);
         clear_history();
 }
 
@@ -517,11 +491,13 @@ t_env *ft_insert_env(char **envp)
 }
 int main(int argc, char **argv, char **envp)
 {
-	t_data *data = 	NULL;
+	t_data data;
 	t_node *list;
 	(void)argv;
 	(void)argc;
 
+    rl_catch_signals = 0;
+    data.exit_code = 0;
 	if (argc == 2)
 		ft_out_exit(1);
 	if (!envp || !*envp)
@@ -534,7 +510,7 @@ int main(int argc, char **argv, char **envp)
 	list->pipe[0] = -1;
 	list->env = ft_insert_env(envp);
 	//print_env(list->env);
-	organisation_shell_loop(list, data);
+	organisation_shell_loop(list, &data);
 
 	return (0); // Il faut l'exit code.
 }

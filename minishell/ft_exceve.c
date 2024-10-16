@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/01 11:35:23 by aduriez           #+#    #+#             */
-/*   Updated: 2024/10/16 13:21:12 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/16 15:17:09 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -475,7 +475,7 @@ int builtin(char *name) {
 		// printf("env\n");
 		founded = 7;
 	}
-	printf("\nJe suis found|%d|\n", founded);
+	// printf("\nJe suis found|%d|\n", founded);
 	return founded;
 }
 
@@ -539,7 +539,7 @@ void	ft_display_envp(char *copy_envp[])
 	}
 }
 
-int ft_excev_butlin(struct s_exec **lst, t_node **list, int i)
+int ft_excev_butlin(struct s_exec **lst, t_node **list, int i, t_data *data)
 {        
 	int built = 0;
     //    printf("|Name=|%s|I=|%d|",  (*lst)[i].exec, i);
@@ -590,7 +590,7 @@ int ft_excev_butlin(struct s_exec **lst, t_node **list, int i)
 	if (built ==7) 
 	{
 		// printf("Je susi bulting Cd");
-	       return bulting_exit((*lst)[i].argv,(*list),  &(*list)->env);
+	       return bulting_exit((*lst)[i].argv,(*list),  &(*list)->env, data);
  
 	}
 	
@@ -599,6 +599,12 @@ int ft_excev_butlin(struct s_exec **lst, t_node **list, int i)
 	// print_env_list((*list)->env);
 	return(0);
 }
+
+void handler_void(int sig)
+{
+	(void) sig;
+}
+
 int ft_exceve(t_node *list, t_data *data, t_env **env)
 {
     int len;
@@ -606,102 +612,104 @@ int ft_exceve(t_node *list, t_data *data, t_env **env)
     int last_in = 0, p[2], ret = -1;
     (void)data;
     (void)env;
-	printf("\nXXXX\n");
+
+	signal(SIGQUIT, handler_void);
+	signal(SIGINT, handler_void);
     for (int i = 0; i < len; i++)
     {
-	if (i < len - 1 && pipe(p) < 0)
-	{
-	    fprintf(stderr, "Erreur: Échec de la création du pipe.\n");
-	    break;
-	}
-
-	lst[i].in = (lst[i].in < 0) ? last_in : lst[i].in;
-	lst[i].out = (lst[i].out < 0) ? ((i < len - 1) ? p[1] : 1) : lst[i].out;
-
-	if (ft_exceve_bulting(lst[i].argv[0], i) == 0)
-	{
-	    // Traitement des builtins
-	    int stdin_copy = dup(0);
-	    int stdout_copy = dup(1);
-
-	    if (lst[i].in != 0)
-			dup2(lst[i].in, 0);
-	    if (lst[i].out != 1)
-			dup2(lst[i].out, 1);
-		ret = ft_excev_butlin(&lst, &list, i);
-		dup2(stdin_copy, 0);
-	    dup2(stdout_copy, 1);
-	    close(stdin_copy);
-	    close(stdout_copy);
-		if (strequ(lst[i].argv[0], "exit"))
+		if (i < len - 1 && pipe(p) < 0)
 		{
-			if (ret == -1)
-				ret = 1;
-			else
+			fprintf(stderr, "Erreur: Échec de la création du pipe.\n");
+			break;
+		}
+
+		lst[i].in = (lst[i].in < 0) ? last_in : lst[i].in;
+		lst[i].out = (lst[i].out < 0) ? ((i < len - 1) ? p[1] : 1) : lst[i].out;
+
+		if (ft_exceve_bulting(lst[i].argv[0], i) == 0)
+		{
+			// Traitement des builtins
+			int stdin_copy = dup(0);
+			int stdout_copy = dup(1);
+
+			if (lst[i].in != 0)
+				dup2(lst[i].in, 0);
+			if (lst[i].out != 1)
+				dup2(lst[i].out, 1);
+			ret = ft_excev_butlin(&lst, &list, i, data);
+			dup2(stdin_copy, 0);
+			dup2(stdout_copy, 1);
+			close(stdin_copy);
+			close(stdout_copy);
+			if (strequ(lst[i].argv[0], "exit"))
 			{
-				ft_free_env(&(list->env));
-				free_all_exec(lst, len);
-				if (last_in > 0)
-					close(last_in);
-				if (i < len - 1)
+				if (ret == -1)
+					ret = 1;
+				else
 				{
-				close(p[1]);
-				last_in = p[0];
+					ft_free_env(&(list->env));
+					free_all_exec(lst, len);
+					if (last_in > 0)
+						close(last_in);
+					if (i < len - 1)
+					{
+					close(p[1]);
+					last_in = p[0];
+					}
+					ft_free_return_loop(list);
+					ft_free_end(list, env);
+					exit(ret);
 				}
-				ft_free_return_loop(list, data);
-				ft_free_end(list, env, NULL);
-				exit(ret);
 			}
 		}
-	}
-	else
-	{
-	    // Traitement des commandes non-builtin
-	    lst[i].pid = fork();
-	    if (lst[i].pid < 0)
-	    {
-		fprintf(stderr, "Erreur: Échec du fork.\n");
-		break;
-	    }
-	    else if (lst[i].pid == 0)
-	    {
-		if (i < len - 1)
-		    close(p[0]);
-		
-		if (lst[i].in != 0)
+		else
 		{
-		    dup2(lst[i].in, 0);
-		    close(lst[i].in);
+			// Traitement des commandes non-builtin
+			lst[i].pid = fork();
+			if (lst[i].pid < 0)
+			{
+			fprintf(stderr, "Erreur: Échec du fork.\n");
+			break;
+			}
+			else if (lst[i].pid == 0)
+			{
+			if (i < len - 1)
+				close(p[0]);
+			
+			if (lst[i].in != 0)
+			{
+				dup2(lst[i].in, 0);
+				close(lst[i].in);
+			}
+			if (lst[i].out != 1)
+			{
+				dup2(lst[i].out, 1);
+				close(lst[i].out);
+			}
+			int exit_code = exec(lst[i].exec, lst[i].argv, &lst[i].envp);
+			ft_free_env(&(list->env));
+			free_all_exec(lst, len);
+			if (last_in > 0)
+				close(last_in);
+			if (i < len - 1)
+			{
+			close(p[1]);
+			last_in = p[0];
+			}
+			ft_free_return_loop(list);
+			ft_free_end(list, env);
+			exit(exit_code);
+			}
 		}
-		if (lst[i].out != 1)
-		{
-		    dup2(lst[i].out, 1);
-		    close(lst[i].out);
-		}
-		int exit_code = exec(lst[i].exec, lst[i].argv, &lst[i].envp);
-		ft_free_env(&(list->env));
-		free_all_exec(lst, len);
-		if (last_in > 0)
-	    	close(last_in);
-		if (i < len - 1)
-		{
-	   	 close(p[1]);
-	   	 last_in = p[0];
-		}
-		ft_free_return_loop(list, data);
-		 ft_free_end(list, env, NULL);
-		exit(exit_code);
-	    }
-	}
 
-	// Nettoyage des descripteurs de fichiers
-	if (last_in > 0)
-	    close(last_in);
-	if (i < len - 1)
-	{
-	    close(p[1]);
-	    last_in = p[0];
-	}
+		// Nettoyage des descripteurs de fichiers
+		if (last_in > 0)
+			close(last_in);
+		if (i < len - 1)
+		{
+			close(p[1]);
+			last_in = p[0];
+		}
     }
 
     // Attendre la fin de tous les processus non-builtin

@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/03 15:51:36 by aduriez           #+#    #+#             */
-/*   Updated: 2024/10/08 15:12:12 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/16 14:46:32 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,15 +63,11 @@ void ft_free_cmd(t_cmd *tmp)
     }
 }
 
-void free_node(t_node *list, t_data *data)
+void free_node(t_node *list)
 {
     t_node *current = list;
     t_node *next;
 
-    // Sauvegarder l'environnement
-    if (data != NULL) {
-        free(data);
-    }
     while (current != NULL) {
         next = current->next;
         ft_free_arg(current->arg);

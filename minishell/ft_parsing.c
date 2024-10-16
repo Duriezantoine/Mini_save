@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/11 10:51:14 by dpoltura          #+#    #+#             */
-/*   Updated: 2024/10/16 12:28:31 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/16 14:48:10 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,7 @@ void print_list_save(t_save* head) {
     }
 }
 
-int ft_parsing(t_node *list, t_data **data, char *input, t_env *env)
+int ft_parsing(t_node *list, t_data *data, char *input, t_env *env)
 {
     int i;
 
@@ -66,8 +66,8 @@ int ft_parsing(t_node *list, t_data **data, char *input, t_env *env)
     t_echo data_echo;
     char **tokens;
 
-    tokens = ft_parsing_init(*data, input); // IL faut mettre des conditions pour verifier les signaux
-    while ((data != NULL) && (*data != NULL) && i < (*data)->nbr_command)
+    tokens = ft_parsing_init(data, input); // IL faut mettre des conditions pour verifier les signaux
+    while (i < data->nbr_command)
     {
         if (i != 0)
             ft_inser_init_list_arg(&list); // Je pense qu'il faut utliser un pointeur pour mettre next in function demander a titouan
@@ -86,7 +86,7 @@ int ft_parsing(t_node *list, t_data **data, char *input, t_env *env)
         ft_free_data_echo(&data_echo);
         i++;
     }
-    free_tokens(tokens, (*data)->nbr_command);
+    free_tokens(tokens, data->nbr_command);
     return (0);
 }
 
