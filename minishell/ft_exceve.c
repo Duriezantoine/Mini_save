@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/01 11:35:23 by aduriez           #+#    #+#             */
-/*   Updated: 2024/10/15 16:57:59 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/16 13:21:12 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -606,7 +606,7 @@ int ft_exceve(t_node *list, t_data *data, t_env **env)
     int last_in = 0, p[2], ret = -1;
     (void)data;
     (void)env;
-
+	printf("\nXXXX\n");
     for (int i = 0; i < len; i++)
     {
 	if (i < len - 1 && pipe(p) < 0)

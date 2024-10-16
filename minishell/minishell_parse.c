@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/09 17:08:04 by dpoltura          #+#    #+#             */
-/*   Updated: 2024/10/16 13:16:36 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/16 13:36:49 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -343,44 +343,46 @@ void signal_handler(int sig)
 {
     signal_recu = sig;
 }
-int ft_search_inputs( char *str)
+int ft_search_inputs(char *str)
 {
     int i;
 
-    printf("Je suis str|%s|", str);
     i = 0;
-    if (!str)
-        return(0);
-    while(str[i])
+    while (str[i])
     {
-        printf("\n1|%c|",str[i]);
-        if(str[i]== '\'')
+        if (str[i] == '\'')
         {
-            printf("\2|%c|",str[i]);
-
             i++;
-           while(str[i]!= '\'')
+            while (str[i] && str[i] != '\'')
             {
-                if(str[i] != ' ')
-                    return(1);
-                 printf("3|%c|",str[i]);
+                if (str[i] != ' ' && str[i] != '\'')
+                    return 1;
                 i++;
             }
+            if (str[i] == '\'')
+                i++; // Passe le guillemet simple de fermeture
         }
-         if(str[i]== '"')
+        else if (str[i] == '"')
         {
             i++;
-           while(str[i]!= '"')
+            while (str[i] && str[i] != '"')
             {
-                if(str[i] != ' ')
-                    return(1);
+                if (str[i] != ' ')
+                    return 1;
                 i++;
             }
+            if (str[i] == '"')
+                i++; // Passe le guillemet double de fermeture
+        }
+        else if (str[i] != ' ')
+        {
+            return 1;
         }
         i++;
     }
-    return(0);
+    return 0;
 }
+
 int shell_loop(t_node *list, t_data **data, t_env **env)
 {
     char *input;
@@ -394,9 +396,12 @@ int shell_loop(t_node *list, t_data **data, t_env **env)
     {    
 
         input = readline("minishell$ ");
+        printf("Result=|%d|", (ft_search_inputs(input)));
         if(ft_search_inputs(input)==0)
+        {
+            free(input);
             shell_loop(list, data, &list->env);
-
+        }
         ft_init_data(&data, list);
 
         if (input == NULL)  // Gestion de Ctrl+D (EOF)
