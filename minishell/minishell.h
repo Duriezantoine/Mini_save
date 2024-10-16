@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/09 17:05:05 by dpoltura          #+#    #+#             */
-/*   Updated: 2024/10/16 14:49:12 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/16 17:26:58 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,16 +43,6 @@ typedef enum e_tokens
 	OUTPUT_ADD,
 	HEREDOC_INFILE,
 } t_token;
-typedef struct
-{
-	char *write_here_do;
-	int ret;
-	int test;
-	struct sigaction action;
-	struct termios term_attr;
-	char *temp_file_name;
-	int tmp_fd;
-} t_here_doc_data;
 
 /// Strucuture pour l'environnement  ////////////////
 typedef struct s_env
@@ -100,6 +90,19 @@ typedef struct s_node
 
 } t_node;
 
+
+typedef struct
+{
+	char *write_here_do;
+	int ret;
+	int test;
+	struct sigaction action;
+	struct termios term_attr;
+	char *temp_file_name;
+	int tmp_fd;
+	t_node	*list;
+} t_here_doc_data;
+
 // Pour le parsing
 
 typedef struct s_token_str_two
@@ -135,7 +138,6 @@ typedef struct s_data
 	char count;
 	int bool;
 	int	exit_code;
-
 } t_data;
 
 typedef struct s_str
@@ -203,7 +205,7 @@ void type_insert_cmd(t_arg *new_node);
 void ft_format_list(t_arg *arg);
 void ft_insert_tab_echo(t_echo *data_echo, char *input, int i);
 void ft_init_data_list(t_node **list);
-void lexer_cmd(t_node *list, t_data *data);
+int lexer_cmd(t_node *list, t_data *data);
 void print_liste(t_arg *list);
 void ft_insert_double_tab(t_cmd **list, t_arg *list_arg);
 t_arg *ft_init_list(t_node *list, t_echo *data_echo, t_save *save);
@@ -219,8 +221,9 @@ void ft_manager_sig(int sig);
 void ft_init_signaux(struct sigaction *action, char **write_here_do);
 
 // Fonction pour le here_doc
+void	handler_void(int sig);
 
-char *ft_here_doc(t_data *data, t_node *list, char *limiteur);
+char *ft_here_doc(t_data *data, t_node *list, char *limiteur, t_node *base_node);
 // Fonction pour l'environnement
 void ft_init_env(t_env **env);
 char **ft_split(char const *s, char c);

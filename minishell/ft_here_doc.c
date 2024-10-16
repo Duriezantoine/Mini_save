@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/27 10:32:48 by aduriez           #+#    #+#             */
-/*   Updated: 2024/10/16 14:43:16 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/16 17:30:44 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,10 +33,10 @@ void ft_manager_sig(int sig)
 		// printf("\nttt\n");
 		signal_recu = -2;
 	}
-	else if (sig == SIGTSTP)
-	{
-		// printf("Je viens de contrôler z\n");
-	}
+	// else if (sig == SIGTSTP)
+	// {
+	// 	// printf("Je viens de contrôler z\n");
+	// }
 	else
 	{
 		// printf("est ce ");
@@ -74,8 +74,8 @@ t_here_doc_data init_here_doc_data()
 {
     t_here_doc_data data;
     data.write_here_do = NULL;
-    data.ret = 0;
     data.test = 0;
+    data.ret = 1;
     data.temp_file_name = NULL;
     data.tmp_fd = 0;
     return data;
@@ -99,22 +99,22 @@ void setup_here_doc_files(t_here_doc_data *here_doc_data, t_data *data, t_node *
     }
 }
 
-void initialize_here_doc_input(t_here_doc_data *here_doc_data) 
-{
-    ft_init_signaux(&here_doc_data->action, &here_doc_data->write_here_do);
-    tcgetattr(STDIN_FILENO, &here_doc_data->term_attr);
-    here_doc_data->ret = read(0, here_doc_data->write_here_do, 1023);
-    here_doc_data->write_here_do[here_doc_data->ret] = '\n';
-}
+// void initialize_here_doc_input(t_here_doc_data *here_doc_data) 
+// {
+//     ft_init_signaux(&here_doc_data->action, &here_doc_data->write_here_do);
+//     tcgetattr(STDIN_FILENO, &here_doc_data->term_attr);
+//     here_doc_data->ret = read(0, here_doc_data->write_here_do, 1023);
+//     here_doc_data->write_here_do[here_doc_data->ret] = '\n';
+// }
 
-char *handle_write_error(t_here_doc_data *here_doc_data)
+int handle_write_error(t_here_doc_data *here_doc_data)
 {
     if (write(here_doc_data->tmp_fd, here_doc_data->write_here_do, here_doc_data->ret) == -1) {
         perror("write");
         free(here_doc_data->write_here_do);
-        return "erreur";
+        return 1;
     }
-    return NULL;
+    return 0;
 }
 
 void read_input(t_here_doc_data *here_doc_data)
@@ -132,42 +132,104 @@ char *close_and_return_temp_file(t_here_doc_data *here_doc_data)
     return here_doc_data->temp_file_name;//Pourquoi je retourne le nom
 }
 
-void handle_signal_recu(int signal_recu, t_node *list, t_data *data, t_here_doc_data *here_doc_data)
+t_here_doc_data *get_hd_data(void)
 {
-    (void)here_doc_data;
+    static t_here_doc_data  data;
 
-	if (signal_recu == -2) {
-        free_here_doc_data(here_doc_data);//Je ne comprends pas apparement il se free deja
-        shell_loop(list, data, &list->env);
+    return (&data);
+}
+
+void    heredoc_handle_sig(int signal)
+{
+    t_here_doc_data *here_doc_data;
+
+    if (signal == SIGINT)
+    {
+        here_doc_data = get_hd_data();
+        free(here_doc_data->temp_file_name);
+        free(here_doc_data->write_here_do);
+        ft_free_return_loop(here_doc_data->list);
+        ft_free_end(here_doc_data->list, &(here_doc_data->list->env));
+        ft_putstr_fd("^C\n", 2);
+        // todo free all
+        exit(130);
     }
 }
 
-char *ft_here_doc(t_data *data, t_node *list, char *limiteur)
+static void heredoc_process(t_here_doc_data here_doc_data, t_data *data, t_node *list, char *limiteur)
 {
-    t_here_doc_data here_doc_data = init_here_doc_data();
-    //iL manque free
-    setup_here_doc_files(&here_doc_data, data, list, here_doc_data.write_here_do);
-    initialize_here_doc_input(&here_doc_data);
+    signal(SIGQUIT, heredoc_handle_sig);
+    signal(SIGINT, heredoc_handle_sig);
+
+    here_doc_data.write_here_do = ft_calloc(sizeof(char), 1023);
+    *(get_hd_data()) = here_doc_data;
+
+    (void) data;
     while (1) 
 	{
         here_doc_data.test = strncmp(here_doc_data.write_here_do, limiteur, ft_strlen(limiteur));
         if (here_doc_data.ret == 0 || here_doc_data.test == 0)
             break;
-        handle_signal_recu(signal_recu, list, data, &here_doc_data);
-        if (signal_recu == -2) 
-            break;
+        printf("yo\n\n");
        if (list->cmd->cmd != 0) 
 	   	{
-            char *error = handle_write_error(&here_doc_data);
-            if (error) 
-                return error;
+            int error = handle_write_error(&here_doc_data);
+            if (error)
+            {
+                free(here_doc_data.temp_file_name);
+                free(here_doc_data.write_here_do);
+                ft_free_return_loop(here_doc_data.list);
+                ft_free_end(here_doc_data.list, &(here_doc_data.list->env));
+                exit(error);
+            }
         }
-        //printf("write=|%s|demande=|%s|test_delimiteur |%d|",here_doc_data.write_here_do, limiteur, here_doc_data.test );
+        printf("write=|%s|demande=|%s|test_delimiteur |%d|",here_doc_data.write_here_do, limiteur, here_doc_data.test );
         read_input(&here_doc_data);
     }
-    if (list->cmd->cmd != 0)
-        return close_and_return_temp_file(&here_doc_data);
-    free_here_doc_data(&here_doc_data);
-    return "No_tmp_name";
+    free(here_doc_data.temp_file_name);
+    free(here_doc_data.write_here_do);
+    ft_free_return_loop(here_doc_data.list);
+    ft_free_end(here_doc_data.list, &(here_doc_data.list->env));
+    exit(0);
+}
+
+char *ft_here_doc(t_data *data, t_node *list, char *limiteur, t_node *base_node)
+{
+    int heredoc_pid;
+    t_here_doc_data here_doc_data = init_here_doc_data();
+    here_doc_data.list = base_node;
+    int status;
+    
+    setup_here_doc_files(&here_doc_data, data, list, here_doc_data.write_here_do);
+    heredoc_pid = fork(); // todo protection
+    if (heredoc_pid == 0)
+    {
+        heredoc_process(here_doc_data, data, list, limiteur);
+        exit(1);
+    }
+    else
+    {
+        signal(SIGQUIT, handler_void);
+        signal(SIGINT, handler_void);
+        if (waitpid(heredoc_pid, &status, 0) == -1)
+        {
+            perror("waitpid");
+            free(here_doc_data.temp_file_name);
+            return (NULL);
+        }
+        if (WEXITSTATUS(status) == 130 || WEXITSTATUS(status) == 1)
+        {
+            free(here_doc_data.temp_file_name);
+            return NULL;
+        }
+        //iL manque free
+        // initialize_here_doc_input(&here_doc_data);
+        if (list->cmd->cmd != 0)
+        {
+            return close_and_return_temp_file(&here_doc_data);
+        }
+       // free_here_doc_data(&here_doc_data);
+        return "No_tmp_name";
+    }
 }
 

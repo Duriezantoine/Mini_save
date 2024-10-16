@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/09 17:08:04 by dpoltura          #+#    #+#             */
-/*   Updated: 2024/10/16 15:19:06 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/16 17:33:32 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -410,8 +410,13 @@ int shell_loop(t_node *list, t_data *data, t_env **env)
 
         free(input);
         lexer(list);
-        lexer_cmd(list, data);
-        data->exit_code = ft_exceve(list, data, &list->env);
+        if (lexer_cmd(list, data) == 0)
+        {
+            
+            data->exit_code = ft_exceve(list, data, &list->env);
+        }
+        else
+            data->exit_code = 130;
         ft_free_return_loop(list);
     }
 

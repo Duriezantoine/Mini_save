@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/01 11:35:23 by aduriez           #+#    #+#             */
-/*   Updated: 2024/10/16 15:17:09 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/16 17:40:50 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -447,6 +447,8 @@ int strequ(char *s1, char *s2) {
 int builtin(char *name) {
 
 	int founded = 0;
+	if (name == NULL)
+		return (-1);
 	if(strequ(name, "env")) {
 		printf("env\n");
 		founded = 1;
@@ -543,8 +545,10 @@ int ft_excev_butlin(struct s_exec **lst, t_node **list, int i, t_data *data)
 {        
 	int built = 0;
     //    printf("|Name=|%s|I=|%d|",  (*lst)[i].exec, i);
-       built = builtin((*lst)[i].exec) ;
-		if (built == 1) 
+	built = builtin((*lst)[i].exec) ;
+	if (built == -1)
+		return (0);
+	if (built == 1) 
 	{
 		// printf("Je susi bulting Env");
 	       bulting_env((*list));
@@ -609,6 +613,7 @@ int ft_exceve(t_node *list, t_data *data, t_env **env)
 {
     int len;
     struct s_exec *lst = lst_to_execs(list, &len);
+	printf("\n Len|%d|\n", len);
     int last_in = 0, p[2], ret = -1;
     (void)data;
     (void)env;
@@ -626,7 +631,7 @@ int ft_exceve(t_node *list, t_data *data, t_env **env)
 		lst[i].in = (lst[i].in < 0) ? last_in : lst[i].in;
 		lst[i].out = (lst[i].out < 0) ? ((i < len - 1) ? p[1] : 1) : lst[i].out;
 
-		if (ft_exceve_bulting(lst[i].argv[0], i) == 0)
+		if (ft_exceve_bulting(lst[i].argv[0], len) == 0)
 		{
 			// Traitement des builtins
 			int stdin_copy = dup(0);
@@ -641,7 +646,7 @@ int ft_exceve(t_node *list, t_data *data, t_env **env)
 			dup2(stdout_copy, 1);
 			close(stdin_copy);
 			close(stdout_copy);
-			if (strequ(lst[i].argv[0], "exit"))
+			if (lst[i].argv[0] != NULL && strequ(lst[i].argv[0], "exit"))
 			{
 				if (ret == -1)
 					ret = 1;

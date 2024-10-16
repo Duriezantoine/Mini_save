@@ -103,10 +103,9 @@ void delete_node(t_arg **head, t_arg *node_to_delete) {
 }
 
 
-void ft_insert_cmd_here_doc(t_node *list, t_cmd **list_cmd, t_arg *list_arg, t_data *data)
+int ft_insert_cmd_here_doc(t_node *list, t_arg *list_arg, t_data *data, t_node *base_node)
 {
     (void)data;
-    (void)list_cmd;
     char *tmp_file_name;
     t_arg *current = list_arg;
 
@@ -114,7 +113,13 @@ void ft_insert_cmd_here_doc(t_node *list, t_cmd **list_cmd, t_arg *list_arg, t_d
         // printf("\n\nJe suis le type|%s|\n", current->str_command);
         if (current->type == HEREDOC && current->next->type == DELIM) {
             current = current->next;
-            tmp_file_name = ft_here_doc(data, list, current->str_command); // it's ok
+            tmp_file_name = ft_here_doc(data, list, current->str_command, base_node); // it's ok
+            if (tmp_file_name == NULL)
+            {
+                free(tmp_file_name);
+                return 1;
+            }
+            
             if (list->cmd->cmd != 0) // Ce qui permet de ne pas creer d'infile car il n'y a pas de commande
             {
                 printf("\nJe suis le neouds |%s| et le type |%d|\n",current->str_command, current->type);
@@ -132,6 +137,7 @@ void ft_insert_cmd_here_doc(t_node *list, t_cmd **list_cmd, t_arg *list_arg, t_d
         }
         current = current->next;
     }
+    return (0);
 }
 
 void ft_verif_cmd(t_cmd **list, t_arg *list_arg)
@@ -273,23 +279,29 @@ void    ft_check_outfile(t_node *list, t_cmd **cmd, t_arg *arg)
     }
 
 }
-void lexer_cmd(t_node *list, t_data *data) // Cette fonction permet d'implementer list->cmd
+int lexer_cmd(t_node *list, t_data *data) // Cette fonction permet d'implementer list->cmd
 {
     (void)data;
+    t_node  *base_node;
 
+    base_node = list;
     // verification acces list->arg//Start with list->arglist->cmd =
     while (list)
     {
+        printf("ICI");
         ft_init_cmd(&list->cmd);                     // it's ok
         ft_insert_double_tab(&list->cmd, list->arg); // it's ok
         ft_verif_cmd(&list->cmd, list->arg);         //it's ok//Pour le here_doc
         ft_check_outfile(list, &list->cmd, list->arg);//Il me semble qu'il manque un truc
-        ft_insert_cmd_here_doc(list, &list->cmd, list->arg, data);//it's ok plus ou moins
+        
+        if (ft_insert_cmd_here_doc(list, list->arg, data, base_node) == 1)//it's ok plus ou moins
+            return (1);
         ft_check_bulting(&list->cmd, list->arg);//it's ok
         ft_check_infile_cmd(list, &list->cmd, list->arg);//it's ok
         data->count = data->count + 1;//Permet de modifier le nom du infile pour le here_doc
-        list = list->next;
+        list = list->next; // todo check with heredoc
     }
+    return (0);
     // IL faut maintenat voir si il y a here_doc et le placer en premeir
 }
 
