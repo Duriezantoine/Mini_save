@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/06 17:51:35 by aduriez           #+#    #+#             */
-/*   Updated: 2024/10/16 18:14:25 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/17 16:37:15 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,10 @@ int    bulting_echo(char **cmd, int i)
             {
                 if(i != 0)
                 {
+
                     printf("%s", cmd[i]);
+                    if (cmd[i+1]!= NULL)
+                          printf(" ");
                 }
                 i++;
             }

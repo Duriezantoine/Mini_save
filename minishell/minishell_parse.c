@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/09 17:08:04 by dpoltura          #+#    #+#             */
-/*   Updated: 2024/10/17 13:47:13 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/17 17:02:33 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -401,6 +401,7 @@ int shell_loop(t_node *list, t_data *data, t_env **env)
         signal(SIGQUIT, signal_handler);
 
         input = readline("minishell$ ");
+
         if (signal_recu == SIGINT)
             data->exit_code = 130;
         if (input == NULL)  // Gestion de Ctrl+D (EOF)
@@ -417,11 +418,11 @@ int shell_loop(t_node *list, t_data *data, t_env **env)
 
 
         add_history(input);  // Ajout de la commande à l'historique
-        // input = ft_change_input(&input, *env, data);//Il faudra le refaire a la suite 
+        input = ft_change_input(&input, *env, data);//Il faudra le refaire a la suite 
 
         if (ft_strlen(input) == 0 || ft_white_space(input) == 0)
         {
-			//printf("\nICIC\n");
+            //printf("\nICIC\n");
             free(input);
             continue;
         }
@@ -443,6 +444,7 @@ int shell_loop(t_node *list, t_data *data, t_env **env)
         else
             data->exit_code = 130;
         ft_free_return_loop(list);
+        
         // printf("Exitcode|%d|", data->exit_code );
     }
 

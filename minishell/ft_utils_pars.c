@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/11 10:51:14 by dpoltura          #+#    #+#             */
-/*   Updated: 2024/10/17 15:30:26 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/17 16:38:57 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -310,7 +310,7 @@ void ft_insert_data_s_whith_tab(t_echo *data_echo, char *input, int *i, int *cle
 
     data_echo->str_s_quot[(*clef_tab_s_quot)].bool = 0;
 
-    // printf("\nSave_with_tab_s|Nbr_occurence=%d|clef=%d|Save=%s|Sorti=%c\n", iterateur_tab_s_quot, (*clef_tab_s_quot), data_echo->str_s_quot[(*clef_tab_s_quot)].str, input[*i]);
+   // printf("\nSave_with_tab_s|Nbr_occurence=%d|clef=%d|Save=%s|Sorti=%c\n", iterateur_tab_s_quot, (*clef_tab_s_quot), data_echo->str_s_quot[(*clef_tab_s_quot)].str, input[*i]);
     // printf("\n2Sorti de la boucle|%c|\n", input[*i]);
 
 }
@@ -493,11 +493,9 @@ void ft_insert_data_w_quot(t_echo *data_echo, char *input, int *i, int *place_ta
             (*i)++;
             occurence++;
         }
-        (*i)++;
-        occurence++;
         if (input[*i] == '\0')
             break;   
-         while (((ft_isalnum(input[*i]) == 1)  && input[*i] != '\0') && input[*i] != '\n' && input[*i] != '"')
+         while (((ft_isalnum(input[*i]) == 1)  && input[*i] != '\0') && input[*i] != '\'' && input[*i] != '"')
         {
             // printf("5Je suis c|%c|i=|%d|input|%c|\n", c, *i, input[*i]);
             occurence++;
@@ -632,12 +630,11 @@ int ft_handle_quotes(char *input, int *i, int *wt_quot, char c)//Faire avec plus
                 break;
         }
         // printf("3Je suis c|%c|i=|%d|input|%c|\n", c, *i, input[*i]);
-        (*i)++;
         if (input[*i] == '\0')
             break;   
         //  printf("4Je suis c|%c|i=|%d|input|%c|\n", c, *i, input[*i]);
 
-        while (((ft_isalnum(input[*i]) == 1)  && input[*i] != '\0') && input[*i] != '\n' && input[*i] != '"')
+        while (((ft_isalnum(input[*i]) == 1)  && input[*i] != '\0') && input[*i] != '\'' && input[*i] != '"')
         {
             // printf("5Je suis c|%c|i=|%d|input|%c|\n", c, *i, input[*i]);
             (*i)++;
@@ -660,7 +657,7 @@ int ft_handle_quotes(char *input, int *i, int *wt_quot, char c)//Faire avec plus
 
         // }
             
-    //     printf("1je suis input|%c|\n", input[*i]);
+        // printf("1je suis input|%c|\n", input[*i]);
     }
     // printf("2je suis input|%c|\n    ", input[*i]);
     (*wt_quot)++;
@@ -702,7 +699,7 @@ int ft_init_token_space(t_echo *data_echo, char *input, int i)
     }
     data_echo->s_quot = ss_quot;
     data_echo->w_quot = wt_quot;
-    // printf("S_quot = |%d| W_quot|%d|\n", data_echo->s_quot, data_echo->w_quot);
+    //printf("S_quot = |%d| W_quot|%d|\n", data_echo->s_quot, data_echo->w_quot);
     return (0);
 }
 

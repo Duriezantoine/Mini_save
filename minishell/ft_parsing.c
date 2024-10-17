@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/11 10:51:14 by dpoltura          #+#    #+#             */
-/*   Updated: 2024/10/16 14:48:10 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/17 17:03:08 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,6 +56,76 @@ void print_list_save(t_save* head) {
         current = current->next;
     }
 }
+void print_save_list(t_save *head)
+{
+	t_save *current = head;
+
+	while (current != NULL)
+	{
+		printf("str: %s, bool: %d\n", current->str, current->bool);
+		current = current->next;
+	}
+}
+char    *ft_change_save_v3(char *str)
+{
+    int x;
+    int i;
+
+    char *save;
+    x = 0;
+    i = 0;
+    save = NULL;    
+    while(str[x])
+    {
+        if(str[x]== '\'' || str[x]== '"')
+            x++;
+        else
+        {
+            i++;
+            x++;
+        }
+    }
+    save = malloc(sizeof(char)*(i+1));
+    i = 0;
+    x = 0;
+    while(str[x])
+    {
+        if(str[x]== '\'' || str[x]== '"')
+            x++;
+        else
+        {
+            save[i] = str[x];
+            i++;
+            x++;
+        }
+    }
+    save[i]= '\0';
+    return(save);
+}
+void ft_change_save_v2(t_save **save)
+{
+    t_save *tmp;
+    int x;
+    char *save_tmp;
+    tmp = *save;
+    while(tmp)
+    {
+        x = 0;
+        while(tmp->str[x])
+        {
+            if (tmp->str[x]== '\'' || tmp->str[x] == '"')
+                {        
+                    save_tmp = ft_change_save_v3(tmp->str);
+                    free(tmp->str);
+                    tmp->str = ft_strdup(save_tmp);
+                    free(save_tmp);
+                    break;
+                }
+            x++;
+        }
+        tmp = tmp->next;
+    }
+}
 
 int ft_parsing(t_node *list, t_data *data, char *input, t_env *env)
 {
@@ -75,6 +145,8 @@ int ft_parsing(t_node *list, t_data *data, char *input, t_env *env)
             return (1); // Voir comment acceder a ma data
         save = NULL;
         ft_insert_new_data_with_data(&save, &data_echo, env);
+        ft_change_save_v2(&save);
+        print_save_list(save);
         t_save *tmp = save;
         while (tmp)
         { // Boucle permettant d'introduire dans la list->arg
