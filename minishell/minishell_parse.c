@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/09 17:08:04 by dpoltura          #+#    #+#             */
-/*   Updated: 2024/10/16 18:14:17 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/17 13:47:13 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -265,24 +265,45 @@ int ft_space_or_null(char *str)
 	return(0);
 }
 
+char    *ft_change_input_v2(char *save)
+{
+    int x;
+
+    x = 0;
+    while(save[x])
+    {
+        if (save[x]==32)
+            x++;
+        if(save[x] !=32)
+            break;
+    }
+    return(save);
+}
+
 char	*ft_change_input(char **str, t_env *env, t_data *data)
 {
 	char *tmp_tmp;
 	char **tmp;
 	char *save_tmp;
 	int x;
+    char *tmp_tmp_tmp;
 	char *save;
 	x = 0;
 	save_tmp =NULL;
 	save = ft_strjoin((*str), " ");
 	while (count_dollars_outside_quotes((*str))<=0)
-		break;	
+		break;
+    tmp_tmp_tmp = ft_change_input_v2(save);
+    // printf("save|%s|\n", tmp_tmp_tmp);
 	// save = ft_strjoin(str, '$');
 	save_tmp = ft_strdup(" ");
 	tmp = ft_split_d((save));
+
 	free(save);
 	while(tmp[x])
 	{
+        printf("saveTMP|%s|\n", tmp[x]);
+
 		if (ft_space_or_null(tmp[x])==0)
 			break;
 		if (tmp[x][0]== '$')
@@ -300,6 +321,8 @@ char	*ft_change_input(char **str, t_env *env, t_data *data)
 		x++;
 		if (tmp[x]== NULL)
 			break;
+        printf("savMIDDLE|%s|\n", save_tmp);
+
 	}
 
 	free((*str));
@@ -307,6 +330,8 @@ char	*ft_change_input(char **str, t_env *env, t_data *data)
 	free(tmp[x]);
 	free(tmp);
 	// free(save);
+        printf("saveEND|%s|\n", save_tmp);
+
 	return(save_tmp);
 	//print_char_array_d(tmp);
 
@@ -392,7 +417,7 @@ int shell_loop(t_node *list, t_data *data, t_env **env)
 
 
         add_history(input);  // Ajout de la commande à l'historique
-        input = ft_change_input(&input, *env, data);
+        // input = ft_change_input(&input, *env, data);//Il faudra le refaire a la suite 
 
         if (ft_strlen(input) == 0 || ft_white_space(input) == 0)
         {
