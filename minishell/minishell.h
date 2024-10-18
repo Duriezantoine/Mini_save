@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/09 17:05:05 by dpoltura          #+#    #+#             */
-/*   Updated: 2024/10/16 17:26:58 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/18 19:43:57 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -210,6 +210,7 @@ void print_liste(t_arg *list);
 void ft_insert_double_tab(t_cmd **list, t_arg *list_arg);
 t_arg *ft_init_list(t_node *list, t_echo *data_echo, t_save *save);
 void lexer(t_node *head);
+char	*ft_itoa(int n);
 
 
 
@@ -262,7 +263,7 @@ int 	ft_search_n(char **cmd, int i);
 /////////////////////////////////Pour le bulting pwd/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void	bulting_pwd();
 /////////////////////////////////Pour le bulting export//////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void    bulting_export(char **argv, char ***env);
+int    bulting_export(char **argv, char ***env);
 int     ft_verif_export_equal(char *str);
 void    ft_change_envp(char **env, char *key, char *value);
 int     ft_search_key_envp(char  **env, char *key);

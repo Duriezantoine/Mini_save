@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/01 11:35:23 by aduriez           #+#    #+#             */
-/*   Updated: 2024/10/16 18:14:19 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/18 17:37:51 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -148,13 +148,17 @@ char **get_env_cdt(t_env *env) {
     if (!ret) return NULL;
     int count;
 
+	// print_env_list(env);
     count = 0;
 	t_env *tmp;
     int i = 0;
 	tmp =env;
     while (env) {
-	
-	ret[i] = ft_calloc(ft_strlen(env->key) + ft_strlen(env->value) + 2, sizeof(char));
+		// printf("XXX|%s| has value %s\n", env->key, env->value);
+		if (env->value)
+			ret[i] = ft_calloc(ft_strlen(env->key) + ft_strlen(env->value) + 2, sizeof(char));
+		else
+			ret[i] = ft_calloc(ft_strlen(env->key) + 1, sizeof(char));
 	// if (!ret[i]) {
 	//     // Libérer toutes les chaînes de caractères allouées précédemment
 	//     for (int j = 0; j < i; j++) {
@@ -164,8 +168,11 @@ char **get_env_cdt(t_env *env) {
 	//     return NULL;
 	// }
 	real_strcat(ret[i], env->key);
-	ret[i][ft_strlen(env->key)] = '='; // Ajout direct du caractère '='
-	real_strcat(ret[i], env->value);
+	if (env->value)
+	{
+		ret[i][ft_strlen(env->key)] = '='; // Ajout direct du caractère '='
+		real_strcat(ret[i], env->value);
+	}
 	i++;
 	env = env->next;
     }

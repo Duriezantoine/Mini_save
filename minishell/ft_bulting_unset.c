@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/06 18:43:21 by aduriez           #+#    #+#             */
-/*   Updated: 2024/10/15 15:49:51 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/18 18:54:41 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,7 +88,7 @@ int   ft_search_envp(char  **env, char *search)
         {
             free(key);
             free(key_envp); 
-            printf("\nfound\n");
+            // printf("\nfound\n");
             return(3);
         }
         free(key_envp); 

@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/09 17:08:04 by dpoltura          #+#    #+#             */
-/*   Updated: 2024/10/17 16:38:12 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/18 15:57:19 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,19 +41,19 @@ void ft_init_echo_malloc(t_echo *data_echo)
 {
     data_echo->str_w_quot = malloc(data_echo->w_quot * sizeof(t_str));
     data_echo->str_s_quot = malloc(data_echo->s_quot * sizeof(t_str));
-    //printf("\nFT_init echo malloc|w=%d|s=%d||\n",data_echo->w_quot, data_echo->s_quot);
+    // printf("\nFT_init echo malloc|w=%d|s=%d||\n",data_echo->w_quot, data_echo->s_quot);
 }
 
 t_arg *ft_init_list(t_node *list, t_echo *data_echo, t_save *save)
 {
     (void)data_echo; // Supprimer l'avertissement d'utilisation inutilisée
-    t_arg *new_node = ft_calloc(sizeof(t_arg), 1);
+    // printf("calloc\n");
+    t_arg *new_node = calloc(sizeof(t_arg), 1);
     if (!new_node)
     {
         printf("Erreur d'allocation de mémoire\n");
         return NULL;
     }
-    // printf("\nDNEWNODE = |%s|\n",save->str);
     new_node->str_command = ft_strdup(save->str);
     // printf("\nFNEWNODE = |%s|\n", new_node->str_command);
 

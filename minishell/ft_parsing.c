@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/11 10:51:14 by dpoltura          #+#    #+#             */
-/*   Updated: 2024/10/17 17:03:08 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/18 16:39:14 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,80 @@ void print_save_list(t_save *head)
 		current = current->next;
 	}
 }
-char    *ft_change_save_v3(char *str)
+
+int     ft_search_var_env(char **save, t_env *env, t_data *data)
+{
+    t_env *tmp;
+    char *tampon;
+    char *new_val;
+    tmp = env;
+    if ((*save)[0] == '?')
+    { 
+        tampon = ft_itoa(data->exit_code);
+        new_val = ft_strjoin(tampon, *save + 1);
+        free(*save);
+        free(tampon);
+        *save = new_val;
+        return (0);
+    }
+    while(tmp)
+    {
+        if(strequ((*save), tmp->key)) 
+        {
+            tampon = ft_strdup(tmp->value);
+            free((*save));
+            (*save) = tampon;
+            return(0);
+         }
+        tmp = tmp->next;
+    }
+    return(1);
+}
+int     ft_verifi_var_glob(char *str, char **save, t_env *env, t_data *data)
+{
+    int i;
+    int c;
+    int y;
+
+    y = 0;
+    i = 0;
+    c=0;
+    while(str[i])
+    {
+        // if(str[i]== '\'' && str[i+1]== '\0')
+        // {
+        //     (*save)=NULL;   
+        //     return(0);
+        // }
+        if (str[i] == '"' && str[i+1] == '$')
+        {
+             i=i+2;
+             y = i;
+             while(str[i]!='"')
+            {
+                i++;
+                c++;
+            } 
+        }
+        else
+            c++;
+        i++;
+    }
+    i = 0;
+    (*save) = malloc(sizeof(char) *  (c + 1));
+    while(str[y] && str[y] != '"')
+    {
+        (*save)[i] = str[y]; 
+        // printf("y: |%d|%c| i:|%d|%c|\n ", y,  str[y], i, (*save)[i]);
+        i++;
+        y++;
+    }
+    (*save)[i]= '\0';
+    if(ft_search_var_env(save, env, data)== 0)
+        return(0);
+    return(1);
+}
+char    *ft_change_save_v3(char *str, t_env *env, char c, t_data *data)
 {
     int x;
     int i;
@@ -74,23 +147,30 @@ char    *ft_change_save_v3(char *str)
     char *save;
     x = 0;
     i = 0;
-    save = NULL;    
+    save = NULL; 
+    if(ft_verifi_var_glob(str, &save, env, data)== 0)
+    {
+        return(save);
+    }
     while(str[x])
     {
-        if(str[x]== '\'' || str[x]== '"')
+        if(str[x]== c)
+        {
             x++;
+        }
         else
         {
             i++;
             x++;
         }
     }
+    free(save);
     save = malloc(sizeof(char)*(i+1));
     i = 0;
     x = 0;
     while(str[x])
     {
-        if(str[x]== '\'' || str[x]== '"')
+        if(str[x]== c)
             x++;
         else
         {
@@ -102,20 +182,23 @@ char    *ft_change_save_v3(char *str)
     save[i]= '\0';
     return(save);
 }
-void ft_change_save_v2(t_save **save)
+void ft_change_save_v2(t_save **save, t_env *env, t_data *data)
 {
     t_save *tmp;
     int x;
+    (void)env;
     char *save_tmp;
     tmp = *save;
     while(tmp)
     {
+        // printf("Boucle|%s|", tmp->str);
         x = 0;
         while(tmp->str[x])
         {
             if (tmp->str[x]== '\'' || tmp->str[x] == '"')
                 {        
-                    save_tmp = ft_change_save_v3(tmp->str);
+                    // printf("TMP|%s|", tmp->str);
+                    save_tmp = ft_change_save_v3(tmp->str, env, tmp->str[x], data);
                     free(tmp->str);
                     tmp->str = ft_strdup(save_tmp);
                     free(save_tmp);
@@ -145,8 +228,8 @@ int ft_parsing(t_node *list, t_data *data, char *input, t_env *env)
             return (1); // Voir comment acceder a ma data
         save = NULL;
         ft_insert_new_data_with_data(&save, &data_echo, env);
-        ft_change_save_v2(&save);
-        print_save_list(save);
+      //print_save_list(save);
+         ft_change_save_v2(&save,env, data);
         t_save *tmp = save;
         while (tmp)
         { // Boucle permettant d'introduire dans la list->arg

@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/09 17:08:04 by dpoltura          #+#    #+#             */
-/*   Updated: 2024/10/17 17:02:33 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/18 17:37:49 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -183,9 +183,10 @@ int count_dollar_followed_by_characters(char *str)
 
 char **allocate_result(int len)
 {
-    char **result = (char **)malloc(sizeof(char *) * len);
+    char **result = (char **)malloc(sizeof(char *) * (len + 1));
     if (!result)
         return NULL;
+    result[len] = NULL;
     return result;
 }
 
@@ -237,12 +238,14 @@ int	count_dollars_outside_quotes(char *str)
 	int	in_single;
 	int	in_double;
 
+    // printf("\nIci\n");
 	count = 0;
 	i = 0;
 	in_single = 0;
 	in_double = 0;
 	while (str[i])
 	{
+        // printf("\n|STR|%c|\n", str[i]);
 		if (!is_quote(str[i], &in_single, &in_double))
 		{
 			if (str[i] == '$' && !in_single && !in_double)
@@ -250,6 +253,7 @@ int	count_dollars_outside_quotes(char *str)
 		}
 		i++;
 	}
+    // printf("\ncount|%d|\n",count);
 	return (count);
 }
 int ft_space_or_null(char *str)
@@ -302,26 +306,25 @@ char	*ft_change_input(char **str, t_env *env, t_data *data)
 	free(save);
 	while(tmp[x])
 	{
-        printf("saveTMP|%s|\n", tmp[x]);
+        // printf("saveTMP|%s|\n", tmp[x]);
 
-		if (ft_space_or_null(tmp[x])==0)
-			break;
-		if (tmp[x][0]== '$')
-		{
-			tmp_tmp = ft_change_var_environnement(tmp[x],&env, data);
-			tmp[x] = tmp_tmp;
+		if (ft_space_or_null(tmp[x])!=0)
+        {
+            if (tmp[x][0]== '$')
+            {
+                tmp_tmp = ft_change_var_environnement(tmp[x],&env, data);
+                tmp[x] = tmp_tmp;
 
-		}
-		save = ft_strjoin(save_tmp, tmp[x]);
-		free(save_tmp);
-		save_tmp = ft_strjoin(save, " ");
-		free(save);
+            }
+            save = ft_strjoin(save_tmp, tmp[x]);
+            free(save_tmp);
+            save_tmp = ft_strjoin(save, " ");
+            free(save);
+        }
 		// if(tmp_tmp[0]!='\0')
 		free(tmp[x]);
 		x++;
-		if (tmp[x]== NULL)
-			break;
-        printf("savMIDDLE|%s|\n", save_tmp);
+        // printf("savMIDDLE|%s|\n", save_tmp);
 
 	}
 
@@ -330,10 +333,10 @@ char	*ft_change_input(char **str, t_env *env, t_data *data)
 	free(tmp[x]);
 	free(tmp);
 	// free(save);
-        printf("saveEND|%s|\n", save_tmp);
+        // printf("saveEND|%s|\n", save_tmp);
 
 	return(save_tmp);
-	//print_char_array_d(tmp);
+	// print_char_array_d(tmp);
 
 }
 
@@ -415,11 +418,10 @@ int shell_loop(t_node *list, t_data *data, t_env **env)
             continue;
         }
         ft_init_data(data);
-
-
         add_history(input);  // Ajout de la commande à l'historique
+        // printf("Je suis input\n|%s|\n", input);
         input = ft_change_input(&input, *env, data);//Il faudra le refaire a la suite 
-
+        // printf("New_input\n|%s|\n", input);
         if (ft_strlen(input) == 0 || ft_white_space(input) == 0)
         {
             //printf("\nICIC\n");
@@ -508,14 +510,25 @@ t_env *ft_insert_env(char **envp)
         int i;
         t_env *head = NULL;
         t_env *current = NULL;
+        char    *sep;
 
         i = 0;
         while (envp[i])
         {
                 t_env *new_env = (t_env *)malloc(sizeof(t_env));
+                sep = strchr(envp[i], '=');
+                // printf("sep: (%s) %s\n", envp[i], sep);
+                if (sep == NULL)
+                    new_env->value = NULL;
+                else
+                {
+                    *sep = '\0';
+                    new_env->value = ft_strdup(sep + 1);
+                }
 				// printf("allocating ptr %p\n", new_env);
-                new_env->key = ft_copy_start(envp[i], '=');
-                new_env->value = ft_copy_end(envp[i], '=');
+                new_env->key = ft_strdup(envp[i]);
+                if (sep)
+                    *sep = '=';
                 // printf("%s => \n\n%s\n\n\n\n\n\n", new_env->key, new_env->value);
                 new_env->next = NULL;
                 add_env_to_list(&head, &current, new_env);

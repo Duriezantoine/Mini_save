@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/06 18:48:02 by aduriez           #+#    #+#             */
-/*   Updated: 2024/10/15 08:34:18 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/18 17:20:16 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,8 @@ void bulting_env( t_node *list)
     // Afficher les variables d'environnement triées
     t_env *current = tmp;
     while (current != NULL) {
-        printf("%s=%s\n", current->key, current->value);
+        if (current->value)
+            printf("%s=%s\n", current->key, current->value);
         current = current->next;
     }
 
@@ -77,7 +78,10 @@ t_env *copy_env(t_env *env)
             exit(EXIT_FAILURE);
         }
         new_node->key = strdup(current->key);
-        new_node->value = strdup(current->value);
+        if (current->value)
+            new_node->value = strdup(current->value);
+        else
+            new_node->value = NULL;
         new_node->next = NULL;
         if (copy == NULL) 
             copy = new_node;
