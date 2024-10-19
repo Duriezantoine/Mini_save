@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/11 10:51:14 by dpoltura          #+#    #+#             */
-/*   Updated: 2024/10/19 17:06:19 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/19 18:35:51 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -209,7 +209,7 @@ void ft_change_save_v2(t_save **save, t_env *env, t_data *data)
         {
             if (tmp->str[x]== '\'' || tmp->str[x] == '"')
                 {        
-                    printf("TMP|%s|", tmp->str);
+                    // printf("TMP|%s|", tmp->str);
                     save_tmp = ft_change_save_v3(tmp->str, env, tmp->str[x], data);
                     free(tmp->str);
                     tmp->str = ft_strdup(save_tmp);

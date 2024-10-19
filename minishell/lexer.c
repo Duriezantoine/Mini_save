@@ -326,6 +326,7 @@ int lexer_cmd(t_node *list, t_data *data) // Cette fonction permet d'implementer
             data->exit_code = 1;//it's ok
             return (1);
         }
+
         data->count = data->count + 1;//Permet de modifier le nom du infile pour le here_doc
         list = list->next; // todo check with heredoc
     }
@@ -352,13 +353,18 @@ static void set_spec(t_arg *elem) // sets redirection and pipes
 {
     while (elem)
     {
-        if (ft_strcmp(elem->str_command, "<<") == 0)
+        // printf("\nJe suis elequot|%d|\n", elem->quot);
+        if (ft_strcmp(elem->str_command, "<<") == 0 && elem->quot == 2 )//C'est ici qu'il faut mettre une conditions
+        {
+            
             elem->type = HEREDOC;
-        else if (ft_strcmp(elem->str_command, "<") == 0)
+            
+        }    
+        else if (ft_strcmp(elem->str_command, "<") == 0 && elem->quot == 2 )//C'est icic qu'il faut mettre une conditions
             elem->type = INPUT;
-        else if (ft_strcmp(elem->str_command, ">>") == 0)
+        else if (ft_strcmp(elem->str_command, ">>") == 0 && elem->quot == 2 )//C'est icic qu'il faut mettre une conditions
             elem->type = APPEND;
-        else if (ft_strcmp(elem->str_command, ">") == 0)
+        else if (ft_strcmp(elem->str_command, ">") == 0 && elem->quot == 2 )//C'est icic qu'il faut mettre une conditions
             elem->type = OUTPUT;
         elem = elem->next;
     }

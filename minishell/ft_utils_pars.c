@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/11 10:51:14 by dpoltura          #+#    #+#             */
-/*   Updated: 2024/10/19 17:05:57 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/19 18:35:37 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -172,7 +172,7 @@ void ft_insert_data_data_echo_w(t_save **save, t_echo *data_echo, int iterateur_
     }
 
     strcpy(new_node->str, data_echo->str_w_quot[iterateur_w].str);
-   printf("Voila ce que je viens d'inserer |%s|\n", new_node->str);
+//    printf("Voila ce que je viens d'inserer |%s|bool |%d|\n", new_node->str, new_node->bool);
 
     new_node->bool = data_echo->str_w_quot[iterateur_w].bool; // Initialisation de l'attribut bool (vous pouvez le définir selon vos besoins)
     new_node->next = NULL;
@@ -205,9 +205,9 @@ void ft_insert_data_data_echo_s(t_save **save, t_echo *data_echo, int iterateur_
 
     
     new_node->str= ft_strdup(data_echo->str_s_quot[iterateur_s].str );
-    printf("1Voila ce que je viens d'inserer |%s|\n", new_node->str);
     data_echo->str_s_quot[iterateur_s].order =-2;
-    new_node->bool = 0; // Initialisation de l'attribut bool (vous pouvez le définir selon vos besoins)
+    new_node->bool = data_echo->str_s_quot[iterateur_s].bool; // Initialisation de l'attribut bool (vous pouvez le définir selon vos besoins)
+    // printf("1Voila ce que je viens d'inserer |%s|bool |%d|\n", new_node->str, new_node->bool);
     new_node->next = NULL;
 
     // Insérer le nouveau nœud à la fin de la liste
@@ -335,7 +335,7 @@ void ft_insert_data_w_whith_tab(t_echo *data_echo, char *input, int *i, int *cle
     if (input[*i] == '\'')
         data_echo->str_w_quot[(*clef_tab_w_quot)].bool = 1;
     else
-        data_echo->str_w_quot[(*clef_tab_w_quot)].bool = 0;
+        data_echo->str_w_quot[(*clef_tab_w_quot)].bool = 1;
     (*i) = (*i) + 1;
     // printf("2\ninput|%c|    ",input[*i]);
 
@@ -380,6 +380,7 @@ void ft_insert_data_w_whith_tab(t_echo *data_echo, char *input, int *i, int *cle
 
     }
     data_echo->str_w_quot[(*clef_tab_w_quot)].str[iterateur_tab_w_quot] = '\0';
+    data_echo->str_w_quot[(*clef_tab_w_quot)].bool= 0;
     // printf("\nSave_with_tab_w|Nbr_occurence=%d|clef=%d|Save=|%s|Sorti=%c\n", iterateur_tab_w_quot, (*clef_tab_w_quot), data_echo->str_w_quot[(*clef_tab_w_quot)].str, input[*i]);
 }
 
@@ -414,7 +415,7 @@ void ft_insert_tab_echo(t_echo *data_echo, char *input, int i)
                 data_echo->str_s_quot[clef_tab_s_quot].str[0] = input[i];
                 data_echo->str_s_quot[clef_tab_s_quot].str[1] = input[i];
                 data_echo->str_s_quot[clef_tab_s_quot].str[2] = '\0';
-                data_echo->str_s_quot[clef_tab_s_quot].bool = 0;
+                data_echo->str_s_quot[clef_tab_s_quot].bool = 2;
                 // printf("\nnnSave_with_tab_s|Nbr_occurence=%d|clef=%d|Save=|%s|Sorti=%c", 1, clef_tab_s_quot, data_echo->str_s_quot[clef_tab_s_quot].str, input[i]);
                 clef_tab_s_quot++;
                 i = i+2;
@@ -424,7 +425,7 @@ void ft_insert_tab_echo(t_echo *data_echo, char *input, int i)
             // printf("\nJe suis input=%c\n", input[i]);
                 data_echo->str_s_quot[clef_tab_s_quot].str[0] = input[i];
                 data_echo->str_s_quot[clef_tab_s_quot].str[1] = '\0';
-                data_echo->str_s_quot[clef_tab_s_quot].bool = 0;
+                data_echo->str_s_quot[clef_tab_s_quot].bool = 2;
                 // printf("\nnnSave_with_tab_s|Nbr_occurence=%d|clef=%d|Save=%s|Sorti=%c", 1, clef_tab_s_quot, data_echo->str_s_quot[clef_tab_s_quot].str, input[i]);
                 clef_tab_s_quot++;
                 i++;
