@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/11 10:51:14 by dpoltura          #+#    #+#             */
-/*   Updated: 2024/10/18 16:39:14 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/19 17:06:19 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,6 +65,18 @@ void print_save_list(t_save *head)
 		printf("str: %s, bool: %d\n", current->str, current->bool);
 		current = current->next;
 	}
+}
+void print_t_arg(t_arg *arg) {
+    if (arg == NULL) {
+        printf("NULL\n");
+        return;
+    }
+
+    printf("str_command: %s\n", arg->str_command ? arg->str_command : "NULL");
+    printf("type: %d\n", arg->type);
+    printf("quot: %d\n", arg->quot);
+    printf("prev: %p\n", (void *)arg->prev);
+    printf("next: %p\n", (void *)arg->next);
 }
 
 int     ft_search_var_env(char **save, t_env *env, t_data *data)
@@ -197,7 +209,7 @@ void ft_change_save_v2(t_save **save, t_env *env, t_data *data)
         {
             if (tmp->str[x]== '\'' || tmp->str[x] == '"')
                 {        
-                    // printf("TMP|%s|", tmp->str);
+                    printf("TMP|%s|", tmp->str);
                     save_tmp = ft_change_save_v3(tmp->str, env, tmp->str[x], data);
                     free(tmp->str);
                     tmp->str = ft_strdup(save_tmp);
@@ -234,7 +246,7 @@ int ft_parsing(t_node *list, t_data *data, char *input, t_env *env)
         while (tmp)
         { // Boucle permettant d'introduire dans la list->arg
             list->arg = ft_init_list(list, &data_echo, tmp);
-            // print_arg(list->arg);
+            // print_t_arg(list->arg);
             tmp = tmp->next;
         }
         free_list(save);

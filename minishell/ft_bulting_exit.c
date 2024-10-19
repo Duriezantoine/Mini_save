@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/15 16:05:36 by aduriez           #+#    #+#             */
-/*   Updated: 2024/10/16 15:16:38 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/19 12:35:54 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -174,63 +174,85 @@ char	*ft_strtrim(char *s1, char *set)
 	if (ft_strlen(s1) == 0)
 		return (ft_strdup(""));
 	return (ft_substr(s1, 0, (unsigned int) len + 1));
-}
-int  ft_verif_number(char *str)
-{
-    int i;
-    i= 0;
-    char *tmp;
+} 
 
-    tmp = ft_strtrim(str, " "); // str == "       " -> ""ft
-    // printf("Je ssuis tmp|%s|", tmp);
-    if (tmp[0] == '\0')
-    {   
-        tmp = ft_strdup("la");
-        // printf("La chaîne est vide\n");//C'est ici demande ce que l'on renvoit
-        free(tmp);
+int ft_verif_number(char *str)
+{
+    char *start = str;
+    char *end;
+    int has_digits = 0;
+
+    // Ignorer les espaces au début
+    while (*str && isspace(*str))
+        str++;
+
+    // Vérifier le signe
+    if (*str == '+' || *str == '-')
+        str++;
+
+    // Vérifier les chiffres
+    while (*str)
+    {
+        if (isdigit(*str))
+            has_digits = 1;
+        else if (!isspace(*str))
+            return 1;  // Caractère non valide trouvé
+        str++;
+    }
+
+    // Vérifier s'il y a des chiffres et retirer les espaces à la fin
+    end = str - 1;
+    while (end > start && isspace(*end))
+        end--;
+
+    // Si la chaîne est vide ou ne contient que des espaces
+    if (start == str && !has_digits)
         return 2;
-    }
-    
-    // printf("aa: %s\n", tmp);
-    if (tmp[0] == 0)
-    {
-        free(tmp);
-        return (1);
-    }
-    while(tmp[i])
-    {
-        if(tmp[i] < '0' || tmp[i] > '9')
-        {
-            free(tmp);
-            return(1);
-        }
-        i++;
-    }
-    free(tmp);
-    return(0);
+
+    // Si la chaîne ne contient pas de chiffres
+    if (!has_digits)
+        return 1;
+
+    return 0;  // Nombre valide
 }
 
 int bulting_exit(char **args, t_node *list, t_env **env, t_data *data)
 {
     (void) env;
     (void) list;
-    if(args[1]== NULL)
+    long exit_status;
+    char *endptr;
+
+    if (args[1] == NULL)
         return (data->exit_code);
-    if(ft_verif_number(args[1]) == 0)
+
+    int verif_result = ft_verif_number(args[1]);
+    
+    if (verif_result == 0)
     {
+        exit_status = strtol(args[1], &endptr, 10);
+        
+        if (*endptr != '\0' )// exit_status > LONG_MAX || exit_status < LONG_MIN)
+        {
+            ft_putstr_fd("bash: exit: ", 2);
+            ft_putstr_fd(args[1], 2);
+            ft_putstr_fd(": numeric argument required\n", 2);
+            return 2;
+        }
+
         if (args[2] != NULL)
         {
-            ft_putstr_fd("bash: exit: too many arguments", 2);
-            return (-1);
+            ft_putstr_fd("bash: exit: too many arguments\n", 2);
+            return 1;
         }
         else
-            return (ft_atoi(args[1]));
+            return (exit_status & 255);
     }
     else
     {
-        write(2, "bash: exit: ", 12);
-        write(2, args[1], ft_strlen(args[1]));
-        write(2, ": numeric argument required\n", 28);
-        return (2);
+        ft_putstr_fd("bash: exit: ", 2);
+        ft_putstr_fd(args[1], 2);
+        ft_putstr_fd(": numeric argument required\n", 2);
+        return 2;
     }
 }

@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/11 10:51:14 by dpoltura          #+#    #+#             */
-/*   Updated: 2024/10/18 16:38:50 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/19 17:05:57 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -172,7 +172,7 @@ void ft_insert_data_data_echo_w(t_save **save, t_echo *data_echo, int iterateur_
     }
 
     strcpy(new_node->str, data_echo->str_w_quot[iterateur_w].str);
-   // printf("Voila ce que je viens d'inserer |%s|\n", new_node->str);
+   printf("Voila ce que je viens d'inserer |%s|\n", new_node->str);
 
     new_node->bool = data_echo->str_w_quot[iterateur_w].bool; // Initialisation de l'attribut bool (vous pouvez le définir selon vos besoins)
     new_node->next = NULL;
@@ -205,7 +205,7 @@ void ft_insert_data_data_echo_s(t_save **save, t_echo *data_echo, int iterateur_
 
     
     new_node->str= ft_strdup(data_echo->str_s_quot[iterateur_s].str );
-    // printf("1Voila ce que je viens d'inserer |%s|\n", new_node->str);
+    printf("1Voila ce que je viens d'inserer |%s|\n", new_node->str);
     data_echo->str_s_quot[iterateur_s].order =-2;
     new_node->bool = 0; // Initialisation de l'attribut bool (vous pouvez le définir selon vos besoins)
     new_node->next = NULL;
@@ -291,7 +291,7 @@ void ft_insert_data_s_whith_tab(t_echo *data_echo, char *input, int *i, int *cle
                 data_echo->str_s_quot[(*clef_tab_s_quot)].str[iterateur_tab_s_quot] = input[*i];
                 (*i)++; 
                 iterateur_tab_s_quot++;
-                while(input[*i] == '"' && input[*i] != '\0' )
+                while(input[*i] != '"'  )
                 {
                     data_echo->str_s_quot[(*clef_tab_s_quot)].str[iterateur_tab_s_quot] = input[*i];
                     (*i)++;
@@ -308,6 +308,7 @@ void ft_insert_data_s_whith_tab(t_echo *data_echo, char *input, int *i, int *cle
             (*i)++;
             iterateur_tab_s_quot++;
         }
+        
     }
     data_echo->str_s_quot[(*clef_tab_s_quot)].str[iterateur_tab_s_quot] = '\0';
     // printf("\n1Sorti de la boucle|%c|save=|%s|clefTab=|%d|\n", input[*i],  data_echo->str_s_quot[(*clef_tab_s_quot)].str,(*clef_tab_s_quot));
@@ -443,39 +444,30 @@ void ft_insert_data_s_quot(t_echo *data_echo, char *input, int *i, int *place_ta
 {
     int occurence;
 
+    char c;
     occurence = 0;
 
-    while (ft_isalnum(input[*i]) == 1)
+    while (ft_isalnum(input[*i]) == 1  && input[*i] != '\0')
     {
 
-            if(input[*i]=='\'')
+            if(input[*i]=='\'' || input[*i]== '"')
             {
+                 c = input[*i]; 
                 (*i)++;
                 occurence++;
-                while(input[*i] != '\'' && input[*i] != '\0')
+                while(input[*i] != c )
                 {
                     (*i)++;
                     occurence++;
                 }
-                 occurence++;
-                (*i)++;
+
             }
-            if(input[*i]=='"')
-            {
-                (*i)++; 
-                occurence++;
-                while(input[*i] == '"' && input[*i] != '\0' )
-                {
-                    (*i)++;
-                    occurence++;
-                }
-                occurence++;
-                (*i)++;
-            }
-            occurence++;
-            (*i)++;
+        ((*i)++);
+        occurence++;
+
 
      }
+    //  printf("OCCURRENCE|%d|", occurence);
     // Peux d'autre conditions a verifier ici
     data_echo->str_s_quot[(*place_tab_s_quot)].order = data_echo->order_occurence;
     data_echo->order_occurence++;
@@ -508,6 +500,9 @@ void ft_insert_data_w_quot(t_echo *data_echo, char *input, int *i, int *place_ta
                 break;
         }
         //  printf("4IMPUT|%c|",input[*i] );
+        (*i)++;
+        if(input[*i]== ' ')
+            break;
 
          while (((ft_isalnum(input[*i]) == 1)  && input[*i] != '\0') && input[*i] != '\'' && input[*i] != '"')
         {
@@ -590,39 +585,40 @@ int ft_handle_alphanumeric(char *input, int *i, int *ss_quot, int x)
     {
         (*ss_quot)++;
     }
-    // printf("Je suis i|%c|", input[*i]);
+    // printf("Je suis i|%c|?", input[*i]);
+    char c;
     if(input[*i] == '\0' && input[*i] == ' ')
      {
         return 1;
      }
-    if (((ft_isalnum(input[*i]) == 1) && input[*i] != '\0') )
+    if (((ft_isalnum(input[*i]) == 1) && input[*i] != '\0') && (input[*i] != ' ') )
     {
-            // printf("\n3Je suis input[i]|input|%c||\n",input[*i]);
+            // printf("\n3Je suis? input[i]|input|%c||\n",input[*i]);
 
-        while (((ft_isalnum(input[*i]) == 1))  && input[*i] != '\0')
+        while (((ft_isalnum(input[*i]) == 1))  && input[*i] != '\0' && input[*i] != ' ')
         {
-                //  printf("XX");
+                //  printf(?"XX");
+                // printf("\n4.5Je suis in?put[i]|input|%c||\n",input[*i]);
 
-            if(input[*i]=='\'')
+            if(input[*i]=='"' || input[*i] == '\'')
             {
-                (*i)++;
-                while(input[*i] != '\'' && input[*i] != '\0')
-                    (*i)++;
-                (*i)++;
-            }
-                // printf("\n4.5Je suis input[i]|input|%c||\n",input[*i]);
+                 c = input[*i];
+                //  printf("\n4.6Je s?uis input[i]|input|%c||\n",input[*i]);
 
-            if(input[*i]=='"')
-            {
                 (*i)++; 
-                while(input[*i] == '"'&& input[*i] != '\0' )
+                while(input[*i] != c && input[*i] != '\0' )
+                {
+                    // printf("\n4.5Je ?suis input[i]|input|%c||\n",input[*i]);
+
                     (*i)++;
-                (*i)++;
+                }
+                //  printf("\n8e suis? input[i]|input|%c||\n",input[*i]);
+
             }
             (*i)++;
         }
     }
-    // printf("\n5Je suis input[i]|input|%c|i=%d|\n",input[*i], *i);
+    // printf("\n5Je suis input[i]|in?put|%c|i=%d|\n",input[*i], *i);
 
     return 1;
 }
@@ -630,7 +626,7 @@ int ft_handle_alphanumeric(char *input, int *i, int *ss_quot, int x)
 int ft_handle_quotes(char *input, int *i, int *wt_quot, char c)//Faire avec plusir char
 {
     (*i)++;
-    while (input[*i] != '\0'&& input[*i] != c && input[*i] )
+    while (input[*i] != '\0'&& input[*i] != c  )
     {
         // printf("1Je suis c|%c|i=|%d|input|%c|\n", c, *i, input[*i]);
         while(input[*i] )
@@ -641,7 +637,7 @@ int ft_handle_quotes(char *input, int *i, int *wt_quot, char c)//Faire avec plus
                 break;
         }
         // printf("3Je suis c|%c|i=|%d|input|%c|\n", c, *i, input[*i]);
-        if (input[*i] == '\0')
+        if (input[*i] == '\0' || input[*i] == ' ')
             break;   
         //  printf("4Je suis c|%c|i=|%d|input|%c|\n", c, *i, input[*i]);
 
@@ -652,23 +648,17 @@ int ft_handle_quotes(char *input, int *i, int *wt_quot, char c)//Faire avec plus
         }
         // printf("6Je suis c|%c|i=|%d|input|%c|\n", c, *i, input[*i]);
 
+        (*i)++;
+            if (input[*i] == '\0' || input[*i] == ' ')
+            break;   
+        // printf("7Je suis c|%c|i=|%d|input|%c|\n", c, *i, input[*i]);
+
         if(input[*i]== '\'' || input[*i]== '"')
         {
             c = input[*i];
             (*i)++;  
         }
-        // printf("7Je suis c|%c|i=|%d|input|%c|\n", c, *i, input[*i]);
 
-
-        // if(ft_isalnum (input[*i])== 1)
-        // {
-        //     while (((ft_isalnum(input[*i]) == 1))  && input[*i] != '\0')
-        //         i++;
-        //     printf("SortirAlnum=|%c|", input[*i]);
-
-        // }
-            
-        // printf("1je suis input|%c|\n", input[*i]);
     }
     // printf("2je suis input|%c|\n    ", input[*i]);
     (*wt_quot)++;
@@ -712,6 +702,8 @@ int ft_init_token_space(t_echo *data_echo, char *input, int i)
        // printf("\n1Je suis input[i]|input|%c|i=%d|\n",input[i], i);
         if (((ft_isalnum(input[i]) == 1)) && input[i] != ' ' )
             ft_handle_alphanumeric(input, &i, &ss_quot, 1);
+        // printf("\n1End|%c|\n",input[i]);
+
         i++;    
     }
     data_echo->s_quot = ss_quot;
@@ -762,10 +754,10 @@ int ft_nbr_quot(char *input, int i)
 
 int ft_isalnum(int c)
 {
-    // if (c == '<' || c == '>')
+    // if (c == '<' || c == '>' || c == '|' || c == ' ')
     //     return 0;
     // return (1);
-    if ((c =='?') || (c >= 48 && c <= 57) || (c >= 97 && c <= 122) || (c >= 65 && c <= 90) || (c == 45) || (c == 61) || (c==46) || (c == 126) || (c == 47) || (c == 43) || (c==36) || (c ==95) || c == '"' || (c=='\'') )
+    if ((c =='?') || (c >= 48 && c <= 57) || (c >= 97 && c <= 122) || (c >= 65 && c <= 90) || (c == 45) || (c == 61) || (c==46) || (c == 126) || (c == 47) || (c == 43) || (c==36) || (c ==95) || c == '"' || (c=='\'') || c == '.' || c == ',' )
     {
         // if (c == 45)
         return (1);

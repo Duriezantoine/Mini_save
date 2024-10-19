@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/06 18:43:21 by aduriez           #+#    #+#             */
-/*   Updated: 2024/10/18 18:54:41 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/19 11:40:58 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ void ft_delete_unset(t_env **env, char *search)
     }
 }
 
-void    bulting_unset( char ***env, t_cmd *cmd, t_node *list)
+int    bulting_unset( char ***env, t_cmd *cmd, t_node *list)
 {
     //1) il faut cherche dans l'environnement
     char  **tmp = cmd->cmd_and_args;
@@ -51,15 +51,15 @@ void    bulting_unset( char ***env, t_cmd *cmd, t_node *list)
     {
         if(ft_search_envp((*env), cmd->cmd_and_args[x])==0)
         {
-            printf("\nVariables not exist\n");
+            return(1);
         }
         else 
         {
-            printf("\nJe dois deleat\n");
             ft_delete_unset(&list->env, cmd->cmd_and_args[x]);
         }
         x++;
     }
+    return(0);
 }
 
 int   ft_search_envp(char  **env, char *search)

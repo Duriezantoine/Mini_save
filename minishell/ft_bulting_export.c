@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/06 17:56:21 by aduriez           #+#    #+#             */
-/*   Updated: 2024/10/18 19:43:35 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/19 11:34:55 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -342,6 +342,8 @@ int     ft_verif_key_letter_number_underscore(char *str)
         end = ft_copy_start(str, '=');
     else
         end = ft_copy_start(str, '+');
+    if (end[0] == '\0' )
+        return(1);
     while(end[x])
     {
         if ((str[x]< 48 || str[x]> 57) && // Chiffres 0-9
@@ -356,16 +358,20 @@ int     ft_verif_key_letter_number_underscore(char *str)
 
 int ft_verif_one_letter(char *str)
 {
-    if((str[0]> 48 && str[0]< 57))
+    if (str == NULL || *str == '\0')
     {
-        printf("\n|%s|\n", str);
-        write(2,"export: not an identifier: ", 27);
-        write(2, str, ft_strlen(str));
-        write(2, "\n", 1);
-        return(1);
+        // Gestion du cas où la chaîne est NULL ou vide
+        return 1;
     }
-    return(0);
-    
+
+    if (str[0] >= '0' && str[0] <= '9')
+    {
+        write(2, "export: `", 9);
+        write(2, str, ft_strlen(str));
+        write(2, "': not a valid identifier\n", 26);
+        return 1;
+    }
+    return(0); 
 }
 
 int     ft_verif_export(char *str)
@@ -374,6 +380,7 @@ int     ft_verif_export(char *str)
         //1 er conditions determiner si il n'y a de = apres
         if(ft_verif_export_add_equal(str)==0)
         {
+            // printf("ICIC");
             write(2,"export: not valid in this context: ", 30);
             write(2, str, ft_strlen(str));
             write(2, "\n", 1);
@@ -382,14 +389,17 @@ int     ft_verif_export(char *str)
         //2 em conditions qui verifier si la key est bien composer de lettre de chiffre et de underscore
         if(ft_verif_key_letter_number_underscore(str)==1)
         {
-            write(2,"export: not an identifier: ", 27);
+            write(2, "export: `", 9);
             write(2, str, ft_strlen(str));
-            write(2, "\n", 1);
+            write(2, "': not a valid identifier\n", 26);
             return(1);
         }
         //3em conditions qui verifient que la premiere lettre ne soit pas considerer comme un nombre 
-        if (ft_verif_one_letter(str)==0)
+        if (ft_verif_one_letter(str)==1)
+        {
+            printf("La");
             return(1);
+        }
         return(0);
 }
 

@@ -41,11 +41,11 @@ void ft_init_cmd(t_cmd **list)
     // IL faut initialiser toutes les variables a NULL
     (*list) = malloc(sizeof(t_cmd));
     (*list)->cmd_and_args = NULL;
-    (*list)->input = -1;
-    (*list)->output = -1;
     (*list)->is_builtin = -1;
     (*list)->prev = NULL;
     (*list)->next = NULL;
+    (*list)->input_str = NULL;
+    (*list)->output_str = NULL;
 }
 void ft_insert_double_tab(t_cmd **list, t_arg *list_arg)
 {
@@ -117,6 +117,7 @@ int ft_insert_cmd_here_doc(t_node *list, t_arg *list_arg, t_data *data, t_node *
             if (tmp_file_name == NULL)
             {
                 free(tmp_file_name);
+                data->exit_code = 130;
                 return 1;
             }
             
@@ -203,78 +204,101 @@ void ft_check_bulting(t_cmd **cmd, t_arg *arg)
         tmp = tmp->next;
     }
 }
-void	ft_open_infile(t_node **list, char *infile)
-{
-	// printf("|DATAVALUE|%s|", data->value);
-    //IL famettre cmd
-	(*list)->cmd->input = open(infile, O_RDONLY);
-	if ((*list)->cmd->input < 0)
-	{
-        ft_putstr_fd("Not open Infile", 2 );
-	}
-    printf("\nJ'ai ouvert|%s|et le fd est |%d|", infile, (*list)->save[0]);
-}
-void    ft_check_infile_cmd(t_node *list, t_cmd **cmd, t_arg *arg)
+// int	ft_open_infile(t_node **list, char *infile)
+// {
+// 	// printf("|DATAVALUE|%s|", data->value);
+//     //IL famettre cmd
+// 	(*list)->cmd->input = open(infile, O_RDONLY);
+// 	if ((*list)->cmd->input < 0)
+// 	{
+//         ft_putstr_fd(strerror(errno), 2 );
+//         ft_putstr_fd("\n", 2 );
+//         return (-1);
+// 	}
+//     // printf("\nJ'ai ouvert|%s|et le fd est |%d|", infile, (*list)->save[0]);
+//     return(0);
+// }
+int    ft_check_infile_cmd(t_node *list, t_cmd **cmd, t_arg *arg)
 {
     //1 er chose il faut boucler sur arg
     t_arg *tmp;
+    int res;
+
     (void)cmd;
     tmp = arg;
-    while(tmp)
+    res = 0;
+    while(tmp && res == 0)
     {
         if (tmp->type == INFILE || tmp->type == HEREDOC_INFILE)
         {
-            //Il faut essayer d'ouvrir le fichier et le mettre dans CMD INFILE
-            ft_open_infile(&list, tmp->str_command);
+            if (list->cmd->input_str != NULL)
+                free(list->cmd->input_str);
+            list->cmd->input_str = ft_strdup(tmp->str_command);
         }
+        // if (tmp->type == INFILE || tmp->type == HEREDOC_INFILE)
+        // {
+        //     //Il faut essayer d'ouvrir le fichier et le mettre dans CMD INFILE
+        //     res = ft_open_infile(&list, tmp->str_command);
+        // }
         tmp = tmp->next;
     }
+    return(res);
 }
-void ft_init_outfile(t_node **list, char *outfile, int i)
-{
-    if(i == 0)
-    {
-        (*list)->cmd->output = open(outfile, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-        if ((*list)->cmd->output< 0)
-        {
-            perror("open");
-            exit(EXIT_FAILURE);
-        }
-        //dup2(fd, STDOUT_FILENO);Demande a tillian
-        printf("Je suis le resultat du outfile|%d|", (*list)->save[1]);
-        close((*list)->save[1]);// peut etre qu'il faut le ferme apres a voir
-    }
-    if(i == 1)
-    {
-        (*list)->cmd->output= open(outfile, O_WRONLY | O_CREAT | O_APPEND, 0644);
-        if ((*list)->cmd->output< 0)
-        {
-        perror("open");
-        exit(EXIT_FAILURE);
-    }
-   // dup2(fd, STDOUT_FILENO);demande a tilian
-        printf("Je suis le resultat du outfile|%d|", (*list)->save[1]);
-      close((*list)->save[1]);
-    }
-}
+// void ft_init_outfile(t_node **list, char *outfile, int i)
+// {
+//     if(i == 0)
+//     {
+//         (*list)->cmd->output = open(outfile, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+//         if ((*list)->cmd->output< 0)
+//         {
+//             perror("open");
+//             exit(EXIT_FAILURE);
+//         }
+//         //dup2(fd, STDOUT_FILENO);Demande a tillian
+//         printf("Je suis le resultat du outfile|%d|", (*list)->save[1]);
+//         close((*list)->save[1]);// peut etre qu'il faut le ferme apres a voir
+//     }
+//     if(i == 1)
+//     {
+//         (*list)->cmd->output= open(outfile, O_WRONLY | O_CREAT | O_APPEND, 0644);
+//         if ((*list)->cmd->output< 0)
+//         {
+//         perror("open");
+//         exit(EXIT_FAILURE);
+//     }
+//    // dup2(fd, STDOUT_FILENO);demande a tilian
+//         printf("Je suis le resultat du outfile|%d|", (*list)->save[1]);
+//       close((*list)->save[1]);
+//     }
+// }
 
 void    ft_check_outfile(t_node *list, t_cmd **cmd, t_arg *arg)
 {
     t_arg *tmp;
 
+    (void)cmd;
     tmp = arg;
     while(tmp)
     {
-        if(tmp->type == OUTFILE)
+        if(tmp->type == OUTFILE || tmp->type == APPEND)
         {
-            ft_init_outfile(&list, tmp->str_command, 0);
-            printf("\n |fd|%d|\n",(*cmd)->output);
+            if (list->cmd->output_str != NULL)
+                free(list->cmd->output_str);
+            list->cmd->output_str = ft_strdup(tmp->str_command);
+            list->cmd->_out_type = tmp->type;
         }
-        if(tmp->type == APPEND)
-        {   
-            ft_init_outfile(&list, tmp->str_command, 1);
-            printf("\n |fd|%d|\n",(*cmd)->output);
-        }
+
+
+        // if(tmp->type == OUTFILE)
+        // {
+        //     ft_init_outfile(&list, tmp->str_command, 0);
+        //     printf("\n |fd|%d|\n",(*cmd)->output);
+        // }
+        // if(tmp->type == APPEND)
+        // {   
+        //     ft_init_outfile(&list, tmp->str_command, 1);
+        //     printf("\n |fd|%d|\n",(*cmd)->output);
+        // }
         tmp= tmp->next;
     }
 
@@ -297,7 +321,11 @@ int lexer_cmd(t_node *list, t_data *data) // Cette fonction permet d'implementer
         if (ft_insert_cmd_here_doc(list, list->arg, data, base_node) == 1)//it's ok plus ou moins
             return (1);
         ft_check_bulting(&list->cmd, list->arg);//it's ok
-        ft_check_infile_cmd(list, &list->cmd, list->arg);//it's ok
+        if(ft_check_infile_cmd(list, &list->cmd, list->arg)==-1)
+        {
+            data->exit_code = 1;//it's ok
+            return (1);
+        }
         data->count = data->count + 1;//Permet de modifier le nom du infile pour le here_doc
         list = list->next; // todo check with heredoc
     }

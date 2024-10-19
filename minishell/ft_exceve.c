@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/01 11:35:23 by aduriez           #+#    #+#             */
-/*   Updated: 2024/10/18 17:37:51 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/19 16:32:42 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,6 +97,10 @@ struct s_exec {
 	char *exec;
 	char **argv;
 	char **envp;
+	char *infile;
+	char *outfile;
+	enum e_tokens	_out_type;
+
 	int in;
 	int out;
 	int pid;
@@ -340,8 +344,13 @@ struct s_exec *lst_to_execs(t_node *list, int *len) {
 		//                 if(ft_replace_var(&ret[i].exec, tmp)==1)
 		//                         printf("La variable recherche n'existe pas ");
 		//Verification pour les arguments
-		ret[i].in = list->cmd->input;
-		ret[i].out = list->cmd->output;
+		// ret[i].in = list->cmd->input;
+		// ret[i].out = list->cmd->output;
+		ret[i].infile = list->cmd->input_str;
+		ret[i].outfile = list->cmd->output_str;
+		ret[i]._out_type = list->cmd->_out_type;
+		ret[i].out = -1;
+		ret[i].in = -1;
 		ret[i].pid = -1;
 		// if(ft_check_cmd_valid(ret[i].exec, tmp)==0)
 		//         printf("Command \'%s\' not found\n", ret[i].exec);
@@ -415,6 +424,8 @@ void free_exec(struct s_exec e) {
 	free(e.envp); // Correction: Libération de e.envp
 	if(e.in > 2) close(e.in);
 	if(e.out > 2) close(e.out);
+	if (e.infile) free(e.infile);
+	if (e.outfile) free(e.outfile);
 }
 
 void free_all_exec(struct s_exec *execs, int len) {
@@ -552,6 +563,7 @@ void	ft_display_envp(char *copy_envp[])
 int ft_excev_butlin(struct s_exec **lst, t_node **list, int i, t_data *data)
 {        
 	int built = 0;
+	int ret = 0;
     //    printf("|Name=|%s|I=|%d|",  (*lst)[i].exec, i);
 	built = builtin((*lst)[i].exec) ;
 	if (built == -1)
@@ -575,13 +587,13 @@ int ft_excev_butlin(struct s_exec **lst, t_node **list, int i, t_data *data)
 		 if((*lst)->argv[1]==NULL)
 		 	ft_display_envp((*lst)[i].envp);
 		else
-	       bulting_export((*lst)[i].argv, &(*lst)[i].envp);
+	      ret = bulting_export((*lst)[i].argv, &(*lst)[i].envp);
  
 	}         
 	if (built == 4) 
 	{
 		// printf("Je susi bulting Cd");
-	       bulting_cd((*lst)[i].argv,(*list),  &(*list)->env);
+	      ret =  bulting_cd((*lst)[i].argv,(*list),  &(*list)->env);
  
 	}
 	if (built == 5 && i ==0) 
@@ -608,6 +620,11 @@ int ft_excev_butlin(struct s_exec **lst, t_node **list, int i, t_data *data)
 	
 	ft_free_env(&(*list)->env);
 	(*list)->env = ft_insert_env(lst[i]->envp);
+	if(ret !=0)
+	{
+		// printf("Ret= %d", ret);
+		return(ret);
+	}
 	// print_env_list((*list)->env);
 	return(0);
 }
@@ -615,6 +632,41 @@ int ft_excev_butlin(struct s_exec **lst, t_node **list, int i, t_data *data)
 void handler_void(int sig)
 {
 	(void) sig;
+}
+
+int	open_in_out(struct s_exec *exec)
+{
+	int	oflags;
+
+	if (exec->outfile)
+	{
+		if (exec->out > 1)
+			close(exec->out);
+		oflags = O_WRONLY | O_CREAT;
+		if (exec->_out_type == APPEND)
+			oflags |= O_APPEND;
+		else
+			oflags |= O_TRUNC;
+		
+		exec->out = open(exec->outfile, oflags, 0644);
+		if (exec->out < 0)
+		{
+			perror("open");
+			return (1);
+		}
+	}
+	if (exec->infile)
+	{
+		if (exec->in > 0)
+			close(exec->in);
+		exec->in = open(exec->infile, O_RDONLY);
+		if (exec->in < 0)
+		{
+			perror("open");
+			return (1);
+		}
+	}
+	return (0);
 }
 
 int ft_exceve(t_node *list, t_data *data, t_env **env)
@@ -642,36 +694,40 @@ int ft_exceve(t_node *list, t_data *data, t_env **env)
 		if (ft_exceve_bulting(lst[i].argv[0], len) == 0)
 		{
 			// Traitement des builtins
-			int stdin_copy = dup(0);
-			int stdout_copy = dup(1);
-
-			if (lst[i].in != 0)
-				dup2(lst[i].in, 0);
-			if (lst[i].out != 1)
-				dup2(lst[i].out, 1);
-			ret = ft_excev_butlin(&lst, &list, i, data);
-			dup2(stdin_copy, 0);
-			dup2(stdout_copy, 1);
-			close(stdin_copy);
-			close(stdout_copy);
-			if (lst[i].argv[0] != NULL && strequ(lst[i].argv[0], "exit"))
+			if (open_in_out(&lst[i]) != 0)
+				ret = 1;
+			else
 			{
-				if (ret == -1)
-					ret = 1;
-				else
+				int stdin_copy = dup(0);
+				int stdout_copy = dup(1);
+				if (lst[i].in != 0)
+					dup2(lst[i].in, 0);
+				if (lst[i].out != 1)
+					dup2(lst[i].out, 1);
+				ret = ft_excev_butlin(&lst, &list, i, data);
+				dup2(stdin_copy, 0);
+				dup2(stdout_copy, 1);
+				close(stdin_copy);
+				close(stdout_copy);
+				if (lst[i].argv[0] != NULL && strequ(lst[i].argv[0], "exit"))
 				{
-					ft_free_env(&(list->env));
-					free_all_exec(lst, len);
-					if (last_in > 0)
-						close(last_in);
-					if (i < len - 1)
+					if (ret == -1)
+						ret = 1;
+					else
 					{
-					close(p[1]);
-					last_in = p[0];
+						ft_free_env(&(list->env));
+						free_all_exec(lst, len);
+						if (last_in > 0)
+							close(last_in);
+						if (i < len - 1)
+						{
+						close(p[1]);
+						last_in = p[0];
+						}
+						ft_free_return_loop(list);
+						ft_free_end(list, env);
+						exit(ret);
 					}
-					ft_free_return_loop(list);
-					ft_free_end(list, env);
-					exit(ret);
 				}
 			}
 		}
@@ -686,32 +742,36 @@ int ft_exceve(t_node *list, t_data *data, t_env **env)
 			}
 			else if (lst[i].pid == 0)
 			{
-			if (i < len - 1)
-				close(p[0]);
-			
-			if (lst[i].in != 0)
-			{
-				dup2(lst[i].in, 0);
-				close(lst[i].in);
-			}
-			if (lst[i].out != 1)
-			{
-				dup2(lst[i].out, 1);
-				close(lst[i].out);
-			}
-			int exit_code = exec(lst[i].exec, lst[i].argv, &lst[i].envp);
-			ft_free_env(&(list->env));
-			free_all_exec(lst, len);
-			if (last_in > 0)
-				close(last_in);
-			if (i < len - 1)
-			{
-			close(p[1]);
-			last_in = p[0];
-			}
-			ft_free_return_loop(list);
-			ft_free_end(list, env);
-			exit(exit_code);
+				if (i < len - 1)
+					close(p[0]);
+				int exit_code = open_in_out(&lst[i]);
+				if (exit_code == 0)
+				{
+					if (lst[i].in != 0)
+					{
+						dup2(lst[i].in, 0);
+						close(lst[i].in);
+					}
+					if (lst[i].out != 1)
+					{
+						dup2(lst[i].out, 1);
+						close(lst[i].out);
+					}
+
+					exit_code = exec(lst[i].exec, lst[i].argv, &lst[i].envp);
+				}
+				ft_free_env(&(list->env));
+				free_all_exec(lst, len);
+				if (last_in > 0)
+					close(last_in);
+				if (i < len - 1)
+				{
+					close(p[1]);
+					last_in = p[0];
+				}
+				ft_free_return_loop(list);
+				ft_free_end(list, env);
+				exit(exit_code);
 			}
 		}
 
@@ -725,7 +785,12 @@ int ft_exceve(t_node *list, t_data *data, t_env **env)
 		}
     }
     // Attendre la fin de tous les processus non-builtin
-    ret = ft_wait_all(lst, len);
+	// printf("\n1ret|%d|\n", ret);
+    int rete = ft_wait_all(lst, len);// a l'origine ret = ici
+	if (ret != 0 && ret != 1)
+		ret = rete;
+	// printf("\n2ret|%d|\n", ret);
+
 	ft_free_env(&(list->env));
     list->env = ft_insert_env(lst[0].envp);
     free_all_exec(lst, len);

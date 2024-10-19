@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/09 17:08:04 by dpoltura          #+#    #+#             */
-/*   Updated: 2024/10/18 17:37:49 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/19 15:40:37 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -439,12 +439,7 @@ int shell_loop(t_node *list, t_data *data, t_env **env)
         free(input);
         lexer(list);
         if (lexer_cmd(list, data) == 0)
-        {
-            
             data->exit_code = ft_exceve(list, data, &list->env);
-        }
-        else
-            data->exit_code = 130;
         ft_free_return_loop(list);
         
         // printf("Exitcode|%d|", data->exit_code );
@@ -482,8 +477,8 @@ void    ft_free_env(t_env **env)
 
 void ft_free_end(t_node *list, t_env **env)
 {
-        if(list->save[0] >= 0) close(list->save[0]);
-        if(list->save[1] >= 0) close(list->save[1]);
+        // if(list->save[0] >= 0) close(list->save[0]);
+        // if(list->save[1] >= 0) close(list->save[1]);
         ft_free_env(env);
         free(list);
         clear_history();
@@ -552,8 +547,8 @@ int main(int argc, char **argv, char **envp)
 	list = ft_calloc(1, sizeof(t_node));
 	if (list == NULL)
 		ft_out_exit(3);
-	list->save[0] = dup(STDIN_FILENO);
-	list->save[1] = dup(STDOUT_FILENO);
+	// list->save[0] = dup(STDIN_FILENO);
+	// list->save[1] = dup(STDOUT_FILENO);
 	list->pipe[0] = -1;
 	list->env = ft_insert_env(envp);
 	//print_env(list->env);
