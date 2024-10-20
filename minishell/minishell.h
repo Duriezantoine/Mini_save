@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/09 17:05:05 by dpoltura          #+#    #+#             */
-/*   Updated: 2024/10/19 15:40:02 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/20 19:43:21 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,14 +63,22 @@ typedef struct s_arg
 	struct s_arg *next;
 } t_arg;
 
+typedef struct s_iofile
+{
+	char			*file;
+	t_token			type;
+	struct s_iofile	*next;
+} t_iofile;
+
 typedef struct s_cmd
 {
 	char **cmd_and_args;
 
-	char *input_str;
+
+	t_iofile *input_str;
 	// int input;
 	
-	char *output_str;
+	t_iofile *output_str;
 	// int output;
 	enum e_tokens	_out_type;
 
@@ -165,7 +173,7 @@ typedef struct s_echo
 
 int main(int argc, char **argv, char **envp);
 int shell_loop(t_node *list, t_data *data, t_env **env);
-void organisation_shell_loop(t_node *list, t_data *data);
+int organisation_shell_loop(t_node *list, t_data *data);
 void ft_insert_cmd(t_command **command, t_data **data, char *input);
 void free_tokens(char **tokens, int len);
 void ft_insert_token(t_command **command, t_data **data);
@@ -216,6 +224,7 @@ void ft_insert_double_tab(t_cmd **list, t_arg *list_arg);
 t_arg *ft_init_list(t_node *list, t_echo *data_echo, t_save *save);
 void lexer(t_node *head);
 char	*ft_itoa(int n);
+int ft_white_space(char c);
 
 
 

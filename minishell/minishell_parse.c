@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/09 17:08:04 by dpoltura          #+#    #+#             */
-/*   Updated: 2024/10/19 18:34:01 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/20 18:55:30 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,10 +56,10 @@ void print_arg_arg(t_arg *head) {
     }
 }
 
-void organisation_shell_loop(t_node *list, t_data *data)
+int organisation_shell_loop(t_node *list, t_data *data)
 {
 	// Declaration des signaux
-	shell_loop(list, data, &list->env);
+	return shell_loop(list, data, &list->env);
 	// free la command_line
 }
 // Fonction pour afficher le contenu du répertoire courant
@@ -94,7 +94,7 @@ void print_environment(t_env *env)
     }
 }
 
-int	ft_white_space(char *str)
+int	ft_white_spaces(char *str)
 {
 	int i;
 
@@ -133,7 +133,7 @@ void split_string_d	(char *str, char **result)
             in_quotes = !in_quotes;
         if (str[i] == '\'')
             in_single_quotes = !in_single_quotes;
-        if (( str[i] == ' ') && !in_quotes && !in_single_quotes)
+        if (( ft_white_space(str[i])) && !in_quotes && !in_single_quotes)
         {
             temp[j] = '\0';
             result[k++] = strdup(temp);
@@ -202,7 +202,7 @@ int count_segments( char *str)
             in_quotes = !in_quotes;
         if (str[i] == '\'')
             in_single_quotes = !in_single_quotes;
-        if (( str[i] == ' ') && !in_quotes && !in_single_quotes)
+        if (( ft_white_space(str[i])) && !in_quotes && !in_single_quotes)
             len++;
     }
     return len + 1;
@@ -262,7 +262,7 @@ int ft_space_or_null(char *str)
 	x=0;
 	while(str[x])
 	{
-		if(str[x] != ' ')
+		if(!ft_white_space(str[x]))
 			return(1);
 		x++;
 	}
@@ -351,6 +351,32 @@ void signal_handler(int sig)
         rl_redisplay();
     }
 }
+// int check_syntax_errors(char *input) 
+// {
+//     int x;
+//     char c;
+//      x =0;
+//     while(input[x])
+//     {
+//         if(input[x] == ' ')
+//             x++;
+//         if (ft_islanum(input[x]) ==1)
+//             x++;
+//         if (input[x] == '\'' || input[x]=='"' )
+//         {
+//             char c = input[x++];
+//             while(input[x] != c)
+//                 x++;
+            
+//         }
+//     }
+
+
+// }
+
+
+
+
 int ft_search_inputs(char *str)
 {
     int i;
@@ -363,7 +389,7 @@ int ft_search_inputs(char *str)
             i++;
             while (str[i] && str[i] != '\'')
             {
-                if (str[i] != ' ' && str[i] != '\'')
+                if (!ft_white_space(str[i]) && str[i] != '\'')
                     return 1;
                 i++;
             }
@@ -375,14 +401,14 @@ int ft_search_inputs(char *str)
             i++;
             while (str[i] && str[i] != '"')
             {
-                if (str[i] != ' ')
+                if (!ft_white_space(str[i]))
                     return 1;
                 i++;
             }
             if (str[i] == '"')
                 i++; // Passe le guillemet double de fermeture
         }
-        else if (str[i] != ' ')
+        else if (!ft_white_space(str[i]))
         {
             return 1;
         }
@@ -398,7 +424,9 @@ int shell_loop(t_node *list, t_data *data, t_env **env)
     // Configuration du gestionnaire de signaux
 
     while (1)
-    {    
+    {   
+        // printf("Exitcode|%d|", data->exit_code );
+
         signal_recu = 0;   
         signal(SIGINT, signal_handler);
         signal(SIGQUIT, signal_handler);
@@ -409,11 +437,12 @@ int shell_loop(t_node *list, t_data *data, t_env **env)
             data->exit_code = 130;
         if (input == NULL)  // Gestion de Ctrl+D (EOF)
         {
-            printf("\nexit\n");
+            write(1, "exit\n", 5);
             break;
         }
-        if (ft_search_inputs(input) == 0)
+        if (ft_search_inputs(input) == 0 )//&& check_syntax_errors(input)==1
         {
+            // printf("ICI");
             free(input);
             continue;
         }
@@ -422,7 +451,7 @@ int shell_loop(t_node *list, t_data *data, t_env **env)
         // printf("Je suis input\n|%s|\n", input);
         input = ft_change_input(&input, *env, data);//Il faudra le refaire a la suite 
         // printf("New_input\n|%s|\n", input);
-        if (ft_strlen(input) == 0 || ft_white_space(input) == 0)
+        if (ft_strlen(input) == 0 || ft_white_spaces(input) == 0)
         {
             //printf("\nICIC\n");
             free(input);
@@ -438,7 +467,7 @@ int shell_loop(t_node *list, t_data *data, t_env **env)
 
         free(input);
         lexer(list);
-        // print_list(list);
+       // print_list(list);
         if (lexer_cmd(list, data) == 0)
             data->exit_code = ft_exceve(list, data, &list->env);
         ft_free_return_loop(list);
@@ -553,7 +582,5 @@ int main(int argc, char **argv, char **envp)
 	list->pipe[0] = -1;
 	list->env = ft_insert_env(envp);
 	//print_env(list->env);
-	organisation_shell_loop(list, &data);
-
-	return (0); // Il faut l'exit code.
+	return (organisation_shell_loop(list, &data));
 }

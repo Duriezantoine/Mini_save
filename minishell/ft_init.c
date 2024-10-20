@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/09 17:08:04 by dpoltura          #+#    #+#             */
-/*   Updated: 2024/10/19 15:40:42 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/20 18:40:22 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,7 @@ t_arg *ft_init_list(t_node *list, t_echo *data_echo, t_save *save)
         free(new_node);
         return NULL;
     }
-        if (list==NULL)
+    if (list==NULL)
         printf("\nCa beug\n");
     ft_insert_nodes(list, new_node);
     // printf("Voila ce que je viens d'introduire: |%s|\n", new_node->str_command);

@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/01 11:35:23 by aduriez           #+#    #+#             */
-/*   Updated: 2024/10/19 16:32:42 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/20 19:47:12 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,13 +97,14 @@ struct s_exec {
 	char *exec;
 	char **argv;
 	char **envp;
-	char *infile;
-	char *outfile;
-	enum e_tokens	_out_type;
+	t_iofile *infile;
+	t_iofile *outfile;
+	// enum e_tokens	_out_type;
 
 	int in;
 	int out;
 	int pid;
+	int	nb_exec;
 };
 
 int cdt_len(char **a) {
@@ -338,6 +339,7 @@ struct s_exec *lst_to_execs(t_node *list, int *len) {
 		ret[i].exec = get_program_name(list->cmd->cmd_and_args[0], list->cmd->is_builtin);
 		ret[i].argv = clone_cdt(list->cmd->cmd_and_args);
 		ret[i].envp = clone_cdt(env);
+		ret[i].nb_exec = *len;
 		//Verification pour la commande
 		// if (ret[i].exec != NULL)
 		//         if (ret[i].exec[0]== '$')
@@ -348,7 +350,7 @@ struct s_exec *lst_to_execs(t_node *list, int *len) {
 		// ret[i].out = list->cmd->output;
 		ret[i].infile = list->cmd->input_str;
 		ret[i].outfile = list->cmd->output_str;
-		ret[i]._out_type = list->cmd->_out_type;
+		// ret[i]._out_type = list->cmd->_out_type;
 		ret[i].out = -1;
 		ret[i].in = -1;
 		ret[i].pid = -1;
@@ -390,25 +392,30 @@ int ft_fork(int exit_err, void (*func)(struct s_exec *, int, int), struct s_exec
 int ft_wait_all(struct s_exec *execs, int len) {
     int i;
     int status;
-    int last_exit_status = 0;
+    int last_exit_status = -1;
 status = 0;
 
     for (i = 0; i < len; i++) {
-	if (waitpid(execs[i].pid, &status, 0) == -1) {
-	    // perror("waitpid");
+		if (ft_exceve_bulting(execs[i].argv[0], 1))
+		{
+			if (waitpid(execs[i].pid, &status, 0) == -1) {
+				// perror("waitpid");
 
-	}
-	if (WIFEXITED(status)) {
-	    last_exit_status = WEXITSTATUS(status);
-	} else if (WIFSIGNALED(status)) {
-	    // fprintf(stderr, "Command terminated by signal %d\n", WTERMSIG(status));
-	    last_exit_status = 128 + WTERMSIG(status);
-	}
+			}
+			if (WIFEXITED(status)) {
+				last_exit_status = WEXITSTATUS(status);
+			} else if (WIFSIGNALED(status)) {
+				// fprintf(stderr, "Command terminated by signal %d\n", WTERMSIG(status));
+				last_exit_status = 128 + WTERMSIG(status);
+			}
+		}
     }
     return last_exit_status;
 }
 
 void free_exec(struct s_exec e) {
+	t_iofile	*tmp;
+
 	free(e.exec);
 	int i = 0;
 	while(e.argv[i]) {
@@ -424,8 +431,20 @@ void free_exec(struct s_exec e) {
 	free(e.envp); // Correction: Libération de e.envp
 	if(e.in > 2) close(e.in);
 	if(e.out > 2) close(e.out);
-	if (e.infile) free(e.infile);
-	if (e.outfile) free(e.outfile);
+	while (e.infile)
+	{
+		free(e.infile->file);
+		tmp = e.infile->next;
+		free(e.infile);
+		e.infile = tmp;
+	}
+	while (e.outfile)
+	{
+		free(e.outfile->file);
+		tmp = e.outfile->next;
+		free(e.outfile);
+		e.outfile = tmp;
+	}
 }
 
 void free_all_exec(struct s_exec *execs, int len) {
@@ -469,7 +488,7 @@ int builtin(char *name) {
 	if (name == NULL)
 		return (-1);
 	if(strequ(name, "env")) {
-		printf("env\n");
+		// printf("env\n");
 		founded = 1;
 	}
 		if(strequ(name, "echo")) {
@@ -504,18 +523,23 @@ int exec(char *name, char **argv, char ***envp) {
 	int i;
 	i = 0;
 	int built;
-       built = builtin(name );
+	
+	built = builtin(name );
 //        printf("\nJe suis built|%d|\n", built);
 	if(!builtin(name))
 	{                   // Imprimer name
 			// printf("\nPasse a cote du bulting\n");
-		name = get_path(name);
+		
+		if (!strchr(name, '/'))
+			name = get_path(name);
 		if (name)
 		{
 			execve(name, argv, (*envp));
 			fprintf(stderr, "%s: %s\n", name, strerror(errno));
+			if (errno == 13)
+				return (126);
 		}
-		return(0);
+		return(127);
 	}
 	// print_env((*envp));
 	return(0);
@@ -548,15 +572,29 @@ void	sort_envp_ex(char **copy_envp)
 void	ft_display_envp(char *copy_envp[])
 {
 	int	i;
+	char	*sep;
 
-	i = 0;
+	i = -1;
 	sort_envp_ex(copy_envp);
-	//printf("\n 1er|%s|\n", copy_envp[0]);
-	while (copy_envp[i])
+	while (copy_envp[++i])
 	{
-		    if (strncmp(copy_envp[i], "_=", 2) != 0 && strncmp(copy_envp[i], "_\0", 2) != 0) 
-				printf("declare -x %s\n", copy_envp[i]);
-		i++;
+		    if (strncmp(copy_envp[i], "_=", 2) != 0 && strncmp(copy_envp[i], "_\0", 2) != 0)
+			{
+				ft_putstr_fd("declare -x ", 1);
+				sep = strchr(copy_envp[i], '=');
+				if (sep)
+				{
+					*sep = '\0';
+					ft_putstr_fd(copy_envp[i], 1);
+					ft_putstr_fd("=\"", 1);
+					ft_putstr_fd(sep + 1, 1);
+					ft_putstr_fd("\"", 1);
+					*sep = '=';
+				}
+				else
+					ft_putstr_fd(copy_envp[i], 1);
+				ft_putstr_fd("\n", 1);
+			}
 	}
 }
 
@@ -572,22 +610,27 @@ int ft_excev_butlin(struct s_exec **lst, t_node **list, int i, t_data *data)
 	{
 		// printf("Je susi bulting Env");
 	       bulting_env((*list));
- 
+		return (0);
 	}   
 	if (built == 2) 
 	{
 		// printf("\nJe susi bulting echo\n");
+		// printf("\nIci\n");
 		bulting_echo((*lst)[i].argv,1);
 		return(0);
 	}
-	 if (built == 3 && i==0) 
+	 if (built == 3) 
 	{
 		// printf("Je susi bulting Export");
 		//  print_args(lst[i]->argv);
 		 if((*lst)->argv[1]==NULL)
 		 	ft_display_envp((*lst)[i].envp);
-		else
+		else if ((*lst)[i].nb_exec == 1)
 	      ret = bulting_export((*lst)[i].argv, &(*lst)[i].envp);
+		else
+			return (0);
+		
+		//   printf("\n|ret=|%d\n|", ret);
  
 	}         
 	if (built == 4) 
@@ -611,10 +654,9 @@ int ft_excev_butlin(struct s_exec **lst, t_node **list, int i, t_data *data)
 		// printf("Je susi bulting Pwd");
 		bulting_pwd();
 	}
-	if (built ==7) 
+	if (built == 7 )
 	{
-		// printf("Je susi bulting Cd");
-	       return bulting_exit((*lst)[i].argv,(*list),  &(*list)->env, data);
+		return bulting_exit((*lst)[i].argv,(*list),  &(*list)->env, data);
  
 	}
 	
@@ -636,35 +678,46 @@ void handler_void(int sig)
 
 int	open_in_out(struct s_exec *exec)
 {
-	int	oflags;
+	int			oflags;
+	t_iofile	*tmp;
 
-	if (exec->outfile)
+	while (exec->outfile)
 	{
 		if (exec->out > 1)
 			close(exec->out);
 		oflags = O_WRONLY | O_CREAT;
-		if (exec->_out_type == APPEND)
+		if (exec->outfile->type == APPEND)
 			oflags |= O_APPEND;
 		else
 			oflags |= O_TRUNC;
 		
-		exec->out = open(exec->outfile, oflags, 0644);
+		exec->out = open(exec->outfile->file, oflags, 0644);
 		if (exec->out < 0)
 		{
 			perror("open");
 			return (1);
 		}
+
+		tmp = exec->outfile;
+		exec->outfile = tmp->next;
+		free(tmp->file);
+		free(tmp);
 	}
-	if (exec->infile)
+	while (exec->infile)
 	{
 		if (exec->in > 0)
 			close(exec->in);
-		exec->in = open(exec->infile, O_RDONLY);
+		// printf("\nJ'ouvre %s\n", exec->infile);
+		exec->in = open(exec->infile->file, O_RDONLY);
 		if (exec->in < 0)
 		{
 			perror("open");
 			return (1);
 		}
+		tmp = exec->infile;
+		exec->infile = tmp->next;
+		free(tmp->file);
+		free(tmp);
 	}
 	return (0);
 }
@@ -709,7 +762,7 @@ int ft_exceve(t_node *list, t_data *data, t_env **env)
 				dup2(stdout_copy, 1);
 				close(stdin_copy);
 				close(stdout_copy);
-				if (lst[i].argv[0] != NULL && strequ(lst[i].argv[0], "exit"))
+				if (lst[i].argv[0] != NULL && strequ(lst[i].argv[0], "exit") && len == 1)
 				{
 					if (ret == -1)
 						ret = 1;
@@ -771,6 +824,7 @@ int ft_exceve(t_node *list, t_data *data, t_env **env)
 				}
 				ft_free_return_loop(list);
 				ft_free_end(list, env);
+
 				exit(exit_code);
 			}
 		}
@@ -787,9 +841,8 @@ int ft_exceve(t_node *list, t_data *data, t_env **env)
     // Attendre la fin de tous les processus non-builtin
 	// printf("\n1ret|%d|\n", ret);
     int rete = ft_wait_all(lst, len);// a l'origine ret = ici
-	if (ret != 0 && ret != 1)
+	if (rete != -1)
 		ret = rete;
-	// printf("\n2ret|%d|\n", ret);
 
 	ft_free_env(&(list->env));
     list->env = ft_insert_env(lst[0].envp);

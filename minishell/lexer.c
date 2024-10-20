@@ -204,88 +204,60 @@ void ft_check_bulting(t_cmd **cmd, t_arg *arg)
         tmp = tmp->next;
     }
 }
-// int	ft_open_infile(t_node **list, char *infile)
-// {
-// 	// printf("|DATAVALUE|%s|", data->value);
-//     //IL famettre cmd
-// 	(*list)->cmd->input = open(infile, O_RDONLY);
-// 	if ((*list)->cmd->input < 0)
-// 	{
-//         ft_putstr_fd(strerror(errno), 2 );
-//         ft_putstr_fd("\n", 2 );
-//         return (-1);
-// 	}
-//     // printf("\nJ'ai ouvert|%s|et le fd est |%d|", infile, (*list)->save[0]);
-//     return(0);
-// }
 int    ft_check_infile_cmd(t_node *list, t_cmd **cmd, t_arg *arg)
 {
     //1 er chose il faut boucler sur arg
     t_arg *tmp;
+    t_iofile    *files;
+    t_iofile    *new;
     int res;
 
     (void)cmd;
     tmp = arg;
     res = 0;
+    files = NULL;
     while(tmp && res == 0)
     {
         if (tmp->type == INFILE || tmp->type == HEREDOC_INFILE)
         {
-            if (list->cmd->input_str != NULL)
-                free(list->cmd->input_str);
-            list->cmd->input_str = ft_strdup(tmp->str_command);
+            new = malloc(sizeof(t_iofile));
+            new->type = tmp->type;
+            new->file = ft_strdup(tmp->str_command);
+            new->next = NULL;
+            if (files == NULL)
+                list->cmd->input_str = new;
+            else
+                files->next = new;
+            files = new;
         }
-        // if (tmp->type == INFILE || tmp->type == HEREDOC_INFILE)
-        // {
-        //     //Il faut essayer d'ouvrir le fichier et le mettre dans CMD INFILE
-        //     res = ft_open_infile(&list, tmp->str_command);
-        // }
         tmp = tmp->next;
     }
     return(res);
 }
-// void ft_init_outfile(t_node **list, char *outfile, int i)
-// {
-//     if(i == 0)
-//     {
-//         (*list)->cmd->output = open(outfile, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-//         if ((*list)->cmd->output< 0)
-//         {
-//             perror("open");
-//             exit(EXIT_FAILURE);
-//         }
-//         //dup2(fd, STDOUT_FILENO);Demande a tillian
-//         printf("Je suis le resultat du outfile|%d|", (*list)->save[1]);
-//         close((*list)->save[1]);// peut etre qu'il faut le ferme apres a voir
-//     }
-//     if(i == 1)
-//     {
-//         (*list)->cmd->output= open(outfile, O_WRONLY | O_CREAT | O_APPEND, 0644);
-//         if ((*list)->cmd->output< 0)
-//         {
-//         perror("open");
-//         exit(EXIT_FAILURE);
-//     }
-//    // dup2(fd, STDOUT_FILENO);demande a tilian
-//         printf("Je suis le resultat du outfile|%d|", (*list)->save[1]);
-//       close((*list)->save[1]);
-//     }
-// }
 
 void    ft_check_outfile(t_node *list, t_cmd **cmd, t_arg *arg)
 {
     t_arg *tmp;
+    t_iofile    *files;
+    t_iofile    *new;
 
     (void)cmd;
     tmp = arg;
+    files = NULL;
     while(tmp)
     {
         if(tmp->type == OUTFILE || tmp->type == APPEND)
         {
-            if (list->cmd->output_str != NULL)
-                free(list->cmd->output_str);
-            list->cmd->output_str = ft_strdup(tmp->str_command);
-            list->cmd->_out_type = tmp->type;
+            new = malloc(sizeof(t_iofile));
+            new->type = tmp->type;
+            new->file = ft_strdup(tmp->str_command);
+            new->next = NULL;
+
+            if (files == NULL)
+                list->cmd->output_str = new;
+            else
+                files->next = new;
+            files = new;
         }
 
 
@@ -338,12 +310,12 @@ void lexer(t_node *list)
 {
     while (list)
     {
-        // printf("LIst = |%s|", list->arg->str_command);
+       // printf("LIst = |%s|", list->arg->str_command);
         set_spec(list->arg);
         set_file(list->arg);
         set_cmd(list->arg);
         set_arg(list->arg);
-        // print_arg(list->arg);
+        //print_arg(list->arg);
         list = list->next;
         // printf("\nXXX %p\n", list);
     }

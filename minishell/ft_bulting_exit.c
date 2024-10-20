@@ -6,11 +6,12 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/15 16:05:36 by aduriez           #+#    #+#             */
-/*   Updated: 2024/10/19 12:35:54 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/20 17:41:07 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+#include <limits.h>
 
 
 size_t	ft_strlcpy(char *dst, const char *src, size_t size)
@@ -76,7 +77,7 @@ static char	*ft_trim_space(const char *str)
 	size_t	i;
 
 	i = 0;
-	while (str[i] == ' ' || (str[i] >= '\t' && str[i] <= '\r'))
+	while (ft_white_space(str[i]))
 		i++;
 	return ((char *)str + i);
 }
@@ -144,7 +145,7 @@ int     ft_check_space(char *str)
     i = 0;
     while(str[i])
     {
-        if (str[i] != ' ')
+        if (!ft_white_space(str[i]))
             return(1);
         i++;
     }
@@ -216,6 +217,33 @@ int ft_verif_number(char *str)
     return 0;  // Nombre valide
 }
 
+long	ft_strtol(char *str, char **endptr)
+{
+	long	res;
+	short	sign;
+
+	if (!str || *str == '\0')
+		return (0);
+	while ((*str >= 8 && *str <= 12) || *str == ' ')
+		str++;
+	sign = 1;
+	res = 0;
+	if (*str == '+' || *str == '-')
+		if (*str++ == '-')
+			sign = -1;
+	while (*str >= '0' && *str <= '9')
+	{
+		if ((sign == 1 &&  res > (LONG_MAX - (*str - '0')) / 10)
+			|| (sign == -1 && -res < (LONG_MIN + (*str - '0')) / 10))
+			break;
+		else
+			res = res * 10 + (*str - '0');
+		str++;
+	}
+	*endptr = str;
+	return (res * sign);
+}
+
 int bulting_exit(char **args, t_node *list, t_env **env, t_data *data)
 {
     (void) env;
@@ -224,35 +252,23 @@ int bulting_exit(char **args, t_node *list, t_env **env, t_data *data)
     char *endptr;
 
     if (args[1] == NULL)
-        return (data->exit_code);
+		return (data->exit_code);
 
-    int verif_result = ft_verif_number(args[1]);
-    
-    if (verif_result == 0)
-    {
-        exit_status = strtol(args[1], &endptr, 10);
-        
-        if (*endptr != '\0' )// exit_status > LONG_MAX || exit_status < LONG_MIN)
-        {
-            ft_putstr_fd("bash: exit: ", 2);
-            ft_putstr_fd(args[1], 2);
-            ft_putstr_fd(": numeric argument required\n", 2);
-            return 2;
-        }
+	exit_status = ft_strtol(args[1], &endptr);
+	
+	if (*endptr != '\0' || endptr == args[1]) 
+	{
+		ft_putstr_fd("bash: exit: ", 2);
+		ft_putstr_fd(args[1], 2);
+		ft_putstr_fd(": numeric argument required\n", 2);
+		return 2;
+	}
 
-        if (args[2] != NULL)
-        {
-            ft_putstr_fd("bash: exit: too many arguments\n", 2);
-            return 1;
-        }
-        else
-            return (exit_status & 255);
-    }
-    else
-    {
-        ft_putstr_fd("bash: exit: ", 2);
-        ft_putstr_fd(args[1], 2);
-        ft_putstr_fd(": numeric argument required\n", 2);
-        return 2;
-    }
+	if (args[2] != NULL)
+	{
+		ft_putstr_fd("bash: exit: too many arguments\n", 2);
+		return 1;
+	}
+	else
+		return (exit_status & 255);
 }

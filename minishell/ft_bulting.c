@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/09 17:08:04 by dpoltura          #+#    #+#             */
-/*   Updated: 2024/10/16 17:40:33 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/20 16:35:40 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ int ft_exceve_bulting(char *str, int len)
 
 		return(0);
     }    
-    if (strncmp(str, "export", 7) == 0 && len==1) {
+    if (strncmp(str, "export", 7) == 0) {
 	    // printf("\n4\n");
 
        return(0);
@@ -45,7 +45,7 @@ int ft_exceve_bulting(char *str, int len)
 
        return(0);
     }
-    if (strncmp(str, "exit", 5) == 0 && len==1) {
+    if (strncmp(str, "exit", 5) == 0 ) {
 	    // printf("\n6\n");
 
        return(0);

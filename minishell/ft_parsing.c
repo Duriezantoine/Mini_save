@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/11 10:51:14 by dpoltura          #+#    #+#             */
-/*   Updated: 2024/10/19 18:35:51 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/20 18:57:48 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,8 +52,8 @@ void print_list_save(t_save* head) {
     t_save* current = head;
 
     while (current != NULL) {
-        printf("str: %s, bool: %d\n", current->str, current->bool);
-        current = current->next;
+        // printf("str: %s, bool: %d\n", current->str, current->bool);
+        // current = current->next;
     }
 }
 void print_save_list(t_save *head)
@@ -62,7 +62,7 @@ void print_save_list(t_save *head)
 
 	while (current != NULL)
 	{
-		printf("str: %s, bool: %d\n", current->str, current->bool);
+		// printf("str: %s, bool: %d\n", current->str, current->bool);
 		current = current->next;
 	}
 }
@@ -123,7 +123,7 @@ int     ft_verifi_var_glob(char *str, char **save, t_env *env, t_data *data)
         //     (*save)=NULL;   
         //     return(0);
         // }
-        if (str[i] == '"' && str[i+1] == '$')
+        if (str[i] == '"' && str[i+1] == '$' && str[i+2] != '\0')
         {
              i=i+2;
              y = i;
@@ -240,11 +240,12 @@ int ft_parsing(t_node *list, t_data *data, char *input, t_env *env)
             return (1); // Voir comment acceder a ma data
         save = NULL;
         ft_insert_new_data_with_data(&save, &data_echo, env);
-      //print_save_list(save);
+      print_save_list(save);
          ft_change_save_v2(&save,env, data);
         t_save *tmp = save;
         while (tmp)
         { // Boucle permettant d'introduire dans la list->arg
+            // printf("adding: %s\n", tmp->str);
             list->arg = ft_init_list(list, &data_echo, tmp);
             // print_t_arg(list->arg);
             tmp = tmp->next;

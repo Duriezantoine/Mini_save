@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/06 17:51:35 by aduriez           #+#    #+#             */
-/*   Updated: 2024/10/18 13:13:17 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/20 14:53:10 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,8 @@ int    bulting_echo(char **cmd, int i)
     n = 0;
     if(cmd[i]== NULL)
     {
-        printf("\n");
+        if (i == 1)
+            write(1, "\n", 1);
         return(0);
     }
      if (ft_search_n(cmd, i)== 0)
@@ -32,20 +33,15 @@ int    bulting_echo(char **cmd, int i)
         {
             if (i != 1)
                 n=1;
-            while(cmd[i] )
+            while(cmd[i])
             {
-                if(i != 0)
-                {
-                    if(i==1 && cmd[i]==NULL)
-                        printf("\n");
-                    printf("%s", cmd[i]);
-                    if (cmd[i+1]!= NULL)
-                          printf(" ");
-                }
+                write(1, cmd[i], ft_strlen(cmd[i]));
+                if (cmd[i+1]!= NULL)
+                        write(1, " ", 1);
                 i++;
             }
-                if(n !=1)
-                printf("\n");
+            if(n !=1)
+                    write(1, "\n", 1);
         }   
     return(0);
 }
@@ -54,21 +50,24 @@ int ft_search_n(char **cmd, int i)
 {
     int x;
     x = 0;
-    while(cmd[i][x])
+    // int count ;
+
+    // count = 0;
+    // while(cmd[i][x])
+    // {
+    if (cmd[i][x]== '-' && cmd[i][x+1] == 'n')
     {
-        if (cmd[i][x]== '-' && cmd[i][x+1] == 'n')
+        x = x+2;
+        if (cmd[i][x]== '\0')
         {
-            x = x+2;
-            if (cmd[i][x]== '\0')
-            {
             return (0);
-            }
         }
-        else 
-            return(1);
-        while(cmd[i][x]== 'n')
-           x++;
     }
+    else 
+        return(1);
+    while(cmd[i][x]== 'n')
+        x++;
+    // }
     if (cmd[i][x]== '\0')
     {
         // printf("\nJe suis a la fin de l'atguments\n");
