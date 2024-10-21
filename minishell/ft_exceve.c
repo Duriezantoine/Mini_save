@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/01 11:35:23 by aduriez           #+#    #+#             */
-/*   Updated: 2024/10/20 19:47:12 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/21 16:38:50 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,16 +49,27 @@ void	ft_free_double_tab(char **str)
 	}
 	free(str);
 }
-char *get_path(char *str)
+
+char	*ft_getpath(char **env)
+{
+	while (*env)
+	{
+		if (strncmp(*env, "PATH=", 5) == 0)
+			return *env + 5;
+		env++;
+	}
+	return NULL;
+}
+char *get_path(char *str, char **env)
 {
     char *path;
     char **split_path;
     char *full_path;
     int i;
 //   printf("Je suis a la rechercher du chemin");
-    path = getenv("PATH");
+    path = ft_getpath(env);
     if (!path) {
-	fprintf(stderr, "Erreur: La variable d'environnement PATH n'est pas définie.\n");
+		fprintf(stderr, "Erreur: La variable d'environnement PATH n'est pas définie.\n");
 	return("R");
     }
 
@@ -215,49 +226,6 @@ void free_split(char **split) {
 	free(split);
 }
 
-char *get_program_name(char *name, int builtin) 
-{
-	if(builtin) return ft_strdup(name);
-	char *path;
-	char **split_path;
-	char *full_path = NULL; // Correction: Initialisation de full_path
-	int i;
-
-	path = getenv("PATH");
-	if (!path) 
-	{
-		fprintf(stderr, "Erreur: La variable d'environnement PATH n'est pas définie.\n");
-		return NULL;
-	}
-
-	split_path = ft_split(path, ':');
-	if (!split_path) {
-		fprintf(stderr, "Erreur: Impossible de diviser le chemin.\n");
-		return NULL;
-	}
-
-	i = 0;
-	while (split_path[i])
-	{
-		char *tmp = ft_strjoin(split_path[i], "/");
-		full_path = ft_strjoin(tmp, name); // Correction: Utilisation de tmp au lieu de full_path
-		free(tmp);
-
-		if (access(full_path, F_OK | X_OK) != -1)
-		{
-			free_split(split_path);
-			return full_path;
-		}
-
-		free(full_path);
-	       // full_path = NULL; // Correction: Réinitialisation de full_path
-		i++;
-	}
-	printf("\nCOmmande not Valid\n");
-	free_split(split_path);
-	return NULL;
-}
-
 int ft_replace_var(char **str, t_env *env)
 {
 	//Pas dur que ca modifier la variables il faut alors verfifier 
@@ -336,7 +304,7 @@ struct s_exec *lst_to_execs(t_node *list, int *len) {
 	tmp = list->env;//Ce  qui permet de garder la lise chaine pour le FT_REPLACE_var
 	int i = 0;
 	while(list) {
-		ret[i].exec = get_program_name(list->cmd->cmd_and_args[0], list->cmd->is_builtin);
+		ret[i].exec= ft_strdup(list->cmd->cmd_and_args[0]);
 		ret[i].argv = clone_cdt(list->cmd->cmd_and_args);
 		ret[i].envp = clone_cdt(env);
 		ret[i].nb_exec = *len;
@@ -407,6 +375,7 @@ status = 0;
 			} else if (WIFSIGNALED(status)) {
 				// fprintf(stderr, "Command terminated by signal %d\n", WTERMSIG(status));
 				last_exit_status = 128 + WTERMSIG(status);
+				write(2, "\n", 2);
 			}
 		}
     }
@@ -531,7 +500,7 @@ int exec(char *name, char **argv, char ***envp) {
 			// printf("\nPasse a cote du bulting\n");
 		
 		if (!strchr(name, '/'))
-			name = get_path(name);
+			name = get_path(name, *envp);
 		if (name)
 		{
 			execve(name, argv, (*envp));

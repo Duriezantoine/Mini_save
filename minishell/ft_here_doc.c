@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/27 10:32:48 by aduriez           #+#    #+#             */
-/*   Updated: 2024/10/16 17:30:44 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/21 17:04:37 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,7 @@ char *create_file_name(char *temp_file_name, t_data *data, char *write_here_do)
 		free(write_here_do);
 		exit(EXIT_FAILURE);
 	}
-	ft_strcpy(temp_file_name, "bbw");
+	ft_strcpy(temp_file_name, "/tmp/heredoc");
 	ft_strcat(temp_file_name, data->count);
 	return (temp_file_name);
 
@@ -156,6 +156,25 @@ void    heredoc_handle_sig(int signal)
     }
 }
 
+
+
+
+int	ft_putchar_fd(char c, int fd)
+{
+	int	tmp;
+
+	tmp = write(fd, &c, 1);
+	return (tmp);
+}
+int	ft_putendl_fd(char *str, int fd)
+{
+	int	ret;
+
+	ret = ft_putstr_fd(str, fd);
+	ret += ft_putchar_fd('\n', fd);
+	return (ret);
+}
+
 static void heredoc_process(t_here_doc_data here_doc_data, t_data *data, t_node *list, char *limiteur)
 {
     signal(SIGQUIT, heredoc_handle_sig);
@@ -169,8 +188,15 @@ static void heredoc_process(t_here_doc_data here_doc_data, t_data *data, t_node 
 	{
         here_doc_data.test = strncmp(here_doc_data.write_here_do, limiteur, ft_strlen(limiteur));
         if (here_doc_data.ret == 0 || here_doc_data.test == 0)
+        {
+            if (here_doc_data.ret == 0)
+            {
+                ft_putstr_fd( "bash: warning: here-document at line 1 delimited by end-of-file (wanted `",2 );
+                ft_putstr_fd( limiteur,2 );
+                ft_putendl_fd( "\')",2 );
+            }
             break;
-        printf("yo\n\n");
+        }
        if (list->cmd->cmd != 0) 
 	   	{
             int error = handle_write_error(&here_doc_data);
@@ -183,7 +209,7 @@ static void heredoc_process(t_here_doc_data here_doc_data, t_data *data, t_node 
                 exit(error);
             }
         }
-        printf("write=|%s|demande=|%s|test_delimiteur |%d|",here_doc_data.write_here_do, limiteur, here_doc_data.test );
+        // printf("write=|%s|demande=|%s|test_delimiteur |%d|",here_doc_data.write_here_do, limiteur, here_doc_data.test );
         read_input(&here_doc_data);
     }
     free(here_doc_data.temp_file_name);

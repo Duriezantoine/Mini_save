@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/11 10:51:14 by dpoltura          #+#    #+#             */
-/*   Updated: 2024/10/20 19:54:58 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/21 15:52:43 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -410,7 +410,7 @@ void ft_insert_tab_echo(t_echo *data_echo, char *input, int i)
         // Ce qui permet d'introduire dans le tableau nouvellement cree
         if ((input[i] == '"' || input[i] == '\'')&& input[i] != '\0')
         {
-            if(input[i+1]!='\'')
+            if(input[i+1] != input[i])
             {
                 ft_insert_data_w_whith_tab(data_echo, input, &i, &clef_tab_w_quot);
                 clef_tab_w_quot++;

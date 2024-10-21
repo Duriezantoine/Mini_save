@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/11 10:51:14 by dpoltura          #+#    #+#             */
-/*   Updated: 2024/10/20 18:57:48 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/21 16:17:43 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,10 +112,12 @@ int     ft_verifi_var_glob(char *str, char **save, t_env *env, t_data *data)
     int i;
     int c;
     int y;
+    char g;
 
     y = 0;
     i = 0;
     c=0;
+    g = 0;
     while(str[i])
     {
         // if(str[i]== '\'' && str[i+1]== '\0')
@@ -123,19 +125,24 @@ int     ft_verifi_var_glob(char *str, char **save, t_env *env, t_data *data)
         //     (*save)=NULL;   
         //     return(0);
         // }
-        if (str[i] == '"' && str[i+1] == '$' && str[i+2] != '\0')
+        if (str[i] == '"')
+            g = (g + 1) % 2;
+        if (g == 1 && str[i] == '"' && str[i+1] == '$' && str[i+2] != '\0')
         {
-             i=i+2;
-             y = i;
-             while(str[i]!='"')
+            i=i+2;
+            y = i;
+            while(str[i] != '"')
             {
                 i++;
                 c++;
-            } 
+            }
+            g = 0;
+            i++;
         }
         else
             c++;
-        i++;
+        
+         i++;
     }
     i = 0;
     (*save) = malloc(sizeof(char) *  (c + 1));

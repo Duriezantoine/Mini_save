@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/09 17:05:05 by dpoltura          #+#    #+#             */
-/*   Updated: 2024/10/20 19:43:21 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/21 12:18:00 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,6 +69,22 @@ typedef struct s_iofile
 	t_token			type;
 	struct s_iofile	*next;
 } t_iofile;
+
+typedef struct s_verif_input
+{
+    int nbr_stack;
+    int pipe;
+    int alnum;
+    int x;
+    char c;
+    int nbr_token;
+    int token_right;
+    int token_left;
+    int stack_start;
+    int heredoc;  // Nouveau champ pour gérer les heredocs (<<)
+    int last_char_special;  // Pour vérifier si le dernier caractère était spécial
+	int 	command_before_pipe;
+} t_verif_input;
 
 typedef struct s_cmd
 {

@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/09 17:08:04 by dpoltura          #+#    #+#             */
-/*   Updated: 2024/10/20 18:55:30 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/21 16:45:03 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -417,6 +417,217 @@ int ft_search_inputs(char *str)
     return 0;
 }
 
+void ft_init_verif(t_verif_input *verif)
+{
+    verif->nbr_stack = 0;
+    verif->pipe = 0;
+    verif->alnum = 0;
+    verif->x = 0;
+    verif->c = 'a';
+    verif->nbr_token = 0;
+    verif->token_right = 0;
+    verif->token_left = 0;
+    verif->stack_start = 0;
+    verif->heredoc = 0;
+    verif->last_char_special = 0;
+    verif->command_before_pipe = 0;
+
+}
+
+// int ft_it_s_ok_input(t_verif_input verif)
+// {
+//     if(verif.pipe== 1 && verif.nbr_stack==0)
+//         return(1);
+//     if(verif.token_left==1 && verif.nbr_stack== 0)
+//         return(1);
+//     if(verif.nbr_token>2)
+//         return(1);
+//     return(0);
+// }
+int print_syntax_error(char c, char *str)
+{
+    fprintf(stderr, "syntax error near unexpected token '%c' in '%s'\n", c, str);
+    return (1);
+}
+int ft_it_s_ok_input(t_verif_input verif)
+{
+    if (verif.pipe == 1 && verif.nbr_stack == 0)
+        return (1);
+    if ((verif.token_left > 0 || verif.token_right > 0) && verif.nbr_stack == 0)
+        return (1);
+    if (verif.nbr_token > 2)
+        return (1);
+    if (verif.heredoc && verif.token_left > 0)
+        return (1);
+    return (0);
+}
+
+int ft_check_end_input(t_verif_input verif)
+{
+    if (verif.last_char_special)
+        return (1);
+    if (verif.pipe > 0 && !verif.command_before_pipe)
+        return (1);
+    return (0);
+}
+
+char *ft_verif_input(char *str)//c'est fonction permet de simplifier la verification de l'input
+{   
+    // t_verif_input verif;
+    int x;
+    // ft_init_verif(&verif);
+    x = 0;
+    char d;
+    int count;
+
+    char *tmp=NULL;
+    char *tmp_tmp=NULL;
+    // int i;
+    // printf("Je suis str3%s3", str);
+    while(str[x])
+    {
+        while(str[x]== ' ')
+            x++;
+        if ( str[x]== '|' || str[x] == '<' || str[x] == '>')
+        {
+             char c[2] = {str[x], '\0'};
+            // printf("\nXXXXXX\n");
+            if (tmp== NULL)
+            {
+                 tmp = ft_strdup((char  *)&c);
+                // printf("10{%s}\n", tmp);
+            }
+            else
+            {
+                tmp_tmp = ft_strjoin(tmp, (char *)&c );
+                // printf("Je sui tmptmp{%s}", tmp_tmp);
+                // free(tmp);
+                tmp = ft_strdup(tmp_tmp);
+                free(tmp_tmp);
+            }   
+            x++;
+        }
+    
+    
+        count = 0;
+        if(str[x] == '\'' || str[x] == '"' )
+        {
+            // printf("END{%c}", str[x]);
+            d = str[x];
+            x++;    
+            while(str[x] != d)
+            {
+                if (str[x] != ' ') 
+                    count++;
+                x++;
+            }
+            if(count !=0)
+            {
+                if (tmp==NULL)
+                {
+                    char c[2] = {'a', '\0'};
+                    tmp = ft_strdup((char  *)&c);
+
+                }
+                else
+                {// fzzree(tmp);
+                    tmp_tmp = ft_strjoin(tmp, "a");
+                    tmp = ft_strdup(tmp_tmp);
+                }// free(tmp_tmp);
+            }
+            x++;
+        }
+        if(ft_isalnum(str[x])==1 &&  str[x]!= '|' && str[x] != '<' && str[x] != '>' && str[x] != ' ')
+        {
+            if (tmp==NULL)
+            {
+                char c[2] = {'a', '\0'};
+                tmp = ft_strdup((char  *)&c);
+            }
+            else
+            {
+                tmp_tmp = ft_strjoin(tmp, "a");
+                free(tmp);
+                tmp = ft_strdup(tmp_tmp);
+                free(tmp_tmp);
+            }
+            while(ft_isalnum(str[x])==1 &&  str[x]!= '|' && str[x] != '<' && str[x] != '>')
+                x++;
+        }
+    }
+    
+    // printf("\nJe suis tmp(%s)|%d|\n ", tmp, ft_strlen(tmp)); 
+    return(tmp);
+}
+int ft_verif_tokens(char *tmp)
+{
+    int x;
+
+    x = 0;
+    while(tmp[x])
+    {
+        if(tmp[x]=='|')
+        {
+            if((x==0 ) ||  (tmp[x+1] != 'a' && tmp[x+1] != '<' && tmp[x+1] != '>' ))
+            {
+                 ft_putstr_fd( "syntax error near unexpected token `|'\n", 2);
+                return(1);
+            }
+        }
+        if(tmp[x]=='>')
+        {
+            if(tmp[x+1] == '>')
+                x++;
+            if(tmp[x+1] != 'a')
+            {
+                if (tmp[x+1] == '>' || tmp[x+1] == '<')
+                {
+                    ft_putstr_fd("syntax error near unexpected token `", 2);
+                    write(2, &tmp[x+1], 1 + (tmp[x+2] == tmp[x+1]));
+                    ft_putstr_fd("'\n", 2);
+                }
+                else
+                 ft_putstr_fd("syntax error near unexpected token `|'\n", 2);
+                return(1);
+            }
+        }
+        if(tmp[x]== '<')
+        {
+            if(tmp[x+1] == '<')
+                x++;
+            if(tmp[x+1] != 'a')
+            {
+                if (tmp[x+1] == '>' || tmp[x+1] == '<')
+                {
+                    ft_putstr_fd("syntax error near unexpected token `", 2);
+                    write(2, &tmp[x+1], 1 + (tmp[x+2] == tmp[x+1]));
+                    ft_putstr_fd("'\n", 2);
+                }
+                else
+                 ft_putstr_fd("syntax error near unexpected token `|'\n", 2);
+                return(1);
+            }   
+
+                
+        }
+        x++;
+    }
+    return(0);
+}
+int ft_orga_verif_input(char *str)
+{
+    char *tmp;
+
+    tmp = ft_verif_input(str);
+    if(ft_verif_tokens(tmp)== 1)
+    {
+        free(tmp);
+        return(1);
+    }
+    free(tmp);
+    return(0);  
+}
+
 int shell_loop(t_node *list, t_data *data, t_env **env)
 {
     char *input;
@@ -435,6 +646,8 @@ int shell_loop(t_node *list, t_data *data, t_env **env)
 
         if (signal_recu == SIGINT)
             data->exit_code = 130;
+
+        // printf("INPUT |%s|", input);    
         if (input == NULL)  // Gestion de Ctrl+D (EOF)
         {
             write(1, "exit\n", 5);
@@ -444,6 +657,14 @@ int shell_loop(t_node *list, t_data *data, t_env **env)
         {
             // printf("ICI");
             free(input);
+            continue;
+        }
+        if(ft_orga_verif_input(input))
+        {
+            add_history(input);     
+            free(input);
+            data->exit_code = 2;
+            // printf("\nProbleme\n");
             continue;
         }
         ft_init_data(data);
@@ -511,7 +732,7 @@ void ft_free_end(t_node *list, t_env **env)
         // if(list->save[1] >= 0) close(list->save[1]);
         ft_free_env(env);
         free(list);
-        clear_history();
+        rl_clear_history();
 }
 
 void add_env_to_list(t_env **head, t_env **current, t_env *new_env)
@@ -572,8 +793,8 @@ int main(int argc, char **argv, char **envp)
     data.exit_code = 0;
 	if (argc == 2)
 		ft_out_exit(1);
-	if (!envp || !*envp)
-		ft_out_exit(2);
+	// if (!envp || !*envp)
+	// 	ft_out_exit(2);
 	list = ft_calloc(1, sizeof(t_node));
 	if (list == NULL)
 		ft_out_exit(3);
