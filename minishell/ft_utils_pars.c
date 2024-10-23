@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/11 10:51:14 by dpoltura          #+#    #+#             */
-/*   Updated: 2024/10/23 16:31:20 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/23 16:36:39 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -511,13 +511,6 @@ int ft_handle_quotes(char *input, int *i, int *wt_quot, char c)
     return (0);
 }
 
-static void	skip_double_quotes(char *input, int *i)
-{
-	(*i)++;
-	if (input[*i] != '\0')
-		(*i)++;
-}
-
 static int	check_end_of_input(char *input, int i, 
 	t_echo *data_echo, int *ss_quot, int *wt_quot)
 {
@@ -538,7 +531,11 @@ static void	handle_current_char(char *input, int *i,
 		if (input[*i + 1] != input[*i])
 			ft_handle_quotes(input, i, wt_quot, input[*i]);
 		else
-			skip_double_quotes(input, i);
+        {
+            (*i)++;
+            if (input[*i] != '\0')
+                (*i)++;
+        }
 	}
 	if (input[*i] == '<' || input[*i] == '>')
 		ft_handle_redirection(input, i, ss_quot);
@@ -597,10 +594,7 @@ int ft_nbr_quot(char *input, int i)
     while (input[search])
     {
         if (input[search] == '"')
-        {
-
             result++;
-        }
         search++;
     }
     if (result % 2 == 0)
@@ -611,12 +605,8 @@ int ft_nbr_quot(char *input, int i)
 
 int ft_isalnum(int c)
 {
-    // if (c == '<' || c == '>' || c == '|' || c == ' ')
-    //     return 0;
-    // return (1);
     if ((c =='?')|| (c== '$') || (c == ':') ||(c == ')')||(c== '_') || (c == '^')||(c >= 48 && c <= 57) || (c >= 97 && c <= 122) || (c >= 65 && c <= 90) || (c == 45) || (c == 61) || (c==46) || (c == 126) || (c == 47) || (c == 43) || (c==36) || (c ==95) || c == '"' || (c=='\'') || c == '.' || c == ',' )
     {
-        // if (c == 45)
         return (1);
     }
     else
@@ -625,31 +615,28 @@ int ft_isalnum(int c)
 
 void free_tokens(char **tokens, int len)
 {
-    if (tokens == NULL)
-    {
-        return;
-    }
+    int i;
 
-    int i = 0;
+    if (tokens == NULL)
+        return;
+    i = 0;
     while (i < len)
     {
         if (tokens[i] != NULL)
-        {
             free(tokens[i]);
-        }
         i++;
     }
-
     free(tokens);
 }
 
 int ft_strlen(char *str)
 {
-    int i = 0;
+    int i;
 
+    i = 0;
     while (str[i] != '\0')
         i++;
-    return i;
+    return (i);
 }
 void *ft_bzero(void *s, size_t n)
 {
@@ -708,33 +695,58 @@ char *ft_strjoin(char const *s1, char const *s2)
     return (str_dest);
 }
 
-char **split_string(char *str, int *len)
+typedef struct s_split_data
 {
-    int count = 0;
-    int i = 0;
-    int j = 0;
-    int in_quotes = 0;
-    char **tokens = malloc(sizeof(char *) * 100);
+	int	count;
+	int	j;
+	int	in_quotes;
+}	t_split_data;
 
-    while (str[i] != '\0')
-    {
-        if (str[i] == '"' || str[i]== '\'')
-            in_quotes = !in_quotes;
-        if (str[i] == '|' && !in_quotes)
-        {
-            str[i] = '\0';
-            tokens[count] = malloc(sizeof(char) * (i - j + 1));
-            strcpy(tokens[count], str + j);
-            count++;
-            j = i + 1;
-        }
-        i++;
-    }
-    tokens[count] = malloc(sizeof(char) * (i - j + 1));
-    strcpy(tokens[count], str + j);
-    count++;
-    *len = count;
-    return tokens;
+static void	allocate_token(char **tokens, char *str, int start,
+	int end, int *count)
+{
+	tokens[*count] = malloc(sizeof(char) * (end - start + 1));
+	strcpy(tokens[*count], str + start);
+	(*count)++;
+}
+
+static void	handle_pipe_char(char *str, char **tokens, int *i,
+	t_split_data *data)
+{
+	str[*i] = '\0';
+	allocate_token(tokens, str, data->j, *i, &data->count);
+	data->j = *i + 1;
+}
+
+static void	init_split_data(t_split_data *data)
+{
+	data->count = 0;
+	data->j = 0;
+	data->in_quotes = 0;
+}
+
+char	**split_string(char *str, int *len)
+{
+	char		**tokens;
+	int			i;
+	t_split_data	data;
+
+	tokens = malloc(sizeof(char *) * 100);
+	if (!tokens)
+		return (NULL);
+	i = 0;
+	init_split_data(&data);
+	while (str[i] != '\0')
+	{
+		if (str[i] == '"' || str[i] == '\'')
+			data.in_quotes = !data.in_quotes;
+		if (str[i] == '|' && !data.in_quotes)
+			handle_pipe_char(str, tokens, &i, &data);
+		i++;
+	}
+	allocate_token(tokens, str, data.j, i, &data.count);
+	*len = data.count;
+	return (tokens);
 }
 
 char *ft_strdup(char *src)
