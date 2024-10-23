@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/11 10:51:14 by dpoltura          #+#    #+#             */
-/*   Updated: 2024/10/21 15:52:43 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/23 15:27:00 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,36 +70,46 @@ char	*ft_itoa(int n)
 	return (ret);
 }
 
-char    *ft_change_var_environnement(char *search, t_env **env, t_data *data)
+static char	*handle_exit_code(char *save, char *search, t_data *data)
 {
-	t_env *tmp;
-	tmp = *env;
-    char *save;
-    char *tmp_save;
-    save = ft_copy_end(search, '$');
-    char *tmp_tmp;
-    if (save[0] == '?')
-    { 
-        tmp_tmp = ft_itoa(data->exit_code);
-        tmp_save = ft_strjoin(tmp_tmp, save + 1);
-        free(tmp_tmp);
-        free(save);
-        free(search);
-        return (tmp_save);
+   char	*tmp_tmp;
+   char	*tmp_save;
+
+   tmp_tmp = ft_itoa(data->exit_code);
+   tmp_save = ft_strjoin(tmp_tmp, save + 1);
+   free(tmp_tmp);
+   free(save);
+   free(search);
+   return (tmp_save);
+}
+
+static char	*find_env_value(char *save, char *search, t_env *env)
+{
+    char	*tmp_save;
+
+    while (env)
+    {
+        if (strequ(save, env->key))
+        {
+            tmp_save = ft_strdup(env->value);
+            free(save);
+            free(search);
+            return (tmp_save);
+        }
+        env = env->next;
     }
-        
-	while(tmp)
-	{
-        if(strequ(save, tmp->key)) {
-				tmp_save = ft_strdup(tmp->value);
-                 free(save);
-                 free(search);
-                return(tmp_save);
-        }		
-		tmp = tmp->next;
-	}
     free(save);
-    return(search);
+    return (search);
+}
+
+char	*ft_change_var_environnement(char *search, t_env **env, t_data *data)
+{
+    char	*save;
+
+    save = ft_copy_end(search, '$');
+    if (save[0] == '?')
+        return (handle_exit_code(save, search, data));
+    return (find_env_value(save, search, *env));
 }
 
 char *ft_strcat(char *dest, char src)
@@ -117,20 +127,17 @@ char *ft_strcat(char *dest, char src)
 
 char *ft_strcpy(char *dest, char *src)
 {
-    char *original_dest = dest; // Sauvegarder la position initiale de dest
-
-    // Copier chaque caractère de src vers dest
+    char *original_dest;
+    
+    original_dest = dest;
     while (*src != '\0')
     {
         *dest = *src;
         dest++;
         src++;
     }
-
-    // Ajouter le caractère de fin de chaîne à dest
     *dest = '\0';
-
-    return original_dest; // Retourner la position initiale de dest
+    return original_dest;
 }
 
 int ft_strcmp(char *s1, char *s2)
@@ -138,7 +145,6 @@ int ft_strcmp(char *s1, char *s2)
     int c;
 
     c = 0;
-   // printf("S1=|%s|S2=|%s|", s1, s2);
     while (s1[c] == s2[c] && (s1[c] != '\0' && s2[c] != '\0'))
         c++;
     return (s1[c] - s2[c]);
@@ -146,106 +152,74 @@ int ft_strcmp(char *s1, char *s2)
 
 int ft_split_with_space(t_echo *data_echo, char *input)
 {
-    // printf("INPUT = |%s|", input);
-    if (ft_init_token_space(data_echo, input, 0) == 1)//it's ok;
+    if (ft_init_token_space(data_echo, input, 0) == 1)
         return (1);
     ft_init_echo_malloc(data_echo);
-    // printf("1\n");
     ft_init_tab_echo_malloc(data_echo, input, 0);
-        // printf("2\n");
-
     ft_insert_tab_echo(data_echo, input, 0);
-        // printf("3\n");
-
-    // Il faut recrer une fonction permettant de free a la toutes fin ne pas
     return (0);
 }
 
 void ft_insert_data_data_echo_w(t_save **save, t_echo *data_echo, int iterateur_w)
 {
-    t_save *new_node = malloc(sizeof(t_save));
-    if (!new_node)
-    {
-        // Gestion de l'erreur d'allocation
-        return;
-    }
+    t_save *new_node;
+    t_save *current;
 
+    new_node = malloc(sizeof(t_save));
+    if (!new_node)
+        return;
     new_node->str = malloc(sizeof(char) * ft_strlen(data_echo->str_w_quot[iterateur_w].str) + 1);
     if (!new_node->str)
     {
-        // Gestion de l'erreur d'allocation
         free(new_node);
         return;
     }
-
     strcpy(new_node->str, data_echo->str_w_quot[iterateur_w].str);
-//    printf("Voila ce que je viens d'inserer |%s|bool |%d|\n", new_node->str, new_node->bool);
-
-    new_node->bool = data_echo->str_w_quot[iterateur_w].bool; // Initialisation de l'attribut bool (vous pouvez le définir selon vos besoins)
+    new_node->bool = data_echo->str_w_quot[iterateur_w].bool;
     new_node->next = NULL;
-
-    // Insérer le nouveau nœud à la fin de la liste
     if (*save == NULL)
-    {
         *save = new_node;
-    }
     else
     {
-        t_save *current = *save;
+        current = *save;
         while (current->next != NULL)
-        {
             current = current->next;
-        }
         current->next = new_node;
     }
 }
 
 void ft_insert_data_data_echo_s(t_save **save, t_echo *data_echo, int iterateur_s, t_env *env)
 {
+    t_save *new_node = ft_calloc(sizeof(t_save), 1);
+    t_save *current;
+
     (void)env;
-    t_save *new_node = ft_calloc(sizeof(t_save), 1);//Calloc plus propre//Des noe
     if (!new_node)
-    {
-        // Gestion de l'erreur d'allocation
         return;
-    }
-
-    
-    new_node->str= ft_strdup(data_echo->str_s_quot[iterateur_s].str );
-    data_echo->str_s_quot[iterateur_s].order =-2;
-    new_node->bool = data_echo->str_s_quot[iterateur_s].bool; // Initialisation de l'attribut bool (vous pouvez le définir selon vos besoins)
-    // printf("1Voila ce que je viens d'inserer |%s|bool |%d|\n", new_node->str, new_node->bool);
+    new_node->str = ft_strdup(data_echo->str_s_quot[iterateur_s].str);
+    data_echo->str_s_quot[iterateur_s].order = -2;
+    new_node->bool = data_echo->str_s_quot[iterateur_s].bool;
     new_node->next = NULL;
-
-    // Insérer le nouveau nœud à la fin de la liste
     if (*save == NULL)
-    {
-        // printf("\nDebut du noeuds\n");
         *save = new_node;
-    }
     else
     {
-        t_save *current = *save;
+        current = *save;
         while (current->next != NULL)
-        {
             current = current->next;
-        }
         current->next = new_node;
     }
-
-    // Libération de la mémoire si nécessaire
-    // free(data_echo->str_s_quot[iterateur_s].str); // Assurez-vous que cela est correct dans votre contexte
 }
 
 void ft_insert_new_data_with_data(t_save **save, t_echo *data_echo, t_env *env)
 {
-    (void)data_echo;
     int i;
     int iterateur_w;
     int iterateur_s;
+
+    (void)data_echo;
     i = -1;
-    // IL faut commencer a Introduire les nouvelles valeurs a l'interieuds de la base de donne
-    while (++i < data_echo->w_quot + data_echo->s_quot)//Bonne pratique
+    while (++i < data_echo->w_quot + data_echo->s_quot)
     {
         iterateur_s = 0;
         while (iterateur_s < data_echo->s_quot)
@@ -257,13 +231,11 @@ void ft_insert_new_data_with_data(t_save **save, t_echo *data_echo, t_env *env)
         iterateur_w = 0;
         while (iterateur_w < data_echo->w_quot)
         {
-            // printf("NBRQUOT|data_eecho->|%d|",data_echo->w_quot );
             if (data_echo->str_w_quot[iterateur_w].order == i)
                 ft_insert_data_data_echo_w(save, data_echo, iterateur_w);
             iterateur_w++;
         }
     }
-    // save[i] = NULL;
 }
 
 void ft_insert_data_s_whith_tab(t_echo *data_echo, char *input, int *i, int *clef_tab_s_quot)
@@ -272,12 +244,6 @@ void ft_insert_data_s_whith_tab(t_echo *data_echo, char *input, int *i, int *cle
     iterateur_tab_s_quot = 0;
     while (ft_isalnum(input[*i]) && input[*i] != '\0')
     {
-        // if(input[*i]== '<' || input[*i] == '>')
-        // {
-        //     (*i)--;
-        //     break;
-
-        // }
           if(input[*i]=='\'')
             {
                 data_echo->str_s_quot[(*clef_tab_s_quot)].str[iterateur_tab_s_quot] = input[*i];
