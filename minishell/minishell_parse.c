@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/09 17:08:04 by dpoltura          #+#    #+#             */
-/*   Updated: 2024/10/23 16:53:26 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/23 17:24:37 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -237,214 +237,34 @@ void signal_handler(int sig)
         rl_redisplay();
     }
 }
-// int check_syntax_errors(char *input) 
-// {
-//     int x;
-//     char c;
-//      x =0;
-//     while(input[x])
-//     {
-//         if(input[x] == ' ')
-//             x++;
-//         if (ft_islanum(input[x]) ==1)
-//             x++;
-//         if (input[x] == '\'' || input[x]=='"' )
-//         {
-//             char c = input[x++];
-//             while(input[x] != c)
-//                 x++;
-            
-//         }
-//     }
-
-
-// }
-
-
-
-
 int ft_search_inputs(char *str)
 {
-    int i;
+    int     i;
+    char    c;
 
     i = 0;
     while (str[i])
     {
-        if (str[i] == '\'')
+        if (str[i] == '\'' || str[i] == '"')
         {
+            c = str[i];
             i++;
-            while (str[i] && str[i] != '\'')
-            {
-                if (!ft_white_space(str[i]) && str[i] != '\'')
-                    return 1;
-                i++;
-            }
-            if (str[i] == '\'')
-                i++; // Passe le guillemet simple de fermeture
-        }
-        else if (str[i] == '"')
-        {
-            i++;
-            while (str[i] && str[i] != '"')
+            while (str[i] && str[i] != c)
             {
                 if (!ft_white_space(str[i]))
-                    return 1;
+                    return (1);
                 i++;
             }
-            if (str[i] == '"')
-                i++; // Passe le guillemet double de fermeture
+            if (str[i] == c)
+                i++;
         }
         else if (!ft_white_space(str[i]))
-        {
-            return 1;
-        }
+            return (1);
         i++;
     }
-    return 0;
-}
-
-void ft_init_verif(t_verif_input *verif)
-{
-    verif->nbr_stack = 0;
-    verif->pipe = 0;
-    verif->alnum = 0;
-    verif->x = 0;
-    verif->c = 'a';
-    verif->nbr_token = 0;
-    verif->token_right = 0;
-    verif->token_left = 0;
-    verif->stack_start = 0;
-    verif->heredoc = 0;
-    verif->last_char_special = 0;
-    verif->command_before_pipe = 0;
-
-}
-
-// int ft_it_s_ok_input(t_verif_input verif)
-// {
-//     if(verif.pipe== 1 && verif.nbr_stack==0)
-//         return(1);
-//     if(verif.token_left==1 && verif.nbr_stack== 0)
-//         return(1);
-//     if(verif.nbr_token>2)
-//         return(1);
-//     return(0);
-// }
-int print_syntax_error(char c, char *str)
-{
-    fprintf(stderr, "syntax error near unexpected token '%c' in '%s'\n", c, str);
-    return (1);
-}
-int ft_it_s_ok_input(t_verif_input verif)
-{
-    if (verif.pipe == 1 && verif.nbr_stack == 0)
-        return (1);
-    if ((verif.token_left > 0 || verif.token_right > 0) && verif.nbr_stack == 0)
-        return (1);
-    if (verif.nbr_token > 2)
-        return (1);
-    if (verif.heredoc && verif.token_left > 0)
-        return (1);
     return (0);
 }
 
-int ft_check_end_input(t_verif_input verif)
-{
-    if (verif.last_char_special)
-        return (1);
-    if (verif.pipe > 0 && !verif.command_before_pipe)
-        return (1);
-    return (0);
-}
-
-char *ft_verif_input(char *str)//c'est fonction permet de simplifier la verification de l'input
-{   
-    // t_verif_input verif;
-    int x;
-    // ft_init_verif(&verif);
-    x = 0;
-    char d;
-    int count;
-
-    char *tmp=NULL;
-    char *tmp_tmp=NULL;
-    // int i;
-    // printf("Je suis str3%s3", str);
-    while(str[x])
-    {
-        while(str[x]== ' ')
-            x++;
-        if ( str[x]== '|' || str[x] == '<' || str[x] == '>')
-        {
-             char c[2] = {str[x], '\0'};
-            // printf("\nXXXXXX\n");
-            if (tmp== NULL)
-            {
-                 tmp = ft_strdup((char  *)&c);
-                // printf("10{%s}\n", tmp);
-            }
-            else
-            {
-                tmp_tmp = ft_strjoin(tmp, (char *)&c );
-                // printf("Je sui tmptmp{%s}", tmp_tmp);
-                // free(tmp);
-                tmp = ft_strdup(tmp_tmp);
-                free(tmp_tmp);
-            }   
-            x++;
-        }
-    
-    
-        count = 0;
-        if(str[x] == '\'' || str[x] == '"' )
-        {
-            // printf("END{%c}", str[x]);
-            d = str[x];
-            x++;    
-            while(str[x] != d)
-            {
-                if (str[x] != ' ') 
-                    count++;
-                x++;
-            }
-            if(count !=0)
-            {
-                if (tmp==NULL)
-                {
-                    char c[2] = {'a', '\0'};
-                    tmp = ft_strdup((char  *)&c);
-
-                }
-                else
-                {// fzzree(tmp);
-                    tmp_tmp = ft_strjoin(tmp, "a");
-                    tmp = ft_strdup(tmp_tmp);
-                }// free(tmp_tmp);
-            }
-            x++;
-        }
-        if(ft_isalnum(str[x])==1 &&  str[x]!= '|' && str[x] != '<' && str[x] != '>' && str[x] != ' ')
-        {
-            if (tmp==NULL)
-            {
-                char c[2] = {'a', '\0'};
-                tmp = ft_strdup((char  *)&c);
-            }
-            else
-            {
-                tmp_tmp = ft_strjoin(tmp, "a");
-                free(tmp);
-                tmp = ft_strdup(tmp_tmp);
-                free(tmp_tmp);
-            }
-            while(ft_isalnum(str[x])==1 &&  str[x]!= '|' && str[x] != '<' && str[x] != '>')
-                x++;
-        }
-    }
-    
-    // printf("\nJe suis tmp(%s)|%d|\n ", tmp, ft_strlen(tmp)); 
-    return(tmp);
-}
 int ft_verif_tokens(char *tmp)
 {
     int x;
