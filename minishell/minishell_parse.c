@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/09 17:08:04 by dpoltura          #+#    #+#             */
-/*   Updated: 2024/10/23 16:40:31 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/23 16:48:57 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -117,29 +117,37 @@ int count_dollar_followed_by_characters(char *str)
 
 char **allocate_result(int len)
 {
-    char **result = (char **)malloc(sizeof(char *) * (len + 1));
+    char **result;
+    
+    result = (char **)malloc(sizeof(char *) * (len + 1));
     if (!result)
         return NULL;
     result[len] = NULL;
     return result;
 }
 
-int count_segments( char *str)
+int	count_segments(char *str)
 {
-    int i, len, in_quotes, in_single_quotes;
+    int	len;
+	int	in_quotes;
+	int	in_single_quotes;
+	int	i;
+
     len = 0;
     in_quotes = 0;
     in_single_quotes = 0;
-    for (i = 0; str[i]; i++)
-    {
+	i = -1;
+	while (str[++i])
+	{
         if (str[i] == '"')
-            in_quotes = !in_quotes;
+		    in_quotes = !in_quotes;
         if (str[i] == '\'')
             in_single_quotes = !in_single_quotes;
-        if (( ft_white_space(str[i])) && !in_quotes && !in_single_quotes)
-            len++;
-    }
-    return len + 1;
+		if (ft_white_space(str[i]) && !in_quotes
+			&& !in_single_quotes)
+			len++;
+	}
+	return (len + 1);
 }
 
 char **ft_split_d( char *str)
