@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/09 17:08:04 by dpoltura          #+#    #+#             */
-/*   Updated: 2024/10/23 17:24:37 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/23 17:28:48 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -265,61 +265,6 @@ int ft_search_inputs(char *str)
     return (0);
 }
 
-int ft_verif_tokens(char *tmp)
-{
-    int x;
-
-    x = 0;
-    while(tmp[x])
-    {
-        if(tmp[x]=='|')
-        {
-            if((x==0 ) ||  (tmp[x+1] != 'a' && tmp[x+1] != '<' && tmp[x+1] != '>' ))
-            {
-                 ft_putstr_fd( "syntax error near unexpected token `|'\n", 2);
-                return(1);
-            }
-        }
-        if(tmp[x]=='>')
-        {
-            if(tmp[x+1] == '>')
-                x++;
-            if(tmp[x+1] != 'a')
-            {
-                if (tmp[x+1] == '>' || tmp[x+1] == '<')
-                {
-                    ft_putstr_fd("syntax error near unexpected token `", 2);
-                    write(2, &tmp[x+1], 1 + (tmp[x+2] == tmp[x+1]));
-                    ft_putstr_fd("'\n", 2);
-                }
-                else
-                 ft_putstr_fd("syntax error near unexpected token `|'\n", 2);
-                return(1);
-            }
-        }
-        if(tmp[x]== '<')
-        {
-            if(tmp[x+1] == '<')
-                x++;
-            if(tmp[x+1] != 'a')
-            {
-                if (tmp[x+1] == '>' || tmp[x+1] == '<')
-                {
-                    ft_putstr_fd("syntax error near unexpected token `", 2);
-                    write(2, &tmp[x+1], 1 + (tmp[x+2] == tmp[x+1]));
-                    ft_putstr_fd("'\n", 2);
-                }
-                else
-                 ft_putstr_fd("syntax error near unexpected token `|'\n", 2);
-                return(1);
-            }   
-
-                
-        }
-        x++;
-    }
-    return(0);
-}
 int ft_orga_verif_input(char *str)
 {
     char *tmp;

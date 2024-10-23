@@ -6,7 +6,7 @@
 #    By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/04/09 17:09:10 by dpoltura          #+#    #+#              #
-#    Updated: 2024/10/23 17:25:16 by aduriez          ###   ########.fr        #
+#    Updated: 2024/10/23 17:28:36 by aduriez          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -15,6 +15,7 @@ LDFLAGS = -lreadline #-fsanitize=address
 
 SRCS =	minishell_parse.c \
 		ft_verif_input.c \
+		ft_verif_tokens.c \
 		ft_change_input.c \
 		ft_exit.c \
 		ft_parsing.c \
