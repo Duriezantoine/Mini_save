@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/27 10:32:48 by aduriez           #+#    #+#             */
-/*   Updated: 2024/10/21 17:04:37 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/23 14:25:28 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -129,7 +129,7 @@ char *close_and_return_temp_file(t_here_doc_data *here_doc_data)
     if (here_doc_data->write_here_do) {
         free(here_doc_data->write_here_do);
     }
-    return here_doc_data->temp_file_name;//Pourquoi je retourne le nom
+    return here_doc_data->temp_file_name;
 }
 
 t_here_doc_data *get_hd_data(void)
@@ -150,14 +150,10 @@ void    heredoc_handle_sig(int signal)
         free(here_doc_data->write_here_do);
         ft_free_return_loop(here_doc_data->list);
         ft_free_end(here_doc_data->list, &(here_doc_data->list->env));
-        ft_putstr_fd("^C\n", 2);
-        // todo free all
+        ft_putstr_fd("\n", 2);
         exit(130);
     }
 }
-
-
-
 
 int	ft_putchar_fd(char c, int fd)
 {

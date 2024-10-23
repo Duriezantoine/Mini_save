@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/01 11:35:23 by aduriez           #+#    #+#             */
-/*   Updated: 2024/10/21 16:38:50 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/23 14:42:53 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -375,7 +375,8 @@ status = 0;
 			} else if (WIFSIGNALED(status)) {
 				// fprintf(stderr, "Command terminated by signal %d\n", WTERMSIG(status));
 				last_exit_status = 128 + WTERMSIG(status);
-				write(2, "\n", 2);
+				if (last_exit_status == 130 || last_exit_status == 131)
+					write(2, "\n", 2);
 			}
 		}
     }
@@ -691,131 +692,175 @@ int	open_in_out(struct s_exec *exec)
 	return (0);
 }
 
-int ft_exceve(t_node *list, t_data *data, t_env **env)
+typedef struct s_exec_info
 {
-    int len;
-    struct s_exec *lst = lst_to_execs(list, &len);
-	// printf("\n Len|%d|\n", len);
-    int last_in = 0, p[2], ret = -1;
-    (void)data;
-    (void)env;
+	int len;
+	int last_in;
+	int p[2];
+	int ret;
+	int i;
 
+	t_env **env;
+}	t_exec_info;
+
+
+void	ft_execve_built_exit(t_exec_info *info, struct s_exec *lst,
+						t_node *list)
+{
+	ft_free_env(&(list->env));
+	free_all_exec(lst, info->len);
+	if (info->last_in > 0)
+		close(info->last_in);
+	if (info->i < info->len - 1)
+	{
+		close(info->p[1]);
+		info->last_in = info->p[0];
+	}
+	ft_free_return_loop(list);
+	ft_free_end(list, info->env);
+	exit(info->ret);
+}
+
+void	ft_execve_dup_io(t_exec_info *info, struct s_exec *lst)
+{
+	if (lst[info->i].in != 0)
+	{
+		dup2(lst[info->i].in, 0);
+		close(lst[info->i].in);
+	}
+	if (lst[info->i].out != 1)
+	{
+		dup2(lst[info->i].out, 1);
+		close(lst[info->i].out);
+	}
+}
+
+void	ft_execve_built(t_exec_info *info, struct s_exec *lst,
+					t_node *list, t_data *data)
+{
+	if (open_in_out(&lst[info->i]) != 0)
+		info->ret = 1;
+	else
+	{
+		int stdin_copy = dup(0);
+		int stdout_copy = dup(1);
+		ft_execve_dup_io(info, lst);
+		info->ret = ft_excev_butlin(&lst, &list, info->i, data);
+		dup2(stdin_copy, 0);
+		dup2(stdout_copy, 1);
+		close(stdin_copy);
+		close(stdout_copy);
+		if (lst[info->i].argv[0] != NULL
+			&& strequ(lst[info->i].argv[0], "exit") && info->len == 1)
+		{
+			if (info->ret == -1)
+				info->ret = 1;
+			else
+				ft_execve_built_exit(info, lst, list);
+		}
+	}
+}
+
+void	ft_execve_bin_child(t_exec_info *info, struct s_exec *lst,
+					t_node *list)
+{
+	if (info->i < info->len - 1)
+		close(info->p[0]);
+	int exit_code = open_in_out(&lst[info->i]);
+	if (exit_code == 0)
+	{
+		ft_execve_dup_io(info, lst);
+		exit_code = exec(lst[info->i].exec, lst[info->i].argv, &lst[info->i].envp);
+	}
+	ft_free_env(&(list->env));
+	free_all_exec(lst, info->len);
+	if (info->last_in > 0)
+		close(info->last_in);
+	if (info->i < info->len - 1)
+	{
+		close(info->p[1]);
+		info->last_in = info->p[0];
+	}
+	ft_free_return_loop(list);
+	ft_free_end(list, info->env);
+	exit(exit_code);
+}
+
+void	ft_init_execve(t_exec_info *info, struct s_exec **lst,
+					t_node *list, t_env **env)
+{
+	*lst = lst_to_execs(list, &(info->len));
+	info->last_in = 0;
+	info->ret = -1;
+	info->env = env;
 	signal(SIGQUIT, handler_void);
 	signal(SIGINT, handler_void);
-    for (int i = 0; i < len; i++)
-    {
-		if (i < len - 1 && pipe(p) < 0)
-		{
-			fprintf(stderr, "Erreur: Échec de la création du pipe.\n");
-			break;
-		}
+	info->i = -1;
+}
 
-		lst[i].in = (lst[i].in < 0) ? last_in : lst[i].in;
-		lst[i].out = (lst[i].out < 0) ? ((i < len - 1) ? p[1] : 1) : lst[i].out;
-
-		if (ft_exceve_bulting(lst[i].argv[0], len) == 0)
-		{
-			// Traitement des builtins
-			if (open_in_out(&lst[i]) != 0)
-				ret = 1;
-			else
-			{
-				int stdin_copy = dup(0);
-				int stdout_copy = dup(1);
-				if (lst[i].in != 0)
-					dup2(lst[i].in, 0);
-				if (lst[i].out != 1)
-					dup2(lst[i].out, 1);
-				ret = ft_excev_butlin(&lst, &list, i, data);
-				dup2(stdin_copy, 0);
-				dup2(stdout_copy, 1);
-				close(stdin_copy);
-				close(stdout_copy);
-				if (lst[i].argv[0] != NULL && strequ(lst[i].argv[0], "exit") && len == 1)
-				{
-					if (ret == -1)
-						ret = 1;
-					else
-					{
-						ft_free_env(&(list->env));
-						free_all_exec(lst, len);
-						if (last_in > 0)
-							close(last_in);
-						if (i < len - 1)
-						{
-						close(p[1]);
-						last_in = p[0];
-						}
-						ft_free_return_loop(list);
-						ft_free_end(list, env);
-						exit(ret);
-					}
-				}
-			}
-		}
+int	ft_manage_pipe(t_exec_info *info, struct s_exec *lst)
+{
+	if (info->i < info->len - 1 && pipe(info->p) < 0)
+	{
+		fprintf(stderr, "Erreur: Échec de la création du pipe.\n");
+		return (1);
+	}
+	if (lst[info->i].in < 0)
+		lst[info->i].in = info->last_in;
+	if (lst[info->i].out < 0)
+	{
+		if (info->i < info->len - 1)
+			lst[info->i].out = info->p[1];
 		else
+			lst[info->i].out = 1;
+	}
+	return (0);
+}
+
+int	ft_exec_cmd(t_exec_info *info, struct s_exec *lst, t_node *list, t_data *data)
+{
+	
+	if (ft_exceve_bulting(lst[info->i].argv[0], info->len) == 0)
+		ft_execve_built(info, lst, list, data);
+	else
+	{
+		lst[info->i].pid = fork();
+		if (lst[info->i].pid < 0)
 		{
-			// Traitement des commandes non-builtin
-			lst[i].pid = fork();
-			if (lst[i].pid < 0)
-			{
 			fprintf(stderr, "Erreur: Échec du fork.\n");
-			break;
-			}
-			else if (lst[i].pid == 0)
-			{
-				if (i < len - 1)
-					close(p[0]);
-				int exit_code = open_in_out(&lst[i]);
-				if (exit_code == 0)
-				{
-					if (lst[i].in != 0)
-					{
-						dup2(lst[i].in, 0);
-						close(lst[i].in);
-					}
-					if (lst[i].out != 1)
-					{
-						dup2(lst[i].out, 1);
-						close(lst[i].out);
-					}
-
-					exit_code = exec(lst[i].exec, lst[i].argv, &lst[i].envp);
-				}
-				ft_free_env(&(list->env));
-				free_all_exec(lst, len);
-				if (last_in > 0)
-					close(last_in);
-				if (i < len - 1)
-				{
-					close(p[1]);
-					last_in = p[0];
-				}
-				ft_free_return_loop(list);
-				ft_free_end(list, env);
-
-				exit(exit_code);
-			}
+			return (1);
 		}
+		else if (lst[info->i].pid == 0)
+			ft_execve_bin_child(info, lst, list);
+	}
+	return (0);
+}
 
-		// Nettoyage des descripteurs de fichiers
-		if (last_in > 0)
-			close(last_in);
-		if (i < len - 1)
+int ft_exceve(t_node *list, t_data *data, t_env **env)
+{
+	t_exec_info	info;
+    struct s_exec *lst;
+	int rete;
+
+	ft_init_execve(&info, &lst, list, env);
+	while (++info.i < info.len)
+	{
+
+		if (ft_manage_pipe(&info, lst) || ft_exec_cmd(&info, lst, list, data))
+			break;
+		if (info.last_in > 0)
+			close(info.last_in);
+		if (info.i < info.len - 1)
 		{
-			close(p[1]);
-			last_in = p[0];
+			close(info.p[1]);
+			info.last_in = info.p[0];
 		}
     }
-    // Attendre la fin de tous les processus non-builtin
-	// printf("\n1ret|%d|\n", ret);
-    int rete = ft_wait_all(lst, len);// a l'origine ret = ici
+    rete = ft_wait_all(lst, info.len);
 	if (rete != -1)
-		ret = rete;
-
+		info.ret = rete;
 	ft_free_env(&(list->env));
     list->env = ft_insert_env(lst[0].envp);
-    free_all_exec(lst, len);
-	// printf("%d\n", ret);
-    return ret;
+    free_all_exec(lst, info.len);
+    return info.ret;
 }
