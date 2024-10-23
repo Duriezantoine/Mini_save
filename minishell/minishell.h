@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/09 17:05:05 by dpoltura          #+#    #+#             */
-/*   Updated: 2024/10/23 18:04:41 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/23 18:34:32 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -248,10 +248,6 @@ int ft_white_space(char c);
 
 // Fonction pour free
 void free_t_echo(t_echo *echo);
-
-// Fonction pour les signauxx
-void ft_manager_sig(int sig);
-void ft_init_signaux(struct sigaction *action, char **write_here_do);
 
 // Fonction pour le here_doc
 void	handler_void(int sig);

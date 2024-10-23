@@ -6,44 +6,13 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/27 10:32:48 by aduriez           #+#    #+#             */
-/*   Updated: 2024/10/23 14:25:28 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/23 18:19:04 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 volatile sig_atomic_t signal_recu = 0;
 
-void ft_init_signaux(struct sigaction *action, char **write_here_do)
-{
-	signal_recu = 0;
-	// here_doc = 0;
-	action->sa_handler = ft_manager_sig;
-	sigemptyset(&action->sa_mask);
-	action->sa_flags = 0;
-	sigaction(SIGINT, action, NULL);
-	sigaction(SIGTSTP, action, NULL); // Ajoutez SIGTSTP si vous voulez gérer ce signal aussi
-	*write_here_do = malloc(sizeof(char) * 1023);
-	// Ne pas oublier de mettre une conditions pour proteger le malloc
-}
-
-void ft_manager_sig(int sig)
-{
-	if (sig == SIGINT)
-	{
-		// printf("\nttt\n");
-		signal_recu = -2;
-	}
-	// else if (sig == SIGTSTP)
-	// {
-	// 	// printf("Je viens de contrôler z\n");
-	// }
-	else
-	{
-		// printf("est ce ");
-		signal_recu = sig;
-	}
-	return;
-}
 char *create_file_name(char *temp_file_name, t_data *data, char *write_here_do)
 {
 	temp_file_name = malloc(256);
@@ -56,7 +25,6 @@ char *create_file_name(char *temp_file_name, t_data *data, char *write_here_do)
 	ft_strcpy(temp_file_name, "/tmp/heredoc");
 	ft_strcat(temp_file_name, data->count);
 	return (temp_file_name);
-
 }
 
 int 	open_file_here_doc(int tmp_fd, char *temp_file_name, char *write_here_do)
@@ -78,17 +46,7 @@ t_here_doc_data init_here_doc_data()
     data.ret = 1;
     data.temp_file_name = NULL;
     data.tmp_fd = 0;
-    return data;
-}
-
-void free_here_doc_data(t_here_doc_data *data)
-{
-    if (data->write_here_do) {
-        free(data->write_here_do);
-    }
-    if (data->temp_file_name) {
-        free(data->temp_file_name);
-    }
+    return (data);
 }
 
 void setup_here_doc_files(t_here_doc_data *here_doc_data, t_data *data, t_node *list, char *write_here_do) {
@@ -98,14 +56,6 @@ void setup_here_doc_files(t_here_doc_data *here_doc_data, t_data *data, t_node *
         here_doc_data->tmp_fd = open_file_here_doc(here_doc_data->tmp_fd, here_doc_data->temp_file_name, write_here_do);
     }
 }
-
-// void initialize_here_doc_input(t_here_doc_data *here_doc_data) 
-// {
-//     ft_init_signaux(&here_doc_data->action, &here_doc_data->write_here_do);
-//     tcgetattr(STDIN_FILENO, &here_doc_data->term_attr);
-//     here_doc_data->ret = read(0, here_doc_data->write_here_do, 1023);
-//     here_doc_data->write_here_do[here_doc_data->ret] = '\n';
-// }
 
 int handle_write_error(t_here_doc_data *here_doc_data)
 {
@@ -171,48 +121,63 @@ int	ft_putendl_fd(char *str, int fd)
 	return (ret);
 }
 
-static void heredoc_process(t_here_doc_data here_doc_data, t_data *data, t_node *list, char *limiteur)
+static void	handle_end_of_file(char *limiteur)
 {
-    signal(SIGQUIT, heredoc_handle_sig);
-    signal(SIGINT, heredoc_handle_sig);
+	ft_putstr_fd("bash: warning: here-document at line 1 "
+		"delimited by end-of-file (wanted `", 2);
+	ft_putstr_fd(limiteur, 2);
+	ft_putendl_fd("\')", 2);
+}
 
-    here_doc_data.write_here_do = ft_calloc(sizeof(char), 1023);
-    *(get_hd_data()) = here_doc_data;
+static void	clean_and_exit(t_here_doc_data *data, int exit_code)
+{
+	free(data->temp_file_name);
+	free(data->write_here_do);
+	ft_free_return_loop(data->list);
+	ft_free_end(data->list, &(data->list->env));
+    close(data->tmp_fd);
+	exit(exit_code);
+}
 
-    (void) data;
-    while (1) 
+static int	check_heredoc_end(t_here_doc_data *data, char *limiteur)
+{
+	data->test = strncmp(data->write_here_do, limiteur,
+		ft_strlen(limiteur));
+	if (data->ret == 0 || data->test == 0)
 	{
-        here_doc_data.test = strncmp(here_doc_data.write_here_do, limiteur, ft_strlen(limiteur));
-        if (here_doc_data.ret == 0 || here_doc_data.test == 0)
-        {
-            if (here_doc_data.ret == 0)
-            {
-                ft_putstr_fd( "bash: warning: here-document at line 1 delimited by end-of-file (wanted `",2 );
-                ft_putstr_fd( limiteur,2 );
-                ft_putendl_fd( "\')",2 );
-            }
-            break;
-        }
-       if (list->cmd->cmd != 0) 
-	   	{
-            int error = handle_write_error(&here_doc_data);
-            if (error)
-            {
-                free(here_doc_data.temp_file_name);
-                free(here_doc_data.write_here_do);
-                ft_free_return_loop(here_doc_data.list);
-                ft_free_end(here_doc_data.list, &(here_doc_data.list->env));
-                exit(error);
-            }
-        }
-        // printf("write=|%s|demande=|%s|test_delimiteur |%d|",here_doc_data.write_here_do, limiteur, here_doc_data.test );
-        read_input(&here_doc_data);
-    }
-    free(here_doc_data.temp_file_name);
-    free(here_doc_data.write_here_do);
-    ft_free_return_loop(here_doc_data.list);
-    ft_free_end(here_doc_data.list, &(here_doc_data.list->env));
-    exit(0);
+		if (data->ret == 0)
+			handle_end_of_file(limiteur);
+		return (1);
+	}
+	return (0);
+}
+
+static void	process_command(t_here_doc_data *data)
+{
+	int	error;
+
+	if (data->list->cmd->cmd != 0)
+	{
+		error = handle_write_error(data);
+		if (error)
+			clean_and_exit(data, error);
+	}
+}
+
+void	heredoc_process(t_here_doc_data here_doc_data, char *limiteur)
+{
+	signal(SIGQUIT, heredoc_handle_sig);
+	signal(SIGINT, heredoc_handle_sig);
+	here_doc_data.write_here_do = ft_calloc(sizeof(char), 1023);
+	*(get_hd_data()) = here_doc_data;
+	while (1)
+	{
+		if (check_heredoc_end(&here_doc_data, limiteur))
+			break ;
+		process_command(&here_doc_data);
+		read_input(&here_doc_data);
+	}
+	clean_and_exit(&here_doc_data, 0);
 }
 
 char *ft_here_doc(t_data *data, t_node *list, char *limiteur, t_node *base_node)
@@ -226,7 +191,7 @@ char *ft_here_doc(t_data *data, t_node *list, char *limiteur, t_node *base_node)
     heredoc_pid = fork(); // todo protection
     if (heredoc_pid == 0)
     {
-        heredoc_process(here_doc_data, data, list, limiteur);
+        heredoc_process(here_doc_data, limiteur);
         exit(1);
     }
     else

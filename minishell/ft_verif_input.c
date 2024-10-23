@@ -6,85 +6,66 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 17:24:47 by aduriez           #+#    #+#             */
-/*   Updated: 2024/10/23 17:26:35 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/23 18:34:59 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-static void	handle_special_char(char c, char **tmp)
+static void	add_token(char token, char **res)
 {
-	char	special[2];
-    char	*tmp_tmp;
-
-	special[0] = c;
-	special[1] = '\0';
-	if (*tmp == NULL)
-		*tmp = ft_strdup(special);
+	const char c[2] = {token, '\0'};
+    char *tmp;
+	
+	if (*res == NULL)
+		*res = ft_strdup((char *)&c);
 	else
 	{
-		tmp_tmp = ft_strjoin(*tmp, special);
-		free(*tmp);
-		*tmp = ft_strdup(tmp_tmp);
-		free(tmp_tmp);
-	}
+		tmp = ft_strjoin(*res, (char *)&c );
+		*res = ft_strdup(tmp);
+		free(tmp);
+	}   
 }
 
-static void	handle_quotes(char *str, int *x, char **tmp)
+static void	add_quote(char *str, int *x, int *count, char **tmp)
 {
-	char	d;
-	int		count;
-
-	d = str[*x];
-	count = 0;
-	(*x)++;
-	while (str[*x] != d)
+    char d;
+	
+	if(str[*x] == '\'' || str[*x] == '"' )
 	{
-		if (str[*x] != ' ')
-			count++;
+		d = str[(*x)++];
+		while(str[*x] != d)
+			if (str[(*x)++] != ' ') 
+				(*count)++;
+		if(*count != 0)
+			add_token('a', tmp);
 		(*x)++;
 	}
-	if (count != 0)
-		handle_special_char('a', tmp);
-	(*x)++;
 }
 
-static void	handle_alnum(char *str, int *x, char **tmp)
-{
-	handle_special_char('a', tmp);
-	while (ft_isalnum(str[*x]) == 1 && str[*x] != '|'
-		&& str[*x] != '<' && str[*x] != '>')
-		(*x)++;
-}
+char *ft_verif_input(char *str)
+{   
+    int x;
+    int count;
+    char *tmp;
 
-static int	is_special_char(char c)
-{
-	return (c == '|' || c == '<' || c == '>');
-}
-
-char	*ft_verif_input(char *str)
-{
-	int		x;
-	char	*tmp;
-
-	x = 0;
 	tmp = NULL;
-	while (str[x])
-	{
-		while (str[x] == ' ')
-			x++;
-		if (is_special_char(str[x]))
-		{
-			handle_special_char(str[x], &tmp);
-			x++;
-		}
-		else if (str[x] == '\'' || str[x] == '"')
-			handle_quotes(str, &x, &tmp);
-		else if (ft_isalnum(str[x]) == 1 && !is_special_char(str[x])
-			&& str[x] != ' ')
-			handle_alnum(str, &x, &tmp);
-		else
-			x++;
-	}
-	return (tmp);
+    x = 0;
+    while(str[x])
+    {
+        while(str[x] == ' ')
+            x++;
+        if ( str[x]== '|' || str[x] == '<' || str[x] == '>')
+			add_token(str[x++], &tmp);
+        count = 0;
+        add_quote(str, &x, &count, &tmp);
+        if(ft_isalnum(str[x])==1 &&  str[x]!= '|' && str[x] != '<'
+			&& str[x] != '>' && str[x] != ' ')
+        {
+			add_token('a', &tmp);
+            while(ft_isalnum(str[x])==1 &&  str[x]!= '|' && str[x] != '<' && str[x] != '>')
+                x++;
+        }
+    }
+    return(tmp);
 }
