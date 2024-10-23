@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/01 11:35:23 by aduriez           #+#    #+#             */
-/*   Updated: 2024/10/23 14:42:53 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/23 14:58:23 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -292,7 +292,7 @@ int ft_check_cmd_valid(char *str, t_env *env)
     }
 
     free_split(split_path);
-    return 0; // La commande n'est pas valide
+    return 0;
 }
 
 struct s_exec *lst_to_execs(t_node *list, int *len) {
@@ -366,14 +366,11 @@ status = 0;
     for (i = 0; i < len; i++) {
 		if (ft_exceve_bulting(execs[i].argv[0], 1))
 		{
-			if (waitpid(execs[i].pid, &status, 0) == -1) {
-				// perror("waitpid");
-
-			}
+			if (waitpid(execs[i].pid, &status, 0) == -1)
+				perror("waitpid");
 			if (WIFEXITED(status)) {
 				last_exit_status = WEXITSTATUS(status);
 			} else if (WIFSIGNALED(status)) {
-				// fprintf(stderr, "Command terminated by signal %d\n", WTERMSIG(status));
 				last_exit_status = 128 + WTERMSIG(status);
 				if (last_exit_status == 130 || last_exit_status == 131)
 					write(2, "\n", 2);
@@ -392,15 +389,17 @@ void free_exec(struct s_exec e) {
 		free(e.argv[i]);
 		i++;
 	}
-	free(e.argv); // Correction: Libération de e.argv
+	free(e.argv);
 	i = 0;
 	while(e.envp[i]) {
-		free(e.envp[i]); // Correction: Utilisation de e.envp au lieu de e.argv
+		free(e.envp[i]);
 		i++;
 	}
-	free(e.envp); // Correction: Libération de e.envp
-	if(e.in > 2) close(e.in);
-	if(e.out > 2) close(e.out);
+	free(e.envp);
+	if(e.in > 2)
+		close(e.in);
+	if(e.out > 2)
+		close(e.out);
 	while (e.infile)
 	{
 		free(e.infile->file);
@@ -424,15 +423,15 @@ void free_all_exec(struct s_exec *execs, int len) {
 		free_exec(execs[i]);
 		i++;
 	}
-	free(execs); // Correction: Libération de execs
+	free(execs);
 }
 
 
 struct s_exec dup_exec(struct s_exec e) {
 	struct s_exec ret;
 	ret.exec = ft_strdup(e.exec);
-	ret.argv = ft_calloc(cdt_len(e.argv) + 1, sizeof(char *)); // Correction: +1 pour le NULL terminal
-	ret.envp = ft_calloc(cdt_len(e.envp) + 1, sizeof(char *)); // Correction: +1 pour le NULL terminal
+	ret.argv = ft_calloc(cdt_len(e.argv) + 1, sizeof(char *));
+	ret.envp = ft_calloc(cdt_len(e.envp) + 1, sizeof(char *));
 	int i = 0;
 	while(ret.argv && e.argv[i]) {
 		ret.argv[i] = ft_strdup(e.argv[i]);
@@ -457,35 +456,20 @@ int builtin(char *name) {
 	int founded = 0;
 	if (name == NULL)
 		return (-1);
-	if(strequ(name, "env")) {
-		// printf("env\n");
+	if(strequ(name, "env"))
 		founded = 1;
-	}
-		if(strequ(name, "echo")) {
-		// printf("3env\n");
+	if(strequ(name, "echo"))
 		founded = 2;
-	}
-		if(strequ(name, "export")) {
-		// printf("env\n");
+	if(strequ(name, "export"))
 		founded = 3;
-	}
-		if(strequ(name, "cd")) {
-		// printf("env\n");
+	if(strequ(name, "cd"))
 		founded = 4;
-	}
-		if(strequ(name, "unset")) {
-		// printf("env\n");
+	if(strequ(name, "unset"))
 		founded = 5;
-	}
-		if(strequ(name, "pwd")) {
-		// printf("env\n");
+	if(strequ(name, "pwd"))
 		founded = 6;
-	}
-			if(strequ(name, "exit")) {
-		// printf("env\n");
+	if(strequ(name, "exit"))
 		founded = 7;
-	}
-	// printf("\nJe suis found|%d|\n", founded);
 	return founded;
 }
 
@@ -495,43 +479,39 @@ int exec(char *name, char **argv, char ***envp) {
 	int built;
 	
 	built = builtin(name );
-//        printf("\nJe suis built|%d|\n", built);
 	if(!builtin(name))
-	{                   // Imprimer name
-			// printf("\nPasse a cote du bulting\n");
-		
+	{
 		if (!strchr(name, '/'))
 			name = get_path(name, *envp);
 		if (name)
 		{
 			execve(name, argv, (*envp));
-			fprintf(stderr, "%s: %s\n", name, strerror(errno));
+			ft_putstr_fd(name, 2);
+			ft_putstr_fd(": ", 2);
+			ft_putstr_fd(strerror(errno), 2);
 			if (errno == 13)
 				return (126);
 		}
 		return(127);
 	}
-	// print_env((*envp));
 	return(0);
 }
+
 void	sort_envp_ex(char **copy_envp)
 {
 	char	*tmp;
 	int		num_envp;
-
 	int i, j;
+
 	num_envp = 0;
-	// Calculer le nombre d'éléments dans copy_envp
 	while (copy_envp[num_envp] != NULL)
 		num_envp++;
-	// Tri à bulles (bubble sort) basé sur strcmp
 	for (i = 0; i < num_envp - 1; i++)
 	{
 		for (j = 0; j < num_envp - i - 1; j++)
 		{
 			if (strcmp(copy_envp[j], copy_envp[j + 1]) > 0)
 			{
-				// Échanger les pointeurs
 				tmp = copy_envp[j];
 				copy_envp[j] = copy_envp[j + 1];
 				copy_envp[j + 1] = tmp;
@@ -548,97 +528,73 @@ void	ft_display_envp(char *copy_envp[])
 	sort_envp_ex(copy_envp);
 	while (copy_envp[++i])
 	{
-		    if (strncmp(copy_envp[i], "_=", 2) != 0 && strncmp(copy_envp[i], "_\0", 2) != 0)
+		if (strncmp(copy_envp[i], "_=", 2) != 0 && strncmp(copy_envp[i], "_\0", 2) != 0)
+		{
+			ft_putstr_fd("declare -x ", 1);
+			sep = strchr(copy_envp[i], '=');
+			if (sep)
 			{
-				ft_putstr_fd("declare -x ", 1);
-				sep = strchr(copy_envp[i], '=');
-				if (sep)
-				{
-					*sep = '\0';
-					ft_putstr_fd(copy_envp[i], 1);
-					ft_putstr_fd("=\"", 1);
-					ft_putstr_fd(sep + 1, 1);
-					ft_putstr_fd("\"", 1);
-					*sep = '=';
-				}
-				else
-					ft_putstr_fd(copy_envp[i], 1);
-				ft_putstr_fd("\n", 1);
+				*sep = '\0';
+				ft_putstr_fd(copy_envp[i], 1);
+				ft_putstr_fd("=\"", 1);
+				ft_putstr_fd(sep + 1, 1);
+				ft_putstr_fd("\"", 1);
+				*sep = '=';
 			}
+			else
+				ft_putstr_fd(copy_envp[i], 1);
+			ft_putstr_fd("\n", 1);
+		}
 	}
+}
+
+void	ft_start_unset(struct s_exec **lst, t_node **list, int i)
+{
+	char **old;
+
+	bulting_unset( &lst[i]->envp,(*list)->cmd,(*list));
+	old = lst[i]->envp;
+	lst[i]->envp = get_env_cdt((*list)->env);
+	ft_free_double_tab(old);
+}
+
+int	ft_choose_export(struct s_exec **lst, int i, int *ret)
+{
+	if((*lst)->argv[1]==NULL)
+		ft_display_envp((*lst)[i].envp);
+	else if ((*lst)[i].nb_exec == 1)
+		*ret = bulting_export((*lst)[i].argv, &(*lst)[i].envp);
+	else
+		return (1);
+	return (0);
 }
 
 int ft_excev_butlin(struct s_exec **lst, t_node **list, int i, t_data *data)
 {        
 	int built = 0;
 	int ret = 0;
-    //    printf("|Name=|%s|I=|%d|",  (*lst)[i].exec, i);
-	built = builtin((*lst)[i].exec) ;
+
+	built = builtin((*lst)[i].exec);
 	if (built == -1)
 		return (0);
 	if (built == 1) 
-	{
-		// printf("Je susi bulting Env");
-	       bulting_env((*list));
-		return (0);
-	}   
+		return (bulting_env((*list)));
 	if (built == 2) 
-	{
-		// printf("\nJe susi bulting echo\n");
-		// printf("\nIci\n");
-		bulting_echo((*lst)[i].argv,1);
-		return(0);
-	}
-	 if (built == 3) 
-	{
-		// printf("Je susi bulting Export");
-		//  print_args(lst[i]->argv);
-		 if((*lst)->argv[1]==NULL)
-		 	ft_display_envp((*lst)[i].envp);
-		else if ((*lst)[i].nb_exec == 1)
-	      ret = bulting_export((*lst)[i].argv, &(*lst)[i].envp);
-		else
-			return (0);
-		
-		//   printf("\n|ret=|%d\n|", ret);
- 
-	}         
+		return (bulting_echo((*lst)[i].argv,1));
+	if (built == 3)
+		if (ft_choose_export(lst, i, &ret))
+			return (1);
 	if (built == 4) 
-	{
-		// printf("Je susi bulting Cd");
 	      ret =  bulting_cd((*lst)[i].argv,(*list),  &(*list)->env);
- 
-	}
 	if (built == 5 && i ==0) 
-	{
-		// printf("Je susi bulting Unset");
-	       bulting_unset( &lst[i]->envp,(*list)->cmd,(*list));
-		 //Penser a free ici;
-		char **old = lst[i]->envp;
-		lst[i]->envp=get_env_cdt((*list)->env);
-		ft_free_double_tab(old);
-		
-	}
+		ft_start_unset(lst, list, i);
 	if (built == 6) 
-	{
-		// printf("Je susi bulting Pwd");
 		bulting_pwd();
-	}
 	if (built == 7 )
-	{
 		return bulting_exit((*lst)[i].argv,(*list),  &(*list)->env, data);
- 
-	}
-	
 	ft_free_env(&(*list)->env);
 	(*list)->env = ft_insert_env(lst[i]->envp);
-	if(ret !=0)
-	{
-		// printf("Ret= %d", ret);
-		return(ret);
-	}
-	// print_env_list((*list)->env);
-	return(0);
+	return (ret);
 }
 
 void handler_void(int sig)
@@ -646,7 +602,7 @@ void handler_void(int sig)
 	(void) sig;
 }
 
-int	open_in_out(struct s_exec *exec)
+int	open_in(struct s_exec *exec)
 {
 	int			oflags;
 	t_iofile	*tmp;
@@ -667,17 +623,24 @@ int	open_in_out(struct s_exec *exec)
 			perror("open");
 			return (1);
 		}
-
 		tmp = exec->outfile;
 		exec->outfile = tmp->next;
 		free(tmp->file);
 		free(tmp);
 	}
+	return (0);
+}
+
+int	open_in_out(struct s_exec *exec)
+{
+	t_iofile	*tmp;
+
+	if (open_in(exec))
+		return (1);
 	while (exec->infile)
 	{
 		if (exec->in > 0)
 			close(exec->in);
-		// printf("\nJ'ouvre %s\n", exec->infile);
 		exec->in = open(exec->infile->file, O_RDONLY);
 		if (exec->in < 0)
 		{
@@ -770,7 +733,8 @@ void	ft_execve_bin_child(t_exec_info *info, struct s_exec *lst,
 	if (exit_code == 0)
 	{
 		ft_execve_dup_io(info, lst);
-		exit_code = exec(lst[info->i].exec, lst[info->i].argv, &lst[info->i].envp);
+		exit_code = exec(lst[info->i].exec,
+			lst[info->i].argv, &lst[info->i].envp);
 	}
 	ft_free_env(&(list->env));
 	free_all_exec(lst, info->len);
@@ -802,7 +766,7 @@ int	ft_manage_pipe(t_exec_info *info, struct s_exec *lst)
 {
 	if (info->i < info->len - 1 && pipe(info->p) < 0)
 	{
-		fprintf(stderr, "Erreur: Échec de la création du pipe.\n");
+		ft_putstr_fd("Erreur: Échec de la création du pipe.\n", 2);
 		return (1);
 	}
 	if (lst[info->i].in < 0)

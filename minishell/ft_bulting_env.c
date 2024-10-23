@@ -6,29 +6,26 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/06 18:48:02 by aduriez           #+#    #+#             */
-/*   Updated: 2024/10/18 17:20:16 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/23 14:50:02 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void bulting_env( t_node *list)
+int bulting_env( t_node *list)
 {
-    // Créer une copie temporaire de la liste t_env
-    t_env *tmp = copy_env(list->env);
+    t_env *tmp;
+    t_env *current;
 
-    // Trier la copie temporaire
+    tmp = copy_env(list->env);
     sort_envp(&tmp);
-
-    // Afficher les variables d'environnement triées
-    t_env *current = tmp;
-    while (current != NULL) {
+    current = tmp;
+    while (current != NULL)
+    {
         if (current->value)
             printf("%s=%s\n", current->key, current->value);
         current = current->next;
     }
-
-    // Libérer la mémoire allouée pour la copie temporaire
     current = tmp;
     while (current != NULL) {
         t_env *next = current->next;
@@ -37,6 +34,7 @@ void bulting_env( t_node *list)
         free(current);
         current = next;
     }
+    return (0);
 }
 
 void sort_envp(t_env **env) 
