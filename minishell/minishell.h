@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/09 17:05:05 by dpoltura          #+#    #+#             */
-/*   Updated: 2024/10/23 17:32:24 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/23 18:04:41 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -296,16 +296,11 @@ int 	ft_search_n(char **cmd, int i);
 void	bulting_pwd();
 /////////////////////////////////Pour le bulting export//////////////////////////////////////////////////////////////////////////////////////////////////////////////
 int    bulting_export(char **argv, char ***env);
-int     ft_verif_export_equal(char *str);
-void    ft_change_envp(char **env, char *key, char *value);
 int     ft_search_key_envp(char  **env, char *key);
 void ft_insert_envp(char  ***env, char *key, char *value);
 char    *ft_copy_end(char *str, char c);
 char    *ft_copy_start(char *str, char c);
-int ft_verif_export_space(char *str);
 int     ft_verif_export(char *str);
-int     ft_verif_export_equal(char *str);
-int		 ft_verif_export_space(char *str);
 void    ft_delim_envp( char  ***env, char *str);
 
 /////////////////////////////////Pour le bulting unset//////////////////////////////////////////////////////////////////////////////////////////////////////////////
