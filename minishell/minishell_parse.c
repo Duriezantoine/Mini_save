@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/09 17:08:04 by dpoltura          #+#    #+#             */
-/*   Updated: 2024/10/21 16:45:03 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/23 16:40:31 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,85 +14,6 @@
 
 
 #include "minishell.h"
-void print_char_array_d(char **array)
-{
-    if (!array)
-        return;
-
-    int i = 0;
-    while (array[i])
-    {
-        printf("%s\n", array[i]);
-        i++;
-    }
-}
-void print_cmd(t_node *list) {
-    if (list == NULL || list->cmd == NULL) {
-        printf("List or cmd is NULL\n");
-        return;
-    }
-
-	printf("\nNext Node\n");
-    printf("Command: |%s| Command: int |%d|\n", list->cmd->cmd_and_args[0], list->cmd->cmd);
-	for (int i = 1; list->cmd->cmd_and_args[i] != NULL; i++) {
-		printf("Argument %d: %s\n", i, list->cmd->cmd_and_args[i]);
-	}
-}
-
-// Fonction pour boucler sur tous les nœuds de la liste
-void print_all_cmds(t_node *list) {
-    t_node *current = list;
-    while (current != NULL) {
-        print_cmd(current);
-        current = current->next;
-    }
-}
-void print_arg_arg(t_arg *head) {
-    t_arg *current = head;
-
-    while (current != NULL) {
-        printf("str_command: %s, type: %d, quot: %d\n", current->str_command, current->type, current->quot);
-        current = current->next;
-    }
-}
-
-int organisation_shell_loop(t_node *list, t_data *data)
-{
-	// Declaration des signaux
-	return shell_loop(list, data, &list->env);
-	// free la command_line
-}
-// Fonction pour afficher le contenu du répertoire courant
-void print_directory_contents()
-{
-    DIR *dir; // Pointeur vers un répertoire
-    struct dirent *entry; // Structure pour stocker les entrées du répertoire
-
-    dir = opendir("."); // Ouvre le répertoire courant
-    if (dir == NULL) // Vérifie si l'ouverture du répertoire a échoué
-    {
-        perror("opendir"); // Affiche un message d'erreur
-        return;
-    }
-
-    while ((entry = readdir(dir)) != NULL) // Lit les entrées du répertoire une par une
-    {
-        printf("%s\n", entry->d_name); // Affiche le nom de l'entrée
-    }
-
-    closedir(dir); // Ferme le répertoire
-}
-
-void print_environment(t_env *env)
-{
-    t_env *current = env;
-
-    while (current != NULL)
-    {
-        printf("%s=%s\n", current->key, current->value);
-        current = current->next;
-    }
-}
 
 int	ft_white_spaces(char *str)
 {
@@ -101,54 +22,67 @@ int	ft_white_spaces(char *str)
 	i = 0;
 	while(str[i])
 	{
-		if (str[i] != 95 || str[i] != '\n')//IL faudra l'inmplementer plus pour le testeur parsing
+		if (str[i] != 95 || str[i] != '\n')
 			return(1);
 	}
 	return(0);
 }
-void print_env_list(t_env *env) 
+typedef struct s_split_data
 {
-    t_env *current = env;
-    while (current != NULL) {
-        printf("Key: %s, Value: %s\n", current->key, current->value);
-        current = current->next;
-    }
+	int		in_quotes;
+	int		in_single_quotes;
+	int		j;
+	int		k;
+}	t_split_data;
+
+static void	init_split_data(t_split_data *data)
+{
+	data->in_quotes = 0;
+	data->in_single_quotes = 0;
+	data->j = 0;
+	data->k = 0;
 }
 
-void split_string_d	(char *str, char **result)
+static void	handle_quotes(char c, t_split_data *data)
 {
-   int i, j, k, in_quotes, in_single_quotes;
-    char *temp;
-    in_quotes = 0;
-    in_single_quotes = 0;
-    j = 0;
-    k = 0;
-    temp = (char *)malloc(sizeof(char) * (strlen(str) + 1));
-    if (!temp)
-        return;
-
-    for (i = 0; str[i]; i++)
-    {
-        if (str[i] == '"')
-            in_quotes = !in_quotes;
-        if (str[i] == '\'')
-            in_single_quotes = !in_single_quotes;
-        if (( ft_white_space(str[i])) && !in_quotes && !in_single_quotes)
-        {
-            temp[j] = '\0';
-            result[k++] = strdup(temp);
-            j = 0;
-        }
-        else
-        {
-            temp[j++] = str[i];
-        }
-    }
-    temp[j] = '\0';
-    result[k++] = strdup(temp);
-    free(temp);
+	if (c == '"')
+		data->in_quotes = !data->in_quotes;
+	if (c == '\'')
+		data->in_single_quotes = !data->in_single_quotes;
 }
 
+static void	handle_whitespace(char *temp, char **result, t_split_data *data)
+{
+	temp[data->j] = '\0';
+	result[data->k] = strdup(temp);
+	data->k += 1;
+	data->j = 0;
+}
+
+void	split_string_d(char *str, char **result)
+{
+	t_split_data	data;
+	char			*temp;
+	int				i;
+
+	temp = (char *)malloc(sizeof(char) * (strlen(str) + 1));
+	if (!temp)
+		return ;
+	init_split_data(&data);
+	i = -1;
+	while (str[++i])
+	{
+		handle_quotes(str[i], &data);
+		if (ft_white_space(str[i]) && !data.in_quotes
+			&& !data.in_single_quotes)
+			handle_whitespace(temp, result, &data);
+		else
+			temp[data.j++] = str[i];
+	}
+	temp[data.j] = '\0';
+	result[data.k] = strdup(temp);
+	free(temp);
+}
 int count_dollars( char *str)
 {
     int count = 0;
@@ -803,5 +737,5 @@ int main(int argc, char **argv, char **envp)
 	list->pipe[0] = -1;
 	list->env = ft_insert_env(envp);
 	//print_env(list->env);
-	return (organisation_shell_loop(list, &data));
+    return (shell_loop(list, &data, &list->env));
 }
