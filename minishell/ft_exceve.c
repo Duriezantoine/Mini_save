@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/01 11:35:23 by aduriez           #+#    #+#             */
-/*   Updated: 2024/10/23 14:58:23 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/23 15:10:55 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,48 +60,43 @@ char	*ft_getpath(char **env)
 	}
 	return NULL;
 }
-char *get_path(char *str, char **env)
+static char	*create_full_path(char **split_path, char *str, int i)
 {
-    char *path;
-    char **split_path;
-    char *full_path;
-    int i;
-//   printf("Je suis a la rechercher du chemin");
-    path = ft_getpath(env);
-    if (!path) {
-		fprintf(stderr, "Erreur: La variable d'environnement PATH n'est pas définie.\n");
-	return("R");
-    }
+	char	*demi_path;
+	char	*full_path;
 
-    split_path = ft_split(path, ':');
-    if (!split_path) {
-	fprintf(stderr, "Erreur: Impossible de diviser le chemin.\n");
-	return("S");
-    }
+	demi_path = ft_strjoin(split_path[i], "/");
+	full_path = ft_strjoin(demi_path, str);
+	free(demi_path);
+	return (full_path);
+}
 
-    i = 0;
-    while (split_path[i])
-    {
-		char *demi_path = ft_strjoin(split_path[i], "/");
-		full_path = ft_strjoin(demi_path, str);
-		free(demi_path);
+char	*get_path(char *str, char **env)
+{
+	char	*path;
+	char	**split_path;
+	char	*full_path;
+	int		i;
 
+	path = ft_getpath(env);
+	if (!path)
+		return ("R");
+	split_path = ft_split(path, ':');
+	if (!split_path)
+		return ("S");
+	i = -1;
+	while (split_path[++i])
+	{
+		full_path = create_full_path(split_path, str, i);
 		if (access(full_path, F_OK) != -1)
 		{
-		//     printf("Chemin trouvé: %s\n", full_path);
-			// free_split(split_path);
-		//     printf("Chemin non trouvé pour: %s\n", str);
 			ft_free_double_tab(split_path);
-			return(full_path);
+			return (full_path);
 		}
 		free(full_path);
-		i++;
-    }
+	}
 	ft_free_double_tab(split_path);
-	fprintf(stderr, "Command '%s' not found\n", str);
-//     printf("\nCommand not valid\n");
-    return(NULL);
-    // free_split(split_path);
+	return (NULL);
 }
 
 struct s_exec {
@@ -110,7 +105,6 @@ struct s_exec {
 	char **envp;
 	t_iofile *infile;
 	t_iofile *outfile;
-	// enum e_tokens	_out_type;
 
 	int in;
 	int out;
@@ -119,7 +113,8 @@ struct s_exec {
 };
 
 int cdt_len(char **a) {
-	if(!a) return 0;
+	if(!a)
+		 return 0;
 	int i = 0;
 	while(a[i]) {
 		i++;
@@ -130,7 +125,8 @@ int cdt_len(char **a) {
 
 
 int lst_len(t_node *list) {
-	int ret = 0;
+	int ret;
+	ret  = 0;
 	while(list) {
 		ret++;
 		list = list->next;
@@ -140,84 +136,115 @@ int lst_len(t_node *list) {
 
 int env_len(t_env *list) {
 	int ret = 0;
-	while(list) {
+	while(list)
+	{
 		ret++;
 		list = list->next;
 	}
 	return ret;
 }
 
-void real_strcat(char *dest, char *src) {
-	int start = ft_strlen(dest);
-	int i = 0;
-	while(i < (int)ft_strlen(src)) {
+void real_strcat(char *dest, char *src) 
+{
+	int start ;
+	int i ;
+	
+	i = 0;
+	start= ft_strlen(dest);
+	while(i < (int)ft_strlen(src)) 
+	{
 		dest[start + i] = src[i];
-		i++; // Correction: Ajout de l'incrémentation de i
+		i++; 
 	}
 	dest[start + i] = 0;
 }
+static char	*create_env_str(t_env *env)
+{
+	char	*ret;
+	int		len;
 
-
-char **get_env_cdt(t_env *env) {
-    int len = env_len(env);
-    char **ret = ft_calloc(len + 1, sizeof(char *));
-    if (!ret) return NULL;
-    int count;
-
-	// print_env_list(env);
-    count = 0;
-	t_env *tmp;
-    int i = 0;
-	tmp =env;
-    while (env) {
-		// printf("XXX|%s| has value %s\n", env->key, env->value);
-		if (env->value)
-			ret[i] = ft_calloc(ft_strlen(env->key) + ft_strlen(env->value) + 2, sizeof(char));
-		else
-			ret[i] = ft_calloc(ft_strlen(env->key) + 1, sizeof(char));
-	// if (!ret[i]) {
-	//     // Libérer toutes les chaînes de caractères allouées précédemment
-	//     for (int j = 0; j < i; j++) {
-	//         free(ret[j]);
-	//     }
-	//     free(ret); // Libérer le tableau lui-même
-	//     return NULL;
-	// }
-	real_strcat(ret[i], env->key);
+	len = ft_strlen(env->key);
+	if (env->value)
+		len += ft_strlen(env->value) + 2;
+	else
+		len += 1;
+	ret = ft_calloc(len, sizeof(char));
+	if (!ret)
+		return (NULL);
+	real_strcat(ret, env->key);
 	if (env->value)
 	{
-		ret[i][ft_strlen(env->key)] = '='; // Ajout direct du caractère '='
-		real_strcat(ret[i], env->value);
+		ret[ft_strlen(env->key)] = '=';
+		real_strcat(ret, env->value);
 	}
-	i++;
-	env = env->next;
-    }
-    return ret;
+	return (ret);
 }
 
-char **clone_cdt(char **table) {
-	int len = cdt_len(table);
-	char **ret = ft_calloc(len + 1, sizeof(char *));
-	if(!ret) return NULL;
-	int i = 0;
-	while(i < len) {
+char	**get_env_cdt(t_env *env)
+{
+	char	**ret;
+	int		i;
+	t_env	*tmp;
+
+	tmp = env;
+	ret = ft_calloc(env_len(env) + 1, sizeof(char *));
+	if (!ret)
+		return (NULL);
+	i = 0;
+	while (env)
+	{
+		ret[i] = create_env_str(env);
+		if (!ret[i])
+			return (NULL);
+		i++;
+		env = env->next;
+	}
+	return (ret);
+}
+
+static void	free_clone(char **ret, int i)
+{
+	int	j;
+
+	j = 0;
+	while (j < i)
+	{
+		free(ret[j]);
+		j++;
+	}
+	free(ret);
+}
+
+char	**clone_cdt(char **table)
+{
+	char	**ret;
+	int		len;
+	int		i;
+
+	len = cdt_len(table);
+	ret = ft_calloc(len + 1, sizeof(char *));
+	if (!ret)
+		return (NULL);
+	i = 0;
+	while (i < len)
+	{
 		ret[i] = ft_strdup(table[i]);
-		if(!ret[i]) {
-			int j = 0;
-			while(j < i) {
-				free(ret[j]);
-				j++;
-			}
-			free(ret); // Correction: Libération de ret
-			return NULL;
+		if (!ret[i])
+		{
+			free_clone(ret, i);
+			return (NULL);
 		}
 		i++;
 	}
-	return ret;
+	return (ret);
 }
 
-void free_split(char **split) {
-	int i = 0;
+
+void free_split(char **split) 
+{
+	int i ;
+	
+	i = 0;
 	if(!split) return;
 	while(split[i]) {
 		free(split[i]);
@@ -228,7 +255,6 @@ void free_split(char **split) {
 
 int ft_replace_var(char **str, t_env *env)
 {
-	//Pas dur que ca modifier la variables il faut alors verfifier 
 	char *tmp;
 	
 	while(env)
@@ -285,7 +311,7 @@ int ft_check_cmd_valid(char *str, t_env *env)
 	{
 	    free_split(split_path);
 	    free(full_path);
-	    return 1; // La commande est valide
+	    return 1;
 	}
 	free(full_path);
 	i++;
@@ -297,33 +323,22 @@ int ft_check_cmd_valid(char *str, t_env *env)
 
 struct s_exec *lst_to_execs(t_node *list, int *len) {
 	*len = lst_len(list);
-	struct s_exec *ret = ft_calloc(*len, sizeof(struct s_exec)); // Correction: Suppression du cast (size_t)
+	struct s_exec *ret = ft_calloc(*len, sizeof(struct s_exec)); 
 	if(!ret) return NULL;
 	char **env = get_env_cdt(list->env);
 	t_env *tmp;
-	tmp = list->env;//Ce  qui permet de garder la lise chaine pour le FT_REPLACE_var
+	tmp = list->env;
 	int i = 0;
 	while(list) {
 		ret[i].exec= ft_strdup(list->cmd->cmd_and_args[0]);
 		ret[i].argv = clone_cdt(list->cmd->cmd_and_args);
 		ret[i].envp = clone_cdt(env);
 		ret[i].nb_exec = *len;
-		//Verification pour la commande
-		// if (ret[i].exec != NULL)
-		//         if (ret[i].exec[0]== '$')
-		//                 if(ft_replace_var(&ret[i].exec, tmp)==1)
-		//                         printf("La variable recherche n'existe pas ");
-		//Verification pour les arguments
-		// ret[i].in = list->cmd->input;
-		// ret[i].out = list->cmd->output;
 		ret[i].infile = list->cmd->input_str;
 		ret[i].outfile = list->cmd->output_str;
-		// ret[i]._out_type = list->cmd->_out_type;
 		ret[i].out = -1;
 		ret[i].in = -1;
 		ret[i].pid = -1;
-		// if(ft_check_cmd_valid(ret[i].exec, tmp)==0)
-		//         printf("Command \'%s\' not found\n", ret[i].exec);
 		i++;
 		list = list->next;
 	}
