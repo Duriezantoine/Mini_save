@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/09 17:08:04 by dpoltura          #+#    #+#             */
-/*   Updated: 2024/10/23 16:48:57 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/23 16:53:26 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -121,9 +121,9 @@ char **allocate_result(int len)
     
     result = (char **)malloc(sizeof(char *) * (len + 1));
     if (!result)
-        return NULL;
+        return (NULL);
     result[len] = NULL;
-    return result;
+    return (result);
 }
 
 int	count_segments(char *str)
@@ -180,14 +180,12 @@ int	count_dollars_outside_quotes(char *str)
 	int	in_single;
 	int	in_double;
 
-    // printf("\nIci\n");
 	count = 0;
 	i = 0;
 	in_single = 0;
 	in_double = 0;
 	while (str[i])
 	{
-        // printf("\n|STR|%c|\n", str[i]);
 		if (!is_quote(str[i], &in_single, &in_double))
 		{
 			if (str[i] == '$' && !in_single && !in_double)
@@ -195,20 +193,20 @@ int	count_dollars_outside_quotes(char *str)
 		}
 		i++;
 	}
-    // printf("\ncount|%d|\n",count);
 	return (count);
 }
 int ft_space_or_null(char *str)
 {
 	int x;
-	x=0;
+
+	x = 0;
 	while(str[x])
 	{
 		if(!ft_white_space(str[x]))
-			return(1);
+			return (1);
 		x++;
 	}
-	return(0);
+	return (0);
 }
 
 char    *ft_change_input_v2(char *save)
@@ -218,69 +216,15 @@ char    *ft_change_input_v2(char *save)
     x = 0;
     while(save[x])
     {
-        if (save[x]==32)
+        if (save[x] == 32)
             x++;
-        if(save[x] !=32)
-            break;
+        if(save[x] != 32)
+            break ;
     }
-    return(save);
+    return (save);
 }
 
-char	*ft_change_input(char **str, t_env *env, t_data *data)
-{
-	char *tmp_tmp;
-	char **tmp;
-	char *save_tmp;
-	int x;
-    char *tmp_tmp_tmp;
-	char *save;
-	x = 0;
-	save_tmp =NULL;
-	save = ft_strjoin((*str), " ");
-	while (count_dollars_outside_quotes((*str))<=0)
-		break;
-    tmp_tmp_tmp = ft_change_input_v2(save);
-    // printf("save|%s|\n", tmp_tmp_tmp);
-	// save = ft_strjoin(str, '$');
-	save_tmp = ft_strdup(" ");
-	tmp = ft_split_d((save));
 
-	free(save);
-	while(tmp[x])
-	{
-        // printf("saveTMP|%s|\n", tmp[x]);
-
-		if (ft_space_or_null(tmp[x])!=0)
-        {
-            if (tmp[x][0]== '$')
-            {
-                tmp_tmp = ft_change_var_environnement(tmp[x],&env, data);
-                tmp[x] = tmp_tmp;
-
-            }
-            save = ft_strjoin(save_tmp, tmp[x]);
-            free(save_tmp);
-            save_tmp = ft_strjoin(save, " ");
-            free(save);
-        }
-		// if(tmp_tmp[0]!='\0')
-		free(tmp[x]);
-		x++;
-        // printf("savMIDDLE|%s|\n", save_tmp);
-
-	}
-
-	free((*str));
-	// free(tmp_tmp);
-	free(tmp[x]);
-	free(tmp);
-	// free(save);
-        // printf("saveEND|%s|\n", save_tmp);
-
-	return(save_tmp);
-	// print_char_array_d(tmp);
-
-}
 
 void signal_handler(int sig)
 {

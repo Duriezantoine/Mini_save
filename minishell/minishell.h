@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/09 17:05:05 by dpoltura          #+#    #+#             */
-/*   Updated: 2024/10/23 14:49:10 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/23 16:54:53 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -350,6 +350,15 @@ void signal_handler(int sig);
 
 // Prototype de la fonction check_signal_status
 int check_signal_status(void);
+char	*ft_change_input(char **str, t_env *env, t_data *data);
+int	count_dollars_outside_quotes(char *str);
+char    *ft_change_input_v2(char *save);
+char **ft_split_d( char *str);
+int ft_space_or_null(char *str);
+
+
+
+
 
 
 
