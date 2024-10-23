@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/09 17:05:05 by dpoltura          #+#    #+#             */
-/*   Updated: 2024/10/23 17:28:30 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/23 17:32:24 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -189,7 +189,9 @@ typedef struct s_echo
 
 int main(int argc, char **argv, char **envp);
 int shell_loop(t_node *list, t_data *data, t_env **env);
-int organisation_shell_loop(t_node *list, t_data *data);
+int ft_search_inputs(char *str);
+int ft_orga_verif_input(char *str);
+int	ft_white_spaces(char *str);
 void ft_insert_cmd(t_command **command, t_data **data, char *input);
 void free_tokens(char **tokens, int len);
 void ft_insert_token(t_command **command, t_data **data);

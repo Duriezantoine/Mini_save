@@ -6,7 +6,7 @@
 #    By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/04/09 17:09:10 by dpoltura          #+#    #+#              #
-#    Updated: 2024/10/23 17:28:36 by aduriez          ###   ########.fr        #
+#    Updated: 2024/10/23 17:31:38 by aduriez          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -14,6 +14,7 @@ CFLAGS = -Wall -Wextra -Werror -g -fPIE -Wno-unused-command-line-argument
 LDFLAGS = -lreadline #-fsanitize=address
 
 SRCS =	minishell_parse.c \
+		shell_loop.c \
 		ft_verif_input.c \
 		ft_verif_tokens.c \
 		ft_change_input.c \

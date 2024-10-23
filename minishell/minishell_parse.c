@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/09 17:08:04 by dpoltura          #+#    #+#             */
-/*   Updated: 2024/10/23 17:28:48 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/23 17:31:23 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -279,78 +279,6 @@ int ft_orga_verif_input(char *str)
     return(0);  
 }
 
-int shell_loop(t_node *list, t_data *data, t_env **env)
-{
-    char *input;
-
-    // Configuration du gestionnaire de signaux
-
-    while (1)
-    {   
-        // printf("Exitcode|%d|", data->exit_code );
-
-        signal_recu = 0;   
-        signal(SIGINT, signal_handler);
-        signal(SIGQUIT, signal_handler);
-
-        input = readline("minishell$ ");
-
-        if (signal_recu == SIGINT)
-            data->exit_code = 130;
-
-        // printf("INPUT |%s|", input);    
-        if (input == NULL)  // Gestion de Ctrl+D (EOF)
-        {
-            write(1, "exit\n", 5);
-            break;
-        }
-        if (ft_search_inputs(input) == 0 )//&& check_syntax_errors(input)==1
-        {
-            // printf("ICI");
-            free(input);
-            continue;
-        }
-        if(ft_orga_verif_input(input))
-        {
-            add_history(input);     
-            free(input);
-            data->exit_code = 2;
-            // printf("\nProbleme\n");
-            continue;
-        }
-        ft_init_data(data);
-        add_history(input);  // Ajout de la commande à l'historique
-        // printf("Je suis input\n|%s|\n", input);
-        input = ft_change_input(&input, *env, data);//Il faudra le refaire a la suite 
-        // printf("New_input\n|%s|\n", input);
-        if (ft_strlen(input) == 0 || ft_white_spaces(input) == 0)
-        {
-            //printf("\nICIC\n");
-            free(input);
-            continue;
-        }
-
-
-        if (ft_parsing(list, data, input, *env) == 1)
-        {
-            free(input);
-            break;
-        }
-
-        free(input);
-        lexer(list);
-       // print_list(list);
-        if (lexer_cmd(list, data) == 0)
-            data->exit_code = ft_exceve(list, data, &list->env);
-        ft_free_return_loop(list);
-        
-        // printf("Exitcode|%d|", data->exit_code );
-    }
-
-    ft_free_end(list, env);
-    return data->exit_code;
-
-}
 void 	ft_free_return_loop(t_node *list)
 {
 		free_node(list->next);
