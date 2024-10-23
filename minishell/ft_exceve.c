@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/01 11:35:23 by aduriez           #+#    #+#             */
-/*   Updated: 2024/10/23 15:10:55 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/23 15:21:15 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -271,85 +271,103 @@ int ft_replace_var(char **str, t_env *env)
 	return(0);
 
 }
-int ft_check_cmd_valid(char *str, t_env *env)
+static char	*find_path_env(t_env *env)
 {
-    char *path;
-    char **split_path;
-    char *full_path;
-    int i;
-
-    path = NULL;
-    while (env)
-    {
-	if (ft_strcmp(env->key, "PATH") == 0)
+	while (env)
 	{
-	    path = env->value;
-	    break;
+		if (ft_strcmp(env->key, "PATH") == 0)
+			return (env->value);
+		env = env->next;
 	}
-	env = env->next;
-    }
-
-    if (!path)
-    {
-	fprintf(stderr, "Erreur: La variable d'environnement PATH n'est pas définie.\n");
-	return 0;
-    }
-
-    split_path = ft_split(path, ':');
-    if (!split_path)
-    {
-	fprintf(stderr, "Erreur: Impossible de diviser le chemin.\n");
-	return 0;
-    }
-
-    i = 0;
-    while (split_path[i])
-    {
-	full_path = ft_strjoin(split_path[i], "/");
-	full_path = ft_strjoin(full_path, str);
-	if (access(full_path, F_OK | X_OK) != -1)
-	{
-	    free_split(split_path);
-	    free(full_path);
-	    return 1;
-	}
-	free(full_path);
-	i++;
-    }
-
-    free_split(split_path);
-    return 0;
+	return (NULL);
 }
 
-struct s_exec *lst_to_execs(t_node *list, int *len) {
-	*len = lst_len(list);
-	struct s_exec *ret = ft_calloc(*len, sizeof(struct s_exec)); 
-	if(!ret) return NULL;
-	char **env = get_env_cdt(list->env);
-	t_env *tmp;
-	tmp = list->env;
-	int i = 0;
-	while(list) {
-		ret[i].exec= ft_strdup(list->cmd->cmd_and_args[0]);
-		ret[i].argv = clone_cdt(list->cmd->cmd_and_args);
-		ret[i].envp = clone_cdt(env);
-		ret[i].nb_exec = *len;
-		ret[i].infile = list->cmd->input_str;
-		ret[i].outfile = list->cmd->output_str;
-		ret[i].out = -1;
-		ret[i].in = -1;
-		ret[i].pid = -1;
+static int	check_path_access(char **split_path, char *str)
+{
+	char	*full_path;
+	char	*tmp;
+	int		i;
+
+	i = 0;
+	while (split_path[i])
+	{
+		tmp = ft_strjoin(split_path[i], "/");
+		full_path = ft_strjoin(tmp, str);
+		free(tmp);
+		if (access(full_path, F_OK | X_OK) != -1)
+		{
+			free(full_path);
+			return (1);
+		}
+		free(full_path);
 		i++;
-		list = list->next;
 	}
-	i=0;
-	while(env[i])
+	return (0);
+}
+
+int	ft_check_cmd_valid(char *str, t_env *env)
+{
+	char	*path;
+	char	**split_path;
+	int		result;
+
+	path = find_path_env(env);
+	if (!path)
+		return (0);
+	split_path = ft_split(path, ':');
+	if (!split_path)
+		return (0);
+	result = check_path_access(split_path, str);
+	free_split(split_path);
+	return (result);
+}
+
+static void	init_exec_struct(struct s_exec *ret, t_node *list, int i, int len)
+{
+	ret[i].exec = ft_strdup(list->cmd->cmd_and_args[0]);
+	ret[i].argv = clone_cdt(list->cmd->cmd_and_args);
+	ret[i].nb_exec = len;
+	ret[i].infile = list->cmd->input_str;
+	ret[i].outfile = list->cmd->output_str;
+	ret[i].out = -1;
+	ret[i].in = -1;
+	ret[i].pid = -1;
+}
+
+static void	free_env_array(char **env)
+{
+	int	i;
+
+	i = 0;
+	while (env[i])
 	{
 		free(env[i]);
 		i++;
 	}
 	free(env);
-	return ret;
+}
+
+struct s_exec	*lst_to_execs(t_node *list, int *len)
+{
+	struct s_exec	*ret;
+	int				i;
+	char			**env;
+
+	*len = lst_len(list);
+	ret = ft_calloc(*len, sizeof(struct s_exec));
+	if (!ret)
+		return (NULL);
+	env = get_env_cdt(list->env);
+	i = 0;
+	while (list)
+	{
+		init_exec_struct(ret, list, i, *len);
+		ret[i].envp = clone_cdt(env);
+		i++;
+		list = list->next;
+	}
+	free_env_array(env);
+	return (ret);
 }
 
 struct s_ituple {
@@ -375,9 +393,10 @@ int ft_fork(int exit_err, void (*func)(struct s_exec *, int, int), struct s_exec
 int ft_wait_all(struct s_exec *execs, int len) {
     int i;
     int status;
-    int last_exit_status = -1;
-status = 0;
+    int last_exit_status;
 
+	last_exit_status = -1;
+	status = 0;
     for (i = 0; i < len; i++) {
 		if (ft_exceve_bulting(execs[i].argv[0], 1))
 		{
@@ -392,43 +411,46 @@ status = 0;
 			}
 		}
     }
-    return last_exit_status;
+    return (last_exit_status);
 }
 
-void free_exec(struct s_exec e) {
+static void	free_str_array(char **arr)
+{
+	int	i;
+
+	i = 0;
+	while (arr[i])
+	{
+		free(arr[i]);
+		i++;
+	}
+	free(arr);
+}
+
+static void	free_iofile_list(t_iofile *file)
+{
 	t_iofile	*tmp;
 
+	while (file)
+	{
+		free(file->file);
+		tmp = file->next;
+		free(file);
+		file = tmp;
+	}
+}
+
+void	free_exec(struct s_exec e)
+{
 	free(e.exec);
-	int i = 0;
-	while(e.argv[i]) {
-		free(e.argv[i]);
-		i++;
-	}
-	free(e.argv);
-	i = 0;
-	while(e.envp[i]) {
-		free(e.envp[i]);
-		i++;
-	}
-	free(e.envp);
-	if(e.in > 2)
+	free_str_array(e.argv);
+	free_str_array(e.envp);
+	if (e.in > 2)
 		close(e.in);
-	if(e.out > 2)
+	if (e.out > 2)
 		close(e.out);
-	while (e.infile)
-	{
-		free(e.infile->file);
-		tmp = e.infile->next;
-		free(e.infile);
-		e.infile = tmp;
-	}
-	while (e.outfile)
-	{
-		free(e.outfile->file);
-		tmp = e.outfile->next;
-		free(e.outfile);
-		e.outfile = tmp;
-	}
+	free_iofile_list(e.infile);
+	free_iofile_list(e.outfile);
 }
 
 void free_all_exec(struct s_exec *execs, int len) {
@@ -444,10 +466,12 @@ void free_all_exec(struct s_exec *execs, int len) {
 
 struct s_exec dup_exec(struct s_exec e) {
 	struct s_exec ret;
+	int i;
+
 	ret.exec = ft_strdup(e.exec);
 	ret.argv = ft_calloc(cdt_len(e.argv) + 1, sizeof(char *));
 	ret.envp = ft_calloc(cdt_len(e.envp) + 1, sizeof(char *));
-	int i = 0;
+	i = 0;
 	while(ret.argv && e.argv[i]) {
 		ret.argv[i] = ft_strdup(e.argv[i]);
 		i++;
@@ -490,9 +514,9 @@ int builtin(char *name) {
 
 int exec(char *name, char **argv, char ***envp) {
 	int i;
-	i = 0;
 	int built;
 	
+	i = 0;
 	built = builtin(name );
 	if(!builtin(name))
 	{
@@ -516,14 +540,17 @@ void	sort_envp_ex(char **copy_envp)
 {
 	char	*tmp;
 	int		num_envp;
-	int i, j;
+	int 	i;
+	int		j;
 
 	num_envp = 0;
 	while (copy_envp[num_envp] != NULL)
 		num_envp++;
-	for (i = 0; i < num_envp - 1; i++)
+	i = -1;
+	while (++i < num_envp - 1)
 	{
-		for (j = 0; j < num_envp - i - 1; j++)
+		j = -1;
+		while (++j < num_envp - i - 1)
 		{
 			if (strcmp(copy_envp[j], copy_envp[j + 1]) > 0)
 			{
@@ -536,7 +563,7 @@ void	sort_envp_ex(char **copy_envp)
 }
 void	ft_display_envp(char *copy_envp[])
 {
-	int	i;
+	int		i;
 	char	*sep;
 
 	i = -1;
