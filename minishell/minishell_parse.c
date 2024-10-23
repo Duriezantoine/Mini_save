@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/09 17:08:04 by dpoltura          #+#    #+#             */
-/*   Updated: 2024/10/23 17:31:23 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/23 17:39:30 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,64 +85,64 @@ void	split_string_d(char *str, char **result)
 }
 int count_dollars( char *str)
 {
-    int count = 0;
-    while (*str)
-    {
-        if (*str == '$')
-        {
-            count++;
-        }
-        str++;
-    }
-    return count;
+	int count = 0;
+	while (*str)
+	{
+		if (*str == '$')
+		{
+			count++;
+		}
+		str++;
+	}
+	return count;
 }
 
 int count_dollar_followed_by_characters(char *str)
 {
-    int count = 0;
-    while (*str)
-    {
-        if (*(str + 1) && isalnum(*(str + 1)))
-        {
-            count++;
-            while (*(str + 1) && isalnum(*(str + 1)))
-            {
-                str++;
-            }
-        }
-        str++;
-    }
-    return count;
+	int count = 0;
+	while (*str)
+	{
+		if (*(str + 1) && isalnum(*(str + 1)))
+		{
+			count++;
+			while (*(str + 1) && isalnum(*(str + 1)))
+			{
+				str++;
+			}
+		}
+		str++;
+	}
+	return count;
 }
 
 char **allocate_result(int len)
 {
-    char **result;
-    
-    result = (char **)malloc(sizeof(char *) * (len + 1));
-    if (!result)
-        return (NULL);
-    result[len] = NULL;
-    return (result);
+	char **result;
+	
+	result = (char **)malloc(sizeof(char *) * (len + 1));
+	if (!result)
+		return (NULL);
+	result[len] = NULL;
+	return (result);
 }
 
 int	count_segments(char *str)
 {
-    int	len;
+	int	len;
 	int	in_quotes;
 	int	in_single_quotes;
 	int	i;
 
-    len = 0;
-    in_quotes = 0;
-    in_single_quotes = 0;
+	len = 0;
+	in_quotes = 0;
+	in_single_quotes = 0;
 	i = -1;
 	while (str[++i])
 	{
-        if (str[i] == '"')
-		    in_quotes = !in_quotes;
-        if (str[i] == '\'')
-            in_single_quotes = !in_single_quotes;
+		if (str[i] == '"')
+			in_quotes = !in_quotes;
+		if (str[i] == '\'')
+			in_single_quotes = !in_single_quotes;
 		if (ft_white_space(str[i]) && !in_quotes
 			&& !in_single_quotes)
 			len++;
@@ -152,11 +152,11 @@ int	count_segments(char *str)
 
 char **ft_split_d( char *str)
 {
-    int len = count_segments(str);
-    char **result = allocate_result(len);
-    if (result)
-        split_string_d(str, result);
-    return result;
+	int len = count_segments(str);
+	char **result = allocate_result(len);
+	if (result)
+		split_string_d(str, result);
+	return result;
 }
 static int	is_quote(char c, int *in_single, int *in_double)
 {
@@ -211,72 +211,70 @@ int ft_space_or_null(char *str)
 
 char    *ft_change_input_v2(char *save)
 {
-    int x;
+	int x;
 
-    x = 0;
-    while(save[x])
-    {
-        if (save[x] == 32)
-            x++;
-        if(save[x] != 32)
-            break ;
-    }
-    return (save);
+	x = 0;
+	while(save[x])
+	{
+		if (save[x] == 32)
+			x++;
+		if(save[x] != 32)
+			break ;
+	}
+	return (save);
 }
-
-
 
 void signal_handler(int sig)
 {
-    if (sig == SIGINT)
-    {
-        signal_recu = sig;
-        ft_putstr_fd("^C\n", 2);
-        rl_on_new_line();
-        rl_replace_line("", 0);
-        rl_redisplay();
-    }
+	if (sig == SIGINT)
+	{
+		signal_recu = sig;
+		ft_putstr_fd("^C\n", 2);
+		rl_on_new_line();
+		rl_replace_line("", 0);
+		rl_redisplay();
+	}
 }
 int ft_search_inputs(char *str)
 {
-    int     i;
-    char    c;
+	int     i;
+	char    c;
 
-    i = 0;
-    while (str[i])
-    {
-        if (str[i] == '\'' || str[i] == '"')
-        {
-            c = str[i];
-            i++;
-            while (str[i] && str[i] != c)
-            {
-                if (!ft_white_space(str[i]))
-                    return (1);
-                i++;
-            }
-            if (str[i] == c)
-                i++;
-        }
-        else if (!ft_white_space(str[i]))
-            return (1);
-        i++;
-    }
-    return (0);
+	i = 0;
+	while (str[i])
+	{
+		if (str[i] == '\'' || str[i] == '"')
+		{
+			c = str[i];
+			i++;
+			while (str[i] && str[i] != c)
+			{
+				if (!ft_white_space(str[i]))
+					return (1);
+				i++;
+			}
+			if (str[i] == c)
+				i++;
+		}
+		else if (!ft_white_space(str[i]))
+			return (1);
+		i++;
+	}
+	return (0);
 }
 
 int ft_orga_verif_input(char *str)
 {
-    char *tmp;
+	char *tmp;
 
-    tmp = ft_verif_input(str);
-    if(ft_verif_tokens(tmp)== 1)
-    {
-        free(tmp);
-        return(1);
-    }
-    free(tmp);
-    return(0);  
+	tmp = ft_verif_input(str);
+	if(ft_verif_tokens(tmp)== 1)
+	{
+		free(tmp);
+		return(1);
+	}
+	free(tmp);
+	return(0);  
 }
 
 void 	ft_free_return_loop(t_node *list)
@@ -293,25 +291,23 @@ void 	ft_free_return_loop(t_node *list)
 
 void    ft_free_env(t_env **env)
 {
-    t_env *envt;
-    while(*env)
-    {
-            envt = (*env)->next;
-            free((*env)->key);
-            free((*env)->value);
-            // printf("freeing ptr %p\n", *env);
-            free(*env);
-            *env = envt;
-    }
+	t_env *envt;
+
+	while(*env)
+	{
+		envt = (*env)->next;
+		free((*env)->key);
+		free((*env)->value);
+		free(*env);
+		*env = envt;
+	}
 }
 
 void ft_free_end(t_node *list, t_env **env)
 {
-        // if(list->save[0] >= 0) close(list->save[0]);
-        // if(list->save[1] >= 0) close(list->save[1]);
-        ft_free_env(env);
-        free(list);
-        rl_clear_history();
+		ft_free_env(env);
+		free(list);
+		rl_clear_history();
 }
 
 void add_env_to_list(t_env **head, t_env **current, t_env *new_env)
@@ -326,41 +322,36 @@ void add_env_to_list(t_env **head, t_env **current, t_env *new_env)
 		(*current)->next = new_env;
 		*current = new_env;
 	}
-
 }
-
 
 t_env *ft_insert_env(char **envp)
 {
-        int i;
-        t_env *head = NULL;
-        t_env *current = NULL;
-        char    *sep;
+	int     i;
+	t_env   *head;
+	t_env   *current;
+	char    *sep;
+	t_env   *new_env;
 
-        i = 0;
-        while (envp[i])
-        {
-                t_env *new_env = (t_env *)malloc(sizeof(t_env));
-                sep = strchr(envp[i], '=');
-                // printf("sep: (%s) %s\n", envp[i], sep);
-                if (sep == NULL)
-                    new_env->value = NULL;
-                else
-                {
-                    *sep = '\0';
-                    new_env->value = ft_strdup(sep + 1);
-                }
-				// printf("allocating ptr %p\n", new_env);
-                new_env->key = ft_strdup(envp[i]);
-                if (sep)
-                    *sep = '=';
-                // printf("%s => \n\n%s\n\n\n\n\n\n", new_env->key, new_env->value);
-                new_env->next = NULL;
-                add_env_to_list(&head, &current, new_env);
-                i++;
-        }
-        return (head);
+	i = -1;
+	head = NULL;
+	current = NULL;
+	while (envp[++i])
+	{
+		new_env = (t_env *)ft_calloc(sizeof(t_env), 1);
+		sep = strchr(envp[i], '=');
+		if (sep != NULL)
+		{
+			*sep = '\0';
+			new_env->value = ft_strdup(sep + 1);
+		}        
+		new_env->key = ft_strdup(envp[i]);
+		if (sep)
+			*sep = '=';
+		add_env_to_list(&head, &current, new_env);
+	}
+	return (head);
 }
+
 int main(int argc, char **argv, char **envp)
 {
 	t_data data;
@@ -368,19 +359,14 @@ int main(int argc, char **argv, char **envp)
 	(void)argv;
 	(void)argc;
 
-    rl_catch_signals = 0;
-    data.exit_code = 0;
+	rl_catch_signals = 0;
+	data.exit_code = 0;
 	if (argc == 2)
 		ft_out_exit(1);
-	// if (!envp || !*envp)
-	// 	ft_out_exit(2);
 	list = ft_calloc(1, sizeof(t_node));
 	if (list == NULL)
 		ft_out_exit(3);
-	// list->save[0] = dup(STDIN_FILENO);
-	// list->save[1] = dup(STDOUT_FILENO);
 	list->pipe[0] = -1;
 	list->env = ft_insert_env(envp);
-	//print_env(list->env);
-    return (shell_loop(list, &data, &list->env));
+	return (shell_loop(list, &data, &list->env));
 }
