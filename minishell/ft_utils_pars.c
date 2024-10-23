@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/11 10:51:14 by dpoltura          #+#    #+#             */
-/*   Updated: 2024/10/23 16:23:34 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/23 16:26:43 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -400,58 +400,59 @@ void ft_insert_data_w_quot(t_echo *data, char *input, int *i, int *place_tab_w_q
     (*place_tab_w_quot)++;
 }
 
-void ft_init_tab_echo_malloc(t_echo *data_echo, char *input, int i)
+static void	handle_redirection_malloc(t_echo *data_echo, char *input,
+	int *i, int *place_tab_s_quot)
 {
+	data_echo->str_s_quot[*place_tab_s_quot].order
+		= data_echo->order_occurence++;
+	if ((input[*i] == '<' && input[*i + 1] == '<')
+		|| (input[*i] == '>' && input[*i + 1] == '>'))
+	{
+		data_echo->str_s_quot[*place_tab_s_quot].str
+			= malloc(sizeof(char *) * 2 + 1);
+		(*place_tab_s_quot)++;
+		*i += 2;
+	}
+	else
+	{
+		data_echo->str_s_quot[*place_tab_s_quot].str
+			= malloc(sizeof(char *) * 1 + 1);
+		(*place_tab_s_quot)++;
+		(*i)++;
+	}
+}
 
-    int place_tab_w_quot;
-    int place_tab_s_quot;
+static void	handle_quotes_malloc(t_echo *data_echo, char *input,
+	int *i, int *place_tab_w_quot)
+{
+	if (input[*i] != input[*i + 1])
+		ft_insert_data_w_quot(data_echo, input, i, place_tab_w_quot);
+	else
+		*i += 2;
+}
 
-    place_tab_s_quot = 0;
-    place_tab_w_quot = 0;
-    data_echo->order_occurence = 0;
-    // Cette fonction permetd e determiner le nombre d'occurence dans le tableau
-    while (input[i])
-    {
-        while (ft_white_space(input[i]))
-            i++;
-        if ((input[i] == '"' || input[i] == '\'') )
-        {
-            if(input[i]  != input[i+1])
-            {
-                ft_insert_data_w_quot(data_echo, input, &i, &place_tab_w_quot);
-            }
-            else 
-                i = i + 2;
-        }
-        if (input[i]== '<' || input[i]== '>')
-        {
-            if((input[i]== '<' && input[i+1] == '<')||(input[i]== '>' && input[i+1] == '>'))
-            {
-                data_echo->str_s_quot[place_tab_s_quot].order = data_echo->order_occurence;//Je determine sa place ici 
-                data_echo->order_occurence++;//J'incremente la plce ici 
-                // printf("\n Insert double TABS|PLace|%d|Nbr occurence|2|Place_tab|%d|\n", data_echo->str_s_quot[place_tab_s_quot].order, place_tab_s_quot);
-                data_echo->str_s_quot[place_tab_s_quot].str = malloc(sizeof(char *) * 2 + 1);
-                place_tab_s_quot++;//J'incremente ca place dans le tableau
-                i = i+2;
-            }
-            else
-            {//C'est ici qu'il faur que j'implemente
-                data_echo->str_s_quot[place_tab_s_quot].order = data_echo->order_occurence;//Je determine sa place ici 
-                data_echo->order_occurence++;//J'incremente la plce ici 
-                // printf("\nNsertSimpleTABS|PLace|%d|Nbr occurence|1|Place_tab|%d|", data_echo->str_s_quot[place_tab_s_quot].order, place_tab_s_quot);
+void	ft_init_tab_echo_malloc(t_echo *data_echo, char *input, int i)
+{
+	int	place_tab_w_quot;
+	int	place_tab_s_quot;
 
-                data_echo->str_s_quot[place_tab_s_quot].str = malloc(sizeof(char *) * 1 + 1);
-                place_tab_s_quot++;//J'incremente ca place dans le tableau
-                i++;
-            }
-
-        }
-        if (((ft_isalnum(input[i]) == 1)) && !ft_white_space(input[i]) )
-        {
-            ft_insert_data_s_quot(data_echo, input, &i, &place_tab_s_quot);
-        }
-
-    }
+	place_tab_s_quot = 0;
+	place_tab_w_quot = 0;
+	data_echo->order_occurence = 0;
+	while (input[i])
+	{
+		while (ft_white_space(input[i]))
+			i++;
+		if (input[i] == '"' || input[i] == '\'')
+			handle_quotes_malloc(data_echo, input,
+				&i, &place_tab_w_quot);
+		if (input[i] == '<' || input[i] == '>')
+			handle_redirection_malloc(data_echo, input,
+				&i, &place_tab_s_quot);
+		if (ft_isalnum(input[i]) == 1 && !ft_white_space(input[i]))
+			ft_insert_data_s_quot(data_echo, input,
+				&i, &place_tab_s_quot);
+	}
 }
 
 int ft_handle_alphanumeric(char *input, int *i, int *ss_quot, int x)
