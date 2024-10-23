@@ -6,7 +6,7 @@
 #    By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/04/09 17:09:10 by dpoltura          #+#    #+#              #
-#    Updated: 2024/10/20 17:52:03 by aduriez          ###   ########.fr        #
+#    Updated: 2024/10/23 15:43:43 by aduriez          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -17,6 +17,7 @@ SRCS =	minishell_parse.c \
 		ft_exit.c \
 		ft_parsing.c \
 		ft_utils_pars.c \
+		ft_insert_with_quote.c \
 		ft_init.c \
 		ft_verif.c \
 		lexer.c \

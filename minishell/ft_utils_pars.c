@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/11 10:51:14 by dpoltura          #+#    #+#             */
-/*   Updated: 2024/10/23 15:27:00 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/23 15:40:29 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -240,124 +240,31 @@ void ft_insert_new_data_with_data(t_save **save, t_echo *data_echo, t_env *env)
 
 void ft_insert_data_s_whith_tab(t_echo *data_echo, char *input, int *i, int *clef_tab_s_quot)
 {
-    int iterateur_tab_s_quot;
+    int     iterateur_tab_s_quot;
+    char    sep;
+
     iterateur_tab_s_quot = 0;
     while (ft_isalnum(input[*i]) && input[*i] != '\0')
     {
-          if(input[*i]=='\'')
-            {
-                data_echo->str_s_quot[(*clef_tab_s_quot)].str[iterateur_tab_s_quot] = input[*i];
-                (*i)++;
-                iterateur_tab_s_quot++;
-                while(input[*i] != '\'' && input[*i] != '\0')
-                {
-                    data_echo->str_s_quot[(*clef_tab_s_quot)].str[iterateur_tab_s_quot] = input[*i];
-                    (*i)++;
-                    iterateur_tab_s_quot++;
-                }
-                data_echo->str_s_quot[(*clef_tab_s_quot)].str[iterateur_tab_s_quot] = input[*i];
-                iterateur_tab_s_quot++;
-                (*i)++;
-            }
-          else  if(input[*i]=='"')
-            {
-                data_echo->str_s_quot[(*clef_tab_s_quot)].str[iterateur_tab_s_quot] = input[*i];
-                (*i)++; 
-                iterateur_tab_s_quot++;
-                while(input[*i] != '"'  )
-                {
-                    data_echo->str_s_quot[(*clef_tab_s_quot)].str[iterateur_tab_s_quot] = input[*i];
-                    (*i)++;
-                    iterateur_tab_s_quot++;
-
-                }
-                data_echo->str_s_quot[(*clef_tab_s_quot)].str[iterateur_tab_s_quot] = input[*i];
-                iterateur_tab_s_quot++;
-                (*i)++;
-            }
-        else
+        if (input[*i]=='\'' || input[*i]=='"')
         {
+            sep = input[*i];
             data_echo->str_s_quot[(*clef_tab_s_quot)].str[iterateur_tab_s_quot] = input[*i];
             (*i)++;
             iterateur_tab_s_quot++;
+            while(input[*i] != sep && input[*i] != '\0')
+            {
+                data_echo->str_s_quot[(*clef_tab_s_quot)].str[iterateur_tab_s_quot] = input[*i];
+                (*i)++;
+                iterateur_tab_s_quot++;
+            }
         }
-        
+        data_echo->str_s_quot[(*clef_tab_s_quot)].str[iterateur_tab_s_quot] = input[*i];
+        (*i)++;
+        iterateur_tab_s_quot++;
     }
     data_echo->str_s_quot[(*clef_tab_s_quot)].str[iterateur_tab_s_quot] = '\0';
-    // printf("\n1Sorti de la boucle|%c|save=|%s|clefTab=|%d|\n", input[*i],  data_echo->str_s_quot[(*clef_tab_s_quot)].str,(*clef_tab_s_quot));
-
     data_echo->str_s_quot[(*clef_tab_s_quot)].bool = 0;
-
-//    printf("\nSave_with_tab_s|Nbr_occurence=%d|clef=%d|Save=|%s|Sorti=%c\n", iterateur_tab_s_quot, (*clef_tab_s_quot), data_echo->str_s_quot[(*clef_tab_s_quot)].str, input[*i]);
-    // printf("\n2Sorti de la boucle|%c|\n", input[*i]);
-
-}
-
-void ft_insert_data_w_whith_tab(t_echo *data_echo, char *input, int *i, int *clef_tab_w_quot)
-{
-    int iterateur_tab_w_quot;
-    (void)data_echo;
-    iterateur_tab_w_quot = 0;
-    // printf("\nICI|%c|\n", input[*i]);
-    char c = input[*i];
-    // printf("1\ninput|%c|    ",input[*i]);
-    data_echo->str_w_quot[(*clef_tab_w_quot)].str[iterateur_tab_w_quot] = input[*i];
-    iterateur_tab_w_quot++;
-
-
-    if (input[*i] == '\'')
-        data_echo->str_w_quot[(*clef_tab_w_quot)].bool = 1;
-    else
-        data_echo->str_w_quot[(*clef_tab_w_quot)].bool = 1;
-    (*i) = (*i) + 1;
-    // printf("2\ninput|%c|    ",input[*i]);
-
-
-
-    while (input[*i] != '\0' && input[*i] != c)
-    {
-        while (input[*i] != '\0' && input[*i] != c)
-        {
-                    // printf("3\ninput|%c|    ", input[*i]);
-
-                data_echo->str_w_quot[(*clef_tab_w_quot)].str[iterateur_tab_w_quot] = input[*i];
-                (*i)++;
-                iterateur_tab_w_quot++;
-        }
-        if (input[*i] == '\0')
-            break;   
-        // printf("4\ninput|%c|    ",input[*i]);
-        
-        data_echo->str_w_quot[(*clef_tab_w_quot)].str[iterateur_tab_w_quot] = input[*i];
-        (*i)++;
-        iterateur_tab_w_quot++;
-        // printf("4=input|%c|d|%d|\n", input[*i], *i);
-        if(ft_white_space(input[*i]))
-            break;
-         while ((ft_isalnum(input[*i]) == 1) && input[*i] != '\'' && input[*i] != '"')
-        {
-            // printf("5Je suis c|%c|i=|%d|input|%c|\n", c, *i, input[*i]);
-            data_echo->str_w_quot[(*clef_tab_w_quot)].str[iterateur_tab_w_quot] = input[*i];
-            (*i)++;
-            iterateur_tab_w_quot++;
-        }
-        if(ft_white_space(input[*i]) || input[*i] == '\0')
-            break;
-            // printf("6=input|%c|d|%d|\n", input[*i], *i);
-        if(input[*i]== '\'' || input[*i]== '"')
-        {
-            c = input[*i];
-            data_echo->str_w_quot[(*clef_tab_w_quot)].str[iterateur_tab_w_quot] = input[*i];
-            (*i)++;
-            iterateur_tab_w_quot++;
-        }
-
-        // printf("7 =input|%c|d|%d|\n", input[*i], *i);
-
-    }
-    data_echo->str_w_quot[(*clef_tab_w_quot)].str[iterateur_tab_w_quot] = '\0';
-    data_echo->str_w_quot[(*clef_tab_w_quot)].bool= 0;
-    // printf("\nSave_with_tab_w|Nbr_occurence=%d|clef=%d|Save=|%s|Sorti=%c\n", iterateur_tab_w_quot, (*clef_tab_w_quot), data_echo->str_w_quot[(*clef_tab_w_quot)].str, input[*i]);
 }
 
 void ft_insert_tab_echo(t_echo *data_echo, char *input, int i)
