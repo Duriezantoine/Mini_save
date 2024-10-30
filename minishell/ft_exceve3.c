@@ -6,50 +6,11 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 13:20:18 by aduriez           #+#    #+#             */
-/*   Updated: 2024/10/30 14:09:10 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/30 15:03:19 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
-int	open_in_out(t_exec *exec)
-{
-	t_iofile	*tmp;
-	int			oflags;
-	int			*open_fd;
-
-	while (exec->iofiles)
-	{
-		if (exec->iofiles->type == INFILE
-			|| exec->iofiles->type == HEREDOC_INFILE)
-		{
-			open_fd = &exec->in;
-			oflags = O_RDONLY;
-		}
-		else
-		{
-			open_fd = &exec->out;
-			oflags = O_WRONLY | O_CREAT;
-			if (exec->iofiles->type == APPEND)
-				oflags |= O_APPEND;
-			else
-				oflags |= O_TRUNC;
-		}
-		if (*open_fd > 1)
-			close(*open_fd);
-		*open_fd = open(exec->iofiles->file, oflags, 0644);
-		if (*open_fd < 0)
-		{
-			perror("open");
-			return (1);
-		}
-		tmp = exec->iofiles;
-		exec->iofiles = tmp->next;
-		free(tmp->file);
-		free(tmp);
-	}
-	return (0);
-}
 
 void	ft_execve_built_exit(t_exec_info *info, t_exec *lst, t_node *list)
 {

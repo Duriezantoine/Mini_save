@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 17:31:12 by aduriez           #+#    #+#             */
-/*   Updated: 2024/10/30 13:02:45 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/30 15:03:03 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,11 +47,6 @@ void	setup_signals(void)
 	signal(SIGQUIT, signal_handler);
 }
 
-// char *ft_change_white_space(char *input)
-// {
-
-// }
-
 int	shell_loop(t_node *list, t_data *data, t_env **env)
 {
 	char	*input;
@@ -62,7 +57,6 @@ int	shell_loop(t_node *list, t_data *data, t_env **env)
 		input = ft_read_input(data);
 		if (!input)
 			break ;
-		// input = ft_change_white_space(input);
 		if (handle_empty_input(input, data))
 			continue ;
 		status = ft_process_command(input, list, data, *env);

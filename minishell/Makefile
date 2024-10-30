@@ -6,13 +6,13 @@
 #    By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/04/09 17:09:10 by dpoltura          #+#    #+#              #
-#    Updated: 2024/10/28 14:07:09 by aduriez          ###   ########.fr        #
+#    Updated: 2024/10/30 14:59:05 by aduriez          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 CFLAGS = -Wall -Wextra -Werror -g -fPIE -Wno-unused-command-line-argument
 LDFLAGS = -lreadline #-fsanitize=address
-
+CC = cc
 SRCS =	minishell_parse.c \
 		minishell_parse2.c \
 		minishell_parse3.c \
@@ -50,6 +50,7 @@ SRCS =	minishell_parse.c \
 		ft_here_doc3.c \
 		ft_here_doc4.c \
 		ft_split.c \
+		ft_exceve12.c \
 		ft_exceve11.c \
 		ft_exceve10.c \
 		ft_exceve9.c \

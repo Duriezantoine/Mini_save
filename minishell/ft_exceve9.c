@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/25 09:52:29 by aduriez           #+#    #+#             */
-/*   Updated: 2024/10/29 11:41:38 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/30 14:54:04 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,9 +79,7 @@ char	**get_env_cdt(t_env *env)
 {
 	char	**ret;
 	int		i;
-	t_env	*tmp;
 
-	tmp = env;
 	ret = ft_calloc(env_len(env) + 1, sizeof(char *));
 	if (!ret)
 		return (NULL);

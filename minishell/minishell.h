@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/09 17:05:05 by dpoltura          #+#    #+#             */
-/*   Updated: 2024/10/30 13:58:16 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/30 15:39:38 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -262,6 +262,8 @@ int								ft_init_token_space(t_echo *data_echo,
 									char *input, int i);
 char							*ft_change_save_v3(char *str, t_env *env,
 									char c, t_data *data);
+int								ft_process_input(char *input, int *i, int *occ);
+
 // Exits
 int								ft_putstr_fd(char *str, int fd);
 void							ft_out_exit(int i);

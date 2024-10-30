@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 13:42:58 by aduriez           #+#    #+#             */
-/*   Updated: 2024/10/28 13:41:25 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/30 15:03:40 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,11 +68,6 @@ int	builtin(char *name)
 
 int	exec(char *name, char **argv, char ***envp)
 {
-	int	i;
-	int	built;
-
-	i = 0;
-	built = builtin(name);
 	if (!builtin(name))
 	{
 		if (!ft_strchr(name, '/'))

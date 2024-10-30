@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/25 12:13:49 by aduriez           #+#    #+#             */
-/*   Updated: 2024/10/30 14:00:27 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/30 15:00:30 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,7 @@ void	ft_check_iofile(t_node *list, t_arg *arg)
 	t_arg		*tmp;
 	t_iofile	*files;
 	t_iofile	*new;
-	
+
 	tmp = arg;
 	files = NULL;
 	while (tmp)
@@ -90,12 +90,6 @@ int	lexer_cmd(t_node *list, t_data *data)
 			return (1);
 		ft_check_bulting(&list->cmd, list->arg);
 		ft_check_iofile(list, list->arg);
-		// ft_check_outfile(list, &list->cmd, list->arg);
-		// if (ft_check_infile_cmd(list, list->arg) == -1)
-		// {
-		// 	data->exit_code = 1;
-		// 	return (1);
-		// }
 		data->count = data->count + 1;
 		list = list->next;
 	}

@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 17:24:47 by aduriez           #+#    #+#             */
-/*   Updated: 2024/10/30 13:20:59 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/30 15:14:01 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,4 +70,18 @@ char	*ft_verif_input(char *str)
 		}
 	}
 	return (tmp);
+}
+
+int	ft_process_input(char *input, int *i, int *occ)
+{
+	(*i)++;
+	while (input[*i] != '\0' && ft_isalnum(input[*i]) == 1 && input[*i] != '\''
+		&& input[*i] != '"')
+	{
+		(*occ)++;
+		(*i)++;
+	}
+	if (ft_isalnum(input[*i]) == 0)
+		return (1);
+	return (0);
 }
