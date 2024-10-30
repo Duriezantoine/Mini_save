@@ -6,60 +6,59 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/06 18:43:21 by aduriez           #+#    #+#             */
-/*   Updated: 2024/10/23 18:07:10 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/28 13:32:59 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void ft_delete_unset(t_env **env, char *search)
+void	ft_delete_unset(t_env **env, char *search)
 {
-    t_env *current;
-    t_env *prev;
+	t_env	*current;
+	t_env	*prev;
 
-    if (!env || !*env || !search)
-        return;
-    current = *env;
-    prev = NULL;
-    while (current)
-    {
-        if (strcmp(current->key, search) == 0)
-        {
-            if (prev)
-                prev->next = current->next;
-            else
-                *env = current->next;
-    
-            free(current->key);
-            free(current->value);
-            free(current);
-            return;
-        }
-        prev = current;
-        current = current->next;
-    }
+	if (!env || !*env || !search)
+		return ;
+	current = *env;
+	prev = NULL;
+	while (current)
+	{
+		if (ft_strcmp(current->key, search) == 0)
+		{
+			if (prev)
+				prev->next = current->next;
+			else
+				*env = current->next;
+			free(current->key);
+			free(current->value);
+			free(current);
+			return ;
+		}
+		prev = current;
+		current = current->next;
+	}
 }
 
-int    bulting_unset( char ***env, t_cmd *cmd, t_node *list)
+int	bulting_unset(char ***env, t_cmd *cmd, t_node *list)
 {
-    char  **tmp;
-    int     x;
+	char	**tmp;
+	int		x;
 
-    tmp = cmd->cmd_and_args;
-    x = 1;
-    while(tmp[x])
-    {
-        if(ft_search_envp((*env), cmd->cmd_and_args[x])==0)
-        {
-            return(1);
-        }
-        else 
-        {
-            ft_delete_unset(&list->env, cmd->cmd_and_args[x]);
-        }
-        x++;
-    }
-    return(0);
+	tmp = cmd->cmd_and_args;
+	x = 1;
+	while (tmp[x])
+	{
+		if (ft_search_envp((*env), cmd->cmd_and_args[x]) == 0)
+		{
+			return (1);
+		}
+		else
+		{
+			ft_delete_unset(&list->env, cmd->cmd_and_args[x]);
+		}
+		x++;
+	}
+	return (0);
 }
 
 static int	check_plus_sign(char *key, char *key_envp)
@@ -78,7 +77,7 @@ static int	check_plus_sign(char *key, char *key_envp)
 
 static int	compare_keys(char *key, char *key_envp, char *search)
 {
-	if (strncmp(key_envp, key, ft_strlen(search)) == 0)
+	if (ft_strncmp(key_envp, key, ft_strlen(search)) == 0)
 	{
 		free(key);
 		free(key_envp);

@@ -6,84 +6,86 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/03 15:51:36 by aduriez           #+#    #+#             */
-/*   Updated: 2024/10/23 18:10:25 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/25 15:48:16 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include"minishell.h"
+#include "minishell.h"
 
-void     ft_free_data_echo(t_echo *data_echo)
+void	ft_free_data_echo(t_echo *data_echo)
 {
-    int i;
+	int	i;
 
-    i = 0;
-    while(i < data_echo->s_quot)
-    {
-        free(data_echo->str_s_quot[i].str);
-        i++;
-    }
-    i = 0;
-    while(i < data_echo->w_quot)
-    {
-        free(data_echo->str_w_quot[i].str);
-        i++;
-    }
-    free(data_echo->str_s_quot);
-    free(data_echo->str_w_quot);
+	i = 0;
+	while (i < data_echo->s_quot)
+	{
+		free(data_echo->str_s_quot[i].str);
+		i++;
+	}
+	i = 0;
+	while (i < data_echo->w_quot)
+	{
+		free(data_echo->str_w_quot[i].str);
+		i++;
+	}
+	free(data_echo->str_s_quot);
+	free(data_echo->str_w_quot);
 }
-void ft_free_arg(t_arg *tmp)
+
+void	ft_free_arg(t_arg *tmp)
 {
-    t_arg *next_tmp;
+	t_arg	*next_tmp;
 
-    while (tmp != NULL)
-    {
-        next_tmp = tmp->next;
-        free(tmp->str_command);
-        free(tmp);
-        tmp = next_tmp;
-    }
+	while (tmp != NULL)
+	{
+		next_tmp = tmp->next;
+		free(tmp->str_command);
+		free(tmp);
+		tmp = next_tmp;
+	}
 }
 
-void free_dt_c(char **dt) {
-    int i;
-
-    i = 0;
-    if(!dt)
-        return;
-    while(dt[i] != NULL)
-    {
-        free(dt[i]);
-        i++;
-    }
-    free(dt);
-}
-
-void ft_free_cmd(t_cmd *tmp)
+void	free_dt_c(char **dt)
 {
-    t_cmd *next_tmp;
+	int	i;
 
-    while (tmp != NULL)
-    {
-        next_tmp = tmp->next;
-        if (tmp->cmd_and_args != NULL)
-            free_dt_c(tmp->cmd_and_args);
-        free(tmp);
-        tmp = next_tmp;
-    }
+	i = 0;
+	if (!dt)
+		return ;
+	while (dt[i] != NULL)
+	{
+		free(dt[i]);
+		i++;
+	}
+	free(dt);
 }
 
-void free_node(t_node *list)
+void	ft_free_cmd(t_cmd *tmp)
 {
-    t_node *current = list;
-    t_node *next;
+	t_cmd	*next_tmp;
 
-    while (current != NULL)
-    {
-        next = current->next;
-        ft_free_arg(current->arg);
-        ft_free_cmd(current->cmd);
-        free(current);
-        current = next;
-    }
+	while (tmp != NULL)
+	{
+		next_tmp = tmp->next;
+		if (tmp->cmd_and_args != NULL)
+			free_dt_c(tmp->cmd_and_args);
+		free(tmp);
+		tmp = next_tmp;
+	}
 }
 
+void	free_node(t_node *list)
+{
+	t_node	*current;
+	t_node	*next;
+
+	current = list;
+	while (current != NULL)
+	{
+		next = current->next;
+		ft_free_arg(current->arg);
+		ft_free_cmd(current->cmd);
+		free(current);
+		current = next;
+	}
+}

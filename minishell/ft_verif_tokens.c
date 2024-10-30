@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 17:27:59 by aduriez           #+#    #+#             */
-/*   Updated: 2024/10/23 18:21:09 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/25 17:56:18 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,9 @@ static int	check_redirection(char *tmp, int *x, char c)
 	{
 		if (tmp[*x + 1] == '>' || tmp[*x + 1] == '<')
 			return (print_error_token(tmp[*x + 1], tmp[*x + 2]));
-		return (print_error_token('|', 0));
+		if (tmp[*x + 1] == '|')
+			return (print_error_token('|', 0));
+		return (print_error_token(tmp[*x], 0));
 	}
 	return (0);
 }
