@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 16:32:46 by aduriez           #+#    #+#             */
-/*   Updated: 2024/10/29 11:43:13 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/30 13:58:04 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,6 +89,5 @@ void	free_exec(struct s_exec e)
 		close(e.in);
 	if (e.out > 2)
 		close(e.out);
-	free_iofile_list(e.infile);
-	free_iofile_list(e.outfile);
+	free_iofile_list(e.iofiles);
 }

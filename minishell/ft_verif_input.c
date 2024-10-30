@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 17:24:47 by aduriez           #+#    #+#             */
-/*   Updated: 2024/10/29 15:10:51 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/30 13:20:59 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,7 @@ char	*ft_verif_input(char *str)
 	x = 0;
 	while (str[x])
 	{
-		while (str[x] == ' ')
+		while (ft_white_space(str[x]))
 			x++;
 		if (str[x] == '|' || str[x] == '<' || str[x] == '>')
 			add_token(str[x++], &tmp);

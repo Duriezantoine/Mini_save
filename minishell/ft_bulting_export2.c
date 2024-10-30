@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 13:15:32 by aduriez           #+#    #+#             */
-/*   Updated: 2024/10/28 13:24:31 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/30 13:16:37 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,9 +106,6 @@ int	ft_verif_export(char *str)
 		return (1);
 	}
 	if (ft_verif_one_letter(str) == 1)
-	{
-		printf("La");
 		return (1);
-	}
 	return (0);
 }

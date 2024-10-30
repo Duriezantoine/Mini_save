@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/23 15:36:21 by aduriez           #+#    #+#             */
-/*   Updated: 2024/10/29 11:10:10 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/30 13:42:25 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,7 +60,7 @@ void	ft_insert_data_w_whith_tab(t_echo *data_echo, char *input, int *i,
 	{
 		if (goto_quote(&data, data_echo, j))
 			break ;
-		if (ft_white_space(input[*i]) || input[*i] == '\0')
+		if (ft_isalnum(input[*i]) == 0)
 			break ;
 		if (input[*i] == '\'' || input[*i] == '"')
 		{

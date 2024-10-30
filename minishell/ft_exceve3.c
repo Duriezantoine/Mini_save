@@ -6,58 +6,45 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/24 13:20:18 by aduriez           #+#    #+#             */
-/*   Updated: 2024/10/29 09:23:29 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/30 14:09:10 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int	open_in(t_exec *exec)
-{
-	int			oflags;
-	t_iofile	*tmp;
-
-	while (exec->outfile)
-	{
-		if (exec->out > 1)
-			close(exec->out);
-		oflags = O_WRONLY | O_CREAT;
-		if (exec->outfile->type == APPEND)
-			oflags |= O_APPEND;
-		else
-			oflags |= O_TRUNC;
-		exec->out = open(exec->outfile->file, oflags, 0644);
-		if (exec->out < 0)
-		{
-			perror("open");
-			return (1);
-		}
-		tmp = exec->outfile;
-		exec->outfile = tmp->next;
-		free(tmp->file);
-		free(tmp);
-	}
-	return (0);
-}
-
 int	open_in_out(t_exec *exec)
 {
 	t_iofile	*tmp;
+	int			oflags;
+	int			*open_fd;
 
-	if (open_in(exec))
-		return (1);
-	while (exec->infile)
+	while (exec->iofiles)
 	{
-		if (exec->in > 0)
-			close(exec->in);
-		exec->in = open(exec->infile->file, O_RDONLY);
-		if (exec->in < 0)
+		if (exec->iofiles->type == INFILE
+			|| exec->iofiles->type == HEREDOC_INFILE)
+		{
+			open_fd = &exec->in;
+			oflags = O_RDONLY;
+		}
+		else
+		{
+			open_fd = &exec->out;
+			oflags = O_WRONLY | O_CREAT;
+			if (exec->iofiles->type == APPEND)
+				oflags |= O_APPEND;
+			else
+				oflags |= O_TRUNC;
+		}
+		if (*open_fd > 1)
+			close(*open_fd);
+		*open_fd = open(exec->iofiles->file, oflags, 0644);
+		if (*open_fd < 0)
 		{
 			perror("open");
 			return (1);
 		}
-		tmp = exec->infile;
-		exec->infile = tmp->next;
+		tmp = exec->iofiles;
+		exec->iofiles = tmp->next;
 		free(tmp->file);
 		free(tmp);
 	}

@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/25 11:14:39 by aduriez           #+#    #+#             */
-/*   Updated: 2024/10/25 16:01:31 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/30 13:39:33 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,15 +22,16 @@ static int	ft_insert_data_loop(char *input, int *i, char *c, int *occ)
 	if (input[*i] == '\0')
 		return (1);
 	(*occ)++;
-	if (ft_white_space(input[(*i)++]) || input[*i] == '\0')
+	if (ft_isalnum(input[(*i)]) == 0)
 		return (1);
+	(*i)++;
 	while (((ft_isalnum(input[*i]) == 1) && input[*i] != '\0')
 		&& input[*i] != '\'' && input[*i] != '"')
 	{
 		(*occ)++;
 		(*i)++;
 	}
-	if (ft_white_space(input[*i]) || input[*i] == '\0')
+	if (ft_isalnum(input[*i]) == 0)
 		return (1);
 	if (input[*i] == '\'' || input[*i] == '"')
 	{

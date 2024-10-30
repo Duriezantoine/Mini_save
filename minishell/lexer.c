@@ -6,25 +6,11 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/25 14:26:27 by aduriez           #+#    #+#             */
-/*   Updated: 2024/10/28 14:04:37 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/30 13:54:04 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
-void	print_arg(t_arg *arg)
-{
-	if (arg == NULL)
-	{
-		printf("t_arg is NULL\n");
-		return ;
-	}
-	printf("t_arg:\n");
-	printf("  str_command: %s\n", arg->str_command);
-	printf("  type: %d\n", arg->type);
-	printf("  prev: %p\n", (void *)arg->prev);
-	printf("  next: %p\n", (void *)arg->next);
-}
 
 void	write_to_temp_file(int fd, char *buffer)
 {
@@ -52,8 +38,7 @@ void	ft_init_cmd(t_cmd **list)
 	(*list)->is_builtin = -1;
 	(*list)->prev = NULL;
 	(*list)->next = NULL;
-	(*list)->input_str = NULL;
-	(*list)->output_str = NULL;
+	(*list)->io_str = NULL;
 }
 
 void	ft_insert_double_tab(t_cmd **list, t_arg *list_arg)

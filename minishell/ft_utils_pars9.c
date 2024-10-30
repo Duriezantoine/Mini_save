@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/25 12:02:25 by aduriez           #+#    #+#             */
-/*   Updated: 2024/10/29 16:41:36 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/30 13:29:38 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,21 +42,17 @@ char	*find_env_value(char *var, t_env *env)
 int	ft_handle_quotes(char *input, int *i, int *wt_quot, char c)
 {
 	(*i)++;
-	while (input[*i] != '\0' && input[*i] != c)
+	while (input[*i] != '\0')
 	{
-		while (input[*i])
-		{
+		while (input[*i] != c)
 			(*i)++;
-			if (input[*i] == c)
-				break ;
-		}
-		if (input[*i] == '\0' || ft_white_space(input[*i]))
+		(*i)++;
+		if (input[*i] == '\0' || ft_isalnum(input[*i]) == 0)
 			break ;
 		while (((ft_isalnum(input[*i]) == 1) && input[*i] != '\0')
 			&& input[*i] != '\'' && input[*i] != '"')
 			(*i)++;
-		(*i)++;
-		if (input[*i] == '\0' || ft_white_space(input[*i]))
+		if (input[*i] == '\0' || ft_isalnum(input[*i]) == 0)
 			break ;
 		if (input[*i] == '\'' || input[*i] == '"')
 		{

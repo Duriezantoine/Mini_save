@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/25 09:50:06 by aduriez           #+#    #+#             */
-/*   Updated: 2024/10/25 15:47:28 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/30 14:00:04 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,8 +57,7 @@ static void	init_exec_struct(struct s_exec *ret, t_node *list, int i, int len)
 	ret[i].exec = ft_strdup(list->cmd->cmd_and_args[0]);
 	ret[i].argv = clone_cdt(list->cmd->cmd_and_args);
 	ret[i].nb_exec = len;
-	ret[i].infile = list->cmd->input_str;
-	ret[i].outfile = list->cmd->output_str;
+	ret[i].iofiles = list->cmd->io_str;
 	ret[i].out = -1;
 	ret[i].in = -1;
 	ret[i].pid = -1;

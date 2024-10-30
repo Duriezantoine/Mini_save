@@ -6,7 +6,7 @@
 /*   By: aduriez <aduriez@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/09 17:05:05 by dpoltura          #+#    #+#             */
-/*   Updated: 2024/10/29 16:40:35 by aduriez          ###   ########.fr       */
+/*   Updated: 2024/10/30 13:58:16 by aduriez          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,8 +98,7 @@ typedef struct s_verif_input
 typedef struct s_cmd
 {
 	char						**cmd_and_args;
-	t_iofile					*input_str;
-	t_iofile					*output_str;
+	t_iofile					*io_str;
 	enum e_tokens				_out_type;
 	int							cmd;
 	int							is_builtin;
@@ -204,8 +203,7 @@ typedef struct s_exec
 	char						*exec;
 	char						**argv;
 	char						**envp;
-	t_iofile					*infile;
-	t_iofile					*outfile;
+	t_iofile					*iofiles;
 
 	int							in;
 	int							out;
@@ -392,7 +390,6 @@ char							**ft_split(char const *s, char c);
 // Ce qui permet de verifier ou j'en suis
 void							print_cmd(t_node *list);
 void							print_all_cmds(t_node *list);
-int								ft_open_infile(t_node **list, char *infile);
 // Ce qui permet de mettre en place l'execution
 int								ft_exceve(t_node *list, t_data *data,
 									t_env **env);
